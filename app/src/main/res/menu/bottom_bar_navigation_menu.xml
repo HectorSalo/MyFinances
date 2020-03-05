@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_home"
+        android:title="@string/menu_inicio"
+        android:icon="@drawable/ic_home_black_24dp"/>
+    <item
+        android:id="@+id/menu_ingresos"
+        android:title="@string/menu_ingresos"
+        android:icon="@drawable/ic_ingresos_24dp"/>
+    <item
+        android:id="@+id/menu_ahorros"
+        android:title="@string/menu_ahorros"
+        android:icon="@drawable/ic_ahorros_24dp"/>
+    <item
+        android:id="@+id/menu_prestamos"
+        android:title="@string/menu_prestamos"
+        android:icon="@drawable/ic_prestamos_24dp"/>
+    <item
+        android:id="@+id/menu_egresos"
+        android:title="@string/menu_egresos"
+        android:icon="@drawable/ic_egresos_24dp"/>
+
+    <item
+        android:id="@+id/menu_deudas"
+        android:title="@string/menu_deudas"
+        android:icon="@drawable/ic_deudas_24dp"/>
+
+</menu>

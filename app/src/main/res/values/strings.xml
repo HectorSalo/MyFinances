@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">MyFinances</string>
+    <string name="app_name">Mis Finanazas</string>
+
+
+    <string name="menu_inicio">Inicio</string>
+    <string name="menu_ingresos">Ingresos Fijos</string>
+    <string name="menu_ahorros">Ahorros</string>
+    <string name="menu_prestamos">Préstamos realizados</string>
+    <string name="menu_egresos">Gastos Fijos</string>
+    <string name="menu_deudas">Deudas</string>
+
+
+    <string name="pie_ingresos">Ingresos</string>
+    <string name="pie_ahorros">Ahorros</string>
+    <string name="pie_prestamos">Préstamos</string>
+    <string name="pie_egresos">Gastos</string>
+    <string name="pie_deudas">Deudas</string>
+
+
 </resources>
