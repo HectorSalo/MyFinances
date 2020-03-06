@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances;
+package com.skysam.hchirinos.myfinances.principal;
 
 import android.os.Bundle;
 
@@ -15,6 +15,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.skysam.hchirinos.myfinances.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;

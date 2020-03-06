@@ -15,6 +15,24 @@
     <string name="pie_prestamos">Préstamos</string>
     <string name="pie_egresos">Gastos</string>
     <string name="pie_deudas">Deudas</string>
+    <string name="title_activity_agregar">AgregarActivity</string>
+
+
+    <!-- Strings used for fragments -->
+    <string name="concepto">Concepto:</string>
+    <string name="monto">Monto:</string>
+    <string name="moneda_bolivares">Bs.</string>
+    <string name="moneda_dolar">$</string>
+    <string name="frecuencia">Frecuencia:</string>
+    <string name="dias">Días</string>
+    <string name="semanas">Semanas</string>
+    <string name="meses">Meses</string>
+    <string name="fecha_incio">Fecha de inicio:</string>
+    <string name="btn_guardar">Guardar</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 
 </resources>
