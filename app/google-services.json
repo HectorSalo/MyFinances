@@ -1,0 +1,93 @@
+{
+  "project_info": {
+    "project_number": "383252820495",
+    "firebase_url": "https://datos-seguros-c80c0.firebaseio.com",
+    "project_id": "datos-seguros-c80c0",
+    "storage_bucket": "datos-seguros-c80c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383252820495:android:c613ca9f4b55f307",
+        "android_client_info": {
+          "package_name": "com.example.datossegurosFirebaseFinal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383252820495-k0ob9kd4i9bok8tgj88hohj7d5bjj300.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.datossegurosFirebaseFinal",
+            "certificate_hash": "3d0cd8a51cc8115f9c14940c8fb6cfe1b5be6930"
+          }
+        },
+        {
+          "client_id": "383252820495-a2f9cur9lr4imlsdfo6s6nag573jougc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.datossegurosFirebaseFinal",
+            "certificate_hash": "d827183ffa2847f9b61136ed17fedfabdf0dfd96"
+          }
+        },
+        {
+          "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIdj6CQXIMGWtDeIcPoBrZr6RmG6QpQlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383252820495:android:a52d8e8ceb1521c9efa97a",
+        "android_client_info": {
+          "package_name": "com.skysam.hchirinos.myfinances"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383252820495-sbmmn49oagh67fdpf212gi46hrlani17.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skysam.hchirinos.myfinances",
+            "certificate_hash": "3d0cd8a51cc8115f9c14940c8fb6cfe1b5be6930"
+          }
+        },
+        {
+          "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIdj6CQXIMGWtDeIcPoBrZr6RmG6QpQlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -28,7 +28,6 @@ public class HomeFragment extends Fragment {
 
     private PieChart pieBalance;
     private Spinner spinner;
-    private List<String> listaMeses;
 
 
     public HomeFragment() {
@@ -58,7 +57,7 @@ public class HomeFragment extends Fragment {
 
         pieBalance = view.findViewById(R.id.pie_balance);
         spinner = view.findViewById(R.id.spinner_meses);
-        listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
+        List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
 

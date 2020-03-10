@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Mis Finanazas</string>
+    <string name="texto_vacio"> </string>
 
 
     <string name="menu_inicio">Inicio</string>
@@ -27,7 +28,8 @@
     <string name="dias">Días</string>
     <string name="semanas">Semanas</string>
     <string name="meses">Meses</string>
-    <string name="fecha_incio">Fecha de inicio:</string>
+    <string name="fecha_inicio">Escoja la fecha inicial</string>
+    <string name="fecha">Fecha:</string>
     <string name="btn_guardar">Guardar</string>
     <string name="previous">Previous</string>
 
