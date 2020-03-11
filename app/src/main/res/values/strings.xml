@@ -16,8 +16,13 @@
     <string name="pie_prestamos">Préstamos</string>
     <string name="pie_egresos">Gastos</string>
     <string name="pie_deudas">Deudas</string>
-    <string name="title_activity_agregar">AgregarActivity</string>
+    <string name="title_activity_agregar">Agregar</string>
 
+
+    <string name="email_sesion">Correo</string>
+    <string name="pass_sesion">Contraseña</string>
+    <string name="btn_inic_sesion">Iniciar Sesión</string>
+    <string name="btn_registrar">Registrar</string>
 
     <!-- Strings used for fragments -->
     <string name="concepto">Concepto:</string>

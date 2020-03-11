@@ -2,11 +2,13 @@ package com.skysam.hchirinos.myfinances.agregar;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -15,16 +17,27 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class AgregarIngresoFragment extends Fragment {
 
@@ -34,6 +47,8 @@ public class AgregarIngresoFragment extends Fragment {
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses;
     private TextView tvFecha;
     private Date fechaSelec;
+    private FirebaseUser user;
+    private ProgressBar progressBar;
 
     public AgregarIngresoFragment() {}
 
@@ -49,6 +64,9 @@ public class AgregarIngresoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         etConcepto = view.findViewById(R.id.et_concepto);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto);
         etMonto = view.findViewById(R.id.et_monto);
@@ -62,6 +80,8 @@ public class AgregarIngresoFragment extends Fragment {
 
         rbBs.setChecked(true);
         rbDias.setChecked(true);
+
+        progressBar = view.findViewById(R.id.progressBar_agregar_ingreso);
 
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia);
 
@@ -99,6 +119,7 @@ public class AgregarIngresoFragment extends Fragment {
                         guardarDatos(concepto, monto, fechaSelec);
                         etConceptoLayout.setError(null);
                         etMontoLayout.setError(null);
+                        progressBar.setVisibility(View.VISIBLE);
                     } else {
                        Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
                     }
@@ -117,7 +138,55 @@ public class AgregarIngresoFragment extends Fragment {
 
 
     private void guardarDatos(String concepto, double monto, Date fechaSelec) {
+        boolean dolar = false;
+        String tipoFrecuencia = null;
         String duracionFrecuencia = spFrecuencia.getSelectedItem().toString();
+
+        if (rbBs.isChecked()) {
+            dolar = false;
+        } else if (rbDolar.isChecked()) {
+            dolar = true;
+        }
+
+        if (rbDias.isChecked()) {
+            tipoFrecuencia = "Dias";
+        } else if (rbSemanas.isChecked()) {
+            tipoFrecuencia = "Semanas";
+        } else if (rbMeses.isChecked()) {
+            tipoFrecuencia = "Meses";
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> docData = new HashMap<>();
+        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
+        docData.put(VariablesEstaticas.BD_MONTO, monto);
+        docData.put(VariablesEstaticas.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(VariablesEstaticas.BD_DOLAR, dolar);
+        docData.put(VariablesEstaticas.BD_DURACION_FRECUENCIA, duracionFrecuencia);
+        docData.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, tipoFrecuencia);
+
+        Objects.requireNonNull(getActivity()).finish();
+
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
+                .add(docData)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        progressBar.setVisibility(View.GONE);
+                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                        Objects.requireNonNull(getActivity()).finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+
 
     }
 
