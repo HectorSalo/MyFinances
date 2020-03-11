@@ -1,21 +1,41 @@
 package com.skysam.hchirinos.myfinances.principal;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.errorprone.annotations.Var;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,12 +43,19 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+import static android.view.View.generateViewId;
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class HomeFragment extends Fragment {
 
     private PieChart pieBalance;
     private Spinner spinner;
-
+    private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
+    private ProgressBar progressBar;
+    private TextView tvCotizacionDolar;
+    private SharedPreferences sharedPreferences;
+    private float valorCotizacion;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -55,36 +82,95 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+
         pieBalance = view.findViewById(R.id.pie_balance);
+        progressBar = view.findViewById(R.id.progressBar_pie);
+        tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
         spinner = view.findViewById(R.id.spinner_meses);
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
+
+        montoIngresos = 1;
+        montoAhorros = 1;
+        montoDeudas = 1;
+        montoGastos = 1;
+        montoPrestamos = 1;
 
         Calendar calendar = Calendar.getInstance();
         int mes = calendar.get(Calendar.MONTH);
 
         spinner.setSelection(mes);
 
+        LinearLayout linearLayoutCotizacion = view.findViewById(R.id.linearLayout_cotizacion_dolar);
+        linearLayoutCotizacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ingresarValorCotizacion(v);
+            }
+        });
+
+        cargarDatos();
         cargarFolios();
 
         return view;
     }
 
+    private void cargarDatos() {
+        progressBar.setVisibility(View.VISIBLE);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                    montototal = montototal + montoDetal;
+                                } else {
+                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                }
+                            }
+                            montoIngresos = (float) montototal;
+                            cargarFolios();
+                            progressBar.setVisibility(View.GONE);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
+    }
+
     private void cargarFolios() {
 
         pieBalance.setDescription(null);
-        pieBalance.setCenterText("Balance Mensual");
+        pieBalance.setCenterText("Balance Mensual\n($)");
         pieBalance.setCenterTextSize(24);
         pieBalance.setDrawEntryLabels(false);
         pieBalance.setRotationEnabled(false);
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(5313, Objects.requireNonNull(getContext()).getString(R.string.pie_ingresos)));
-        pieEntries.add(new PieEntry(1200, getContext().getString(R.string.pie_ahorros)));
-        pieEntries.add(new PieEntry(313, getContext().getString(R.string.pie_prestamos)));
-        pieEntries.add(new PieEntry(587, getContext().getString(R.string.pie_egresos)));
-        pieEntries.add(new PieEntry(2489, getContext().getString(R.string.pie_deudas)));
+        pieEntries.add(new PieEntry(montoIngresos, Objects.requireNonNull(getContext()).getString(R.string.pie_ingresos)));
+        pieEntries.add(new PieEntry(montoAhorros, getContext().getString(R.string.pie_ahorros)));
+        pieEntries.add(new PieEntry(montoPrestamos, getContext().getString(R.string.pie_prestamos)));
+        pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
+        pieEntries.add(new PieEntry(montoDeudas, getContext().getString(R.string.pie_deudas)));
 
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
@@ -96,5 +182,46 @@ public class HomeFragment extends Fragment {
 
         pieBalance.setData(pieData);
         pieBalance.invalidate();
+    }
+
+
+    private void ingresarValorCotizacion(View view) {
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
+        final EditText editText = v.findViewById(R.id.editText_cotizacion);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+        dialog.setTitle("Ingrese la cotización actualizada")
+                .setView(v)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!editText.getText().toString().isEmpty()) {
+                            float valor = Float.parseFloat(editText.getText().toString());
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putFloat("valor_cotizacion", valor);
+                            editor.commit();
+                            actualizarCotizacion();
+                        }
+                    }
+                }).show();
+    }
+
+
+    private void actualizarCotizacion() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+        valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
+
+        tvCotizacionDolar.setText("Bs. " + valorCotizacion);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        cargarDatos();
+        actualizarCotizacion();
     }
 }

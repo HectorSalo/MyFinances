@@ -6,25 +6,66 @@
     tools:context=".principal.HomeFragment">
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical">
+        android:layout_marginEnd="8dp">
     <Spinner
         android:layout_marginTop="32dp"
         android:id="@+id/spinner_meses"
         android:layout_width="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
         android:layout_height="50dp" />
 
-    <com.github.mikephil.charting.charts.PieChart
+        <LinearLayout
+            android:id="@+id/linearLayout_cotizacion_dolar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="32dp"
+            android:layout_toEndOf="@id/spinner_meses"
+            android:background="@drawable/fondo_cotizacion"
+            android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:text="Bs./$" />
+
+        <TextView
+            android:id="@+id/textView_cotizacion_dolar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/texto_vacio"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/colorPrimaryDark"/>
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_balance"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="24dp"
+        android:layout_below="@id/spinner_meses"
         />
-    </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar_pie"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
 
 </FrameLayout>

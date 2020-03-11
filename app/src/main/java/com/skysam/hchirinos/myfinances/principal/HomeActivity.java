@@ -3,20 +3,25 @@ package com.skysam.hchirinos.myfinances.principal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.agregar.AgregarActivity;
+import com.skysam.hchirinos.myfinances.inicioSesion.InicSesionActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -30,13 +35,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomAppBar bottomAppBar = findViewById(R.id.bottomAppBar);
-
-        bottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                abrirBottomDrawer();
-            }
-        });
+        setSupportActionBar(bottomAppBar);
 
         FloatingActionButton floatingActionButton = findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +49,32 @@ public class HomeActivity extends AppCompatActivity {
         ingresosFragment = new IngresosFragment();
 
         getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, homeFragment, "home").commit();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.home_options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                abrirBottomDrawer();
+                break;
+            case R.id.menu_cerrrar_sesion:
+                confirmarCerrarSesion();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void abrirBottomDrawer() {
@@ -130,5 +155,32 @@ public class HomeActivity extends AppCompatActivity {
             }
         }).show();
 
+    }
+
+    private void confirmarCerrarSesion() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmar");
+        builder.setMessage("¿Desea cerrar la sesión?");
+        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                cerrarSesion();
+            }
+        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).show();
+    }
+
+    private void cerrarSesion() {
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(this, InicSesionActivity.class));
+    }
+
+    @Override
+    public void onBackPressed() {
+        confirmarCerrarSesion();
     }
 }

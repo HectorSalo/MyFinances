@@ -9,6 +9,7 @@
     <string name="menu_prestamos">Préstamos realizados</string>
     <string name="menu_egresos">Gastos Fijos</string>
     <string name="menu_deudas">Deudas</string>
+    <string name="menu_cerrar_sesion">Cerrar Sesión</string>
 
 
     <string name="pie_ingresos">Ingresos</string>
@@ -21,8 +22,10 @@
 
     <string name="email_sesion">Correo</string>
     <string name="pass_sesion">Contraseña</string>
+    <string name="pass_sesion_repetir">Repetir Contraseña</string>
     <string name="btn_inic_sesion">Iniciar Sesión</string>
     <string name="btn_registrar">Registrar</string>
+    <string name="btn_restablecimiento_pass">Olvidé mi contraseña</string>
 
     <!-- Strings used for fragments -->
     <string name="concepto">Concepto:</string>

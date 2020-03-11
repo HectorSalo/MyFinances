@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -49,6 +50,7 @@ public class AgregarIngresoFragment extends Fragment {
     private Date fechaSelec;
     private FirebaseUser user;
     private ProgressBar progressBar;
+    private Button btnGuardar;
 
     public AgregarIngresoFragment() {}
 
@@ -92,7 +94,8 @@ public class AgregarIngresoFragment extends Fragment {
         fechaSelec = new Date();
         fechaSelec = null;
 
-        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
+        btnGuardar = view.findViewById(R.id.button_first);
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validarDatos();
@@ -120,6 +123,9 @@ public class AgregarIngresoFragment extends Fragment {
                         etConceptoLayout.setError(null);
                         etMontoLayout.setError(null);
                         progressBar.setVisibility(View.VISIBLE);
+                        etConceptoLayout.setEnabled(false);
+                        etMontoLayout.setEnabled(false);
+                        btnGuardar.setEnabled(false);
                     } else {
                        Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
                     }
@@ -166,7 +172,6 @@ public class AgregarIngresoFragment extends Fragment {
         docData.put(VariablesEstaticas.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, tipoFrecuencia);
 
-        Objects.requireNonNull(getActivity()).finish();
 
         db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
                 .add(docData)
@@ -184,6 +189,9 @@ public class AgregarIngresoFragment extends Fragment {
                         Log.w(TAG, "Error adding document", e);
                         Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
                     }
                 });
 
