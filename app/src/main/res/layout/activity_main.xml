@@ -19,14 +19,15 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_gravity="bottom"
+            app:fabAnimationMode="slide"
             app:fabCradleMargin="5dp"
             app:fabCradleRoundedCornerRadius="16dp"
             app:hideOnScroll="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:navigationIcon="@drawable/ic_menu_black_24dp"
-            />
+
+            app:navigationIcon="@drawable/ic_menu_black_24dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

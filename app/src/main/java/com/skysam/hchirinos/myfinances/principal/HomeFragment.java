@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,7 +30,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.errorprone.annotations.Var;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,17 +41,16 @@ import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static android.view.View.generateViewId;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 public class HomeFragment extends Fragment {
 
     private PieChart pieBalance;
-    private Spinner spinner;
     private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
     private ProgressBar progressBar;
     private TextView tvCotizacionDolar;
@@ -59,6 +58,8 @@ public class HomeFragment extends Fragment {
     private float valorCotizacion;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private Calendar calendar = Calendar.getInstance();
+    private int mesSelected;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,9 +76,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -89,7 +87,7 @@ public class HomeFragment extends Fragment {
         pieBalance = view.findViewById(R.id.pie_balance);
         progressBar = view.findViewById(R.id.progressBar_pie);
         tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
-        spinner = view.findViewById(R.id.spinner_meses);
+        Spinner spinner = view.findViewById(R.id.spinner_meses);
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
@@ -101,9 +99,21 @@ public class HomeFragment extends Fragment {
         montoPrestamos = 1;
 
         Calendar calendar = Calendar.getInstance();
-        int mes = calendar.get(Calendar.MONTH);
+        mesSelected = calendar.get(Calendar.MONTH);
 
-        spinner.setSelection(mes);
+        spinner.setSelection(mesSelected);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mesSelected = position;
+                cargarIngresos();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         LinearLayout linearLayoutCotizacion = view.findViewById(R.id.linearLayout_cotizacion_dolar);
         linearLayoutCotizacion.setOnClickListener(new View.OnClickListener() {
@@ -131,13 +141,19 @@ public class HomeFragment extends Fragment {
                             double montototal = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
-                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+                                Date date = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
+                                calendar.setTime(date);
+                                int mes = calendar.get(Calendar.MONTH);
 
-                                if (dolar) {
-                                    montototal = montototal + montoDetal;
-                                } else {
-                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                if (mes == mesSelected) {
+                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                    if (dolar) {
+                                        montototal = montototal + montoDetal;
+                                    } else {
+                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                    }
                                 }
                             }
                             montoIngresos = (float) montototal;
@@ -175,7 +191,7 @@ public class HomeFragment extends Fragment {
                                     montototal = montototal + (montoDetal / valorCotizacion);
                                 }
                             }
-                            montoIngresos = (float) montototal;
+                            montoAhorros = (float) montototal;
                             cargarPrestamos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -208,7 +224,7 @@ public class HomeFragment extends Fragment {
                                     montototal = montototal + (montoDetal / valorCotizacion);
                                 }
                             }
-                            montoIngresos = (float) montototal;
+                            montoPrestamos = (float) montototal;
                             cargarGastos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -242,7 +258,7 @@ public class HomeFragment extends Fragment {
                                     montototal = montototal + (montoDetal / valorCotizacion);
                                 }
                             }
-                            montoIngresos = (float) montototal;
+                            montoGastos = (float) montototal;
                             cargarDeudas();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -275,7 +291,7 @@ public class HomeFragment extends Fragment {
                                     montototal = montototal + (montoDetal / valorCotizacion);
                                 }
                             }
-                            montoIngresos = (float) montototal;
+                            montoDeudas = (float) montototal;
                             cargarFolios();
                             progressBar.setVisibility(View.GONE);
                         } else {
@@ -332,11 +348,15 @@ public class HomeFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (!editText.getText().toString().isEmpty()) {
                             float valor = Float.parseFloat(editText.getText().toString());
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putFloat("valor_cotizacion", valor);
-                            editor.commit();
-                            cargarIngresos();
-                            actualizarCotizacion();
+                            if (valor > 0) {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putFloat("valor_cotizacion", valor);
+                                editor.commit();
+                                cargarIngresos();
+                                actualizarCotizacion();
+                            } else {
+                                Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 }).show();

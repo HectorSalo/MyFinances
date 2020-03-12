@@ -3,7 +3,6 @@ package com.skysam.hchirinos.myfinances.principal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -28,20 +26,52 @@ public class HomeActivity extends AppCompatActivity {
     private BottomSheetDialog bottomSheetDialog;
     private HomeFragment homeFragment;
     private IngresosFragment ingresosFragment;
+    private BottomAppBar bottomAppBar;
+    private FloatingActionButton floatingActionButton;
+    private int agregar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomAppBar bottomAppBar = findViewById(R.id.bottomAppBar);
+        bottomAppBar = findViewById(R.id.bottomAppBar);
         setSupportActionBar(bottomAppBar);
 
-        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
+        agregar = 0;
+
+        floatingActionButton = findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                escogerOpcionAgregar();
+                Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
+                switch (agregar) {
+                    case 0:
+                        escogerOpcionAgregar();
+                        break;
+                    case 1:
+                        intent.putExtra("agregar", 0);
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        intent.putExtra("agregar", 1);
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent.putExtra("agregar", 2);
+                        startActivity(intent);
+                        break;
+                    case 4:
+                        intent.putExtra("agregar", 3);
+                        startActivity(intent);
+                        break;
+                    case 5:
+                        intent.putExtra("agregar", 4);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -95,26 +125,44 @@ public class HomeActivity extends AppCompatActivity {
                 switch (id){
                     case R.id.menu_home:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, homeFragment, "home").commit();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
+                        agregar = 0;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_ingresos:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
+                        agregar = 1;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_ahorros:
                         Toast.makeText(HomeActivity.this,"Item 2 Clicked",Toast.LENGTH_SHORT).show();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
+                        agregar = 2;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_prestamos:
                         Toast.makeText(HomeActivity.this,"Item 3 Clicked",Toast.LENGTH_SHORT).show();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
+                        agregar = 3;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_egresos:
                         Toast.makeText(HomeActivity.this,"Item 4 Clicked",Toast.LENGTH_SHORT).show();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
+                        agregar = 4;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_deudas:
                         Toast.makeText(HomeActivity.this,"Item 5 Clicked",Toast.LENGTH_SHORT).show();
+                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                        floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
+                        agregar = 5;
                         bottomSheetDialog.dismiss();
                         break;
                 }
