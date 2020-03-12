@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -56,6 +57,8 @@ public class HomeFragment extends Fragment {
     private TextView tvCotizacionDolar;
     private SharedPreferences sharedPreferences;
     private float valorCotizacion;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -110,18 +113,151 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        cargarDatos();
+        cargarIngresos();
         cargarFolios();
 
         return view;
     }
 
-    private void cargarDatos() {
+    private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth auth = FirebaseAuth.getInstance();
 
         db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                    montototal = montototal + montoDetal;
+                                } else {
+                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                }
+                            }
+                            montoIngresos = (float) montototal;
+                            cargarAhorros();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+            }
+        });
+
+    }
+
+
+    private void cargarAhorros() {
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_AHORROS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                    montototal = montototal + montoDetal;
+                                } else {
+                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                }
+                            }
+                            montoIngresos = (float) montototal;
+                            cargarPrestamos();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+            }
+        });
+    }
+
+    private void cargarPrestamos() {
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_PRESTAMOS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                    montototal = montototal + montoDetal;
+                                } else {
+                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                }
+                            }
+                            montoIngresos = (float) montototal;
+                            cargarGastos();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+            }
+        });
+    }
+
+
+    private void cargarGastos() {
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_GASTOS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                    montototal = montototal + montoDetal;
+                                } else {
+                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                }
+                            }
+                            montoIngresos = (float) montototal;
+                            cargarDeudas();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+            }
+        });
+    }
+
+    private void cargarDeudas() {
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_DEUDAS)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -154,7 +290,6 @@ public class HomeFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
             }
         });
-
     }
 
     private void cargarFolios() {
@@ -200,6 +335,7 @@ public class HomeFragment extends Fragment {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putFloat("valor_cotizacion", valor);
                             editor.commit();
+                            cargarIngresos();
                             actualizarCotizacion();
                         }
                     }
@@ -221,7 +357,7 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        cargarDatos();
+        cargarIngresos();
         actualizarCotizacion();
     }
 }
