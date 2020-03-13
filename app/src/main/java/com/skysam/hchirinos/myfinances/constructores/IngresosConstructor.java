@@ -3,15 +3,16 @@ package com.skysam.hchirinos.myfinances.constructores;
 import java.util.Date;
 
 public class IngresosConstructor {
-    String concepto, tipoFrecuencia;
+    String concepto, tipoFrecuencia, idIngreso;
     double monto;
     boolean dolar;
     int duracionFrecuencia;
     Date fechaIncial;
 
-    public IngresosConstructor(String concepto, String tipoFrecuencia, double monto, boolean dolar, int duracionFrecuencia, Date fechaIncial) {
+    public IngresosConstructor(String concepto, String tipoFrecuencia, String idIngreso, double monto, boolean dolar, int duracionFrecuencia, Date fechaIncial) {
         this.concepto = concepto;
         this.tipoFrecuencia = tipoFrecuencia;
+        this.idIngreso = idIngreso;
         this.monto = monto;
         this.dolar = dolar;
         this.duracionFrecuencia = duracionFrecuencia;
@@ -19,6 +20,14 @@ public class IngresosConstructor {
     }
 
     public IngresosConstructor() {
+    }
+
+    public String getIdIngreso() {
+        return idIngreso;
+    }
+
+    public void setIdIngreso(String idIngreso) {
+        this.idIngreso = idIngreso;
     }
 
     public String getConcepto() {

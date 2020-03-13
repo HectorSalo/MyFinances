@@ -35,6 +35,15 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull IngresosAdapter.ViewHolder holder, int position) {
+        holder.tvConcepto.setText(listIngresos.get(position).getConcepto());
+
+        if (listIngresos.get(position).isDolar()) {
+            holder.tvMonto.setText("$ " + listIngresos.get(position).getMonto());
+        } else {
+            holder.tvMonto.setText("Bs. " + listIngresos.get(position).getMonto());
+        }
+
+        holder.tvFrecuencia.setText(listIngresos.get(position).getDuracionFrecuencia() + " " + listIngresos.get(position).getTipoFrecuencia());
 
     }
 
@@ -54,5 +63,12 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
             tvProximoCobro = itemView.findViewById(R.id.textView_proxima_fecha);
             tvMenu = itemView.findViewById(R.id.tvmenu_ingresos);
         }
+    }
+
+
+    public void updateList (ArrayList<IngresosConstructor> newList) {
+        listIngresos = new ArrayList<>();
+        listIngresos.addAll(newList);
+        notifyDataSetChanged();
     }
 }
