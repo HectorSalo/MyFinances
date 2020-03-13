@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-
+            android:background="@drawable/fondo_listas"
             >
 
                 <TextView
@@ -29,7 +29,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/texto_vacio"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp"
+                    />
 
 
                 <TextView
@@ -37,7 +40,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/texto_vacio"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:gravity="center" />
 
 
                 <TextView
@@ -46,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/texto_vacio"
                     android:textSize="18sp"
-                    />
+                    android:gravity="center" />
 
 
                 <TextView
@@ -54,7 +58,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/texto_vacio"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:layout_marginBottom="4dp"/>
 
         </LinearLayout>
 
@@ -66,7 +72,8 @@
             android:gravity="center"
             android:paddingEnd="16dp"
             android:text="&#8942;"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"/>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

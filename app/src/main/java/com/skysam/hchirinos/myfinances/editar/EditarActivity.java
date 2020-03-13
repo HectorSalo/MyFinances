@@ -1,0 +1,66 @@
+package com.skysam.hchirinos.myfinances.editar;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.MenuItem;
+
+import com.skysam.hchirinos.myfinances.R;
+
+import java.util.Objects;
+
+public class EditarActivity extends AppCompatActivity {
+
+    private String idDoc;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_editar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+
+        Bundle myBundle = this.getIntent().getExtras();
+        int fragment = myBundle.getInt("fragment");
+        idDoc = myBundle.getString("idDoc");
+    }
+
+
+    private void confirmarSalir() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("¿Desea salir?");
+        builder.setMessage("Se perderá la información no almacenada.");
+        builder.setPositiveButton("Salir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        confirmarSalir();
+    }
+}

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,7 @@ public class IngresosFragment extends Fragment {
     private ArrayList<IngresosConstructor> listaIngresos;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private boolean fragmentCreado;
 
 
     public IngresosFragment() {
@@ -65,6 +67,8 @@ public class IngresosFragment extends Fragment {
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
 
         recyclerView = view.findViewById(R.id.rv_ingresos);
+
+        fragmentCreado = true;
 
         cargarIngresos();
 
@@ -118,5 +122,16 @@ public class IngresosFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!fragmentCreado) {
+            cargarIngresos();
+        }
+        fragmentCreado = false;
+
     }
 }
