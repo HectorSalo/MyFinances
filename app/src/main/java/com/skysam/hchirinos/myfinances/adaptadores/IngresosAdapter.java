@@ -100,27 +100,9 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu_editar:
-                                editar(listIngresos.get(i));
                                 break;
 
                             case R.id.menu_eliminar:
-                                AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-                                dialog.setTitle("Confirmar");
-                                dialog.setMessage("¿Desea eliminar estos datos de manera permanente?");
-
-                                dialog.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        eliminar(listIngresos.get(i));
-                                    }
-                                });
-                                dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                dialog.show();
                                 break;
 
                             default:
@@ -171,30 +153,4 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
         context.startActivity(myIntent);
     }
 
-
-    private void eliminar(final IngresosConstructor i) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String userID = user.getUid();
-        String doc = i.getIdIngreso();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_INGRESOS);
-
-        reference.document(doc)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        listIngresos.remove(i);
-                        notifyDataSetChanged();
-                        Toast.makeText(context,"Eliminado", Toast.LENGTH_SHORT).show();
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Error al eliminar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 }

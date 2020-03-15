@@ -1,13 +1,18 @@
 package com.skysam.hchirinos.myfinances.principal;
 
+import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,6 +40,8 @@ import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
+
 
 public class IngresosFragment extends Fragment {
 
@@ -41,6 +51,9 @@ public class IngresosFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
+    private CoordinatorLayout coordinatorLayout;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
     public IngresosFragment() {
@@ -65,8 +78,12 @@ public class IngresosFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_ingresos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
+        coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
 
         recyclerView = view.findViewById(R.id.rv_ingresos);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemSwipe);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         fragmentCreado = true;
 
@@ -75,8 +92,69 @@ public class IngresosFragment extends Fragment {
         return view;
     }
 
+
+    private ItemTouchHelper.SimpleCallback itemSwipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            final int position = viewHolder.getAdapterPosition();
+            switch (direction) {
+                case ItemTouchHelper.RIGHT:
+                    IngresosConstructor itemSwipe = new IngresosConstructor();
+
+                    itemSwipe = listaIngresos.get(position);
+                    listaIngresos.remove(position);
+                    ingresosAdapter.updateList(listaIngresos);
+
+                    final IngresosConstructor finalItemSwipe = itemSwipe;
+
+                    final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            listaIngresos.add(position, finalItemSwipe);
+                            ingresosAdapter.updateList(listaIngresos);
+                        }
+                    });
+                    snackbar.show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!listaIngresos.contains(finalItemSwipe)) {
+                                deleteItemSwipe(finalItemSwipe.getIdIngreso());
+                            }
+                        }
+                    }, 4500);
+                    break;
+                case ItemTouchHelper.LEFT:
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeRightActionIcon(R.drawable.ic_delete_item)
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_A700))
+                    .addSwipeLeftActionIcon(R.drawable.ic_edit_item_24dp)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_orange_A700))
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+        }
+    };
+
     private void cargarIngresos() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
         listaIngresos = new ArrayList<>();
@@ -85,7 +163,6 @@ public class IngresosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ingresosAdapter);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_INGRESOS);
 
         Query query = reference.orderBy(VariablesEstaticas.BD_MONTO, Query.Direction.ASCENDING);
@@ -122,6 +199,25 @@ public class IngresosFragment extends Fragment {
                 }
             }
         });
+    }
+
+
+    private void deleteItemSwipe(String id) {
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Delete", "Error deleting document", e);
+                    }
+                });
+
     }
 
     @Override
