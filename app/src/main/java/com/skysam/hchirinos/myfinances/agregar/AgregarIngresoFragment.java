@@ -146,8 +146,7 @@ public class AgregarIngresoFragment extends Fragment {
     private void guardarDatos(String concepto, double monto, Date fechaSelec) {
         boolean dolar = false;
         String tipoFrecuencia = null;
-        String duracionFrecuenciaS = spFrecuencia.getSelectedItem().toString();
-        int duracionFrecuencia = Integer.parseInt(duracionFrecuenciaS);
+        int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
 
         if (rbBs.isChecked()) {
             dolar = false;

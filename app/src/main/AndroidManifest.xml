@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".editar.EditarActivity"></activity>
+        <activity android:name=".editar.EditarActivity"
+            android:label="@string/title_activity_editar"></activity>
         <activity android:name=".inicioSesion.RegistrarActivity" />
         <activity android:name=".inicioSesion.InicSesionActivity">
             <intent-filter>

@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">Mis Finanazas</string>
+    <string name="app_name">Mis Finanzas</string>
     <string name="texto_vacio"> </string>
+    <string name="title_activity_agregar">Agregar</string>
+    <string name="title_activity_editar">Editar</string>
 
 
     <string name="menu_inicio">Inicio</string>
@@ -17,7 +19,6 @@
     <string name="pie_prestamos">Préstamos</string>
     <string name="pie_egresos">Gastos</string>
     <string name="pie_deudas">Deudas</string>
-    <string name="title_activity_agregar">Agregar</string>
 
 
     <string name="email_sesion">Correo</string>
@@ -39,6 +40,7 @@
     <string name="fecha_inicio">Escoja la fecha inicial</string>
     <string name="fecha">Fecha:</string>
     <string name="btn_guardar">Guardar</string>
+    <string name="btn_editar">Actualizar</string>
     <string name="previous">Previous</string>
     <string name="sin_lista">No hay ítems guardados en esta lista. Presione el botón ubicado en la esquina inferior derecha para agregar el primero.</string>
 
@@ -47,6 +49,9 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

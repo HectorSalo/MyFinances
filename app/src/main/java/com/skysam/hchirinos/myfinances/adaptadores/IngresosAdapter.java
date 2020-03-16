@@ -90,7 +90,7 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
 
         holder.tvProximoCobro.setText("Fecha próximo cobro: " + new SimpleDateFormat("EEE d MMM yyyy").format(calendarInicial.getTime()));
 
-        holder.tvMenu.setOnClickListener(new View.OnClickListener() {
+        /*holder.tvMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
@@ -113,7 +113,7 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
                 });
                 popupMenu.show();
             }
-        });
+        });*/
 
 
     }
@@ -141,16 +141,6 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
         listIngresos = new ArrayList<>();
         listIngresos.addAll(newList);
         notifyDataSetChanged();
-    }
-
-
-    private void editar(IngresosConstructor i) {
-        Intent myIntent = new Intent(context, EditarActivity.class);
-        Bundle myBundle = new Bundle();
-        myBundle.putString("idDoc", i.getIdIngreso());
-        myBundle.putInt("fragment", 0);
-        myIntent.putExtras(myBundle);
-        context.startActivity(myIntent);
     }
 
 }

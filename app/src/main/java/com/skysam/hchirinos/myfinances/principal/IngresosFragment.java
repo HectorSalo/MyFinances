@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.principal;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
@@ -36,6 +37,7 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
+import com.skysam.hchirinos.myfinances.editar.EditarActivity;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -102,11 +104,12 @@ public class IngresosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
+            IngresosConstructor itemSwipe = new IngresosConstructor();
+            itemSwipe = listaIngresos.get(position);
+
             switch (direction) {
                 case ItemTouchHelper.RIGHT:
-                    IngresosConstructor itemSwipe = new IngresosConstructor();
 
-                    itemSwipe = listaIngresos.get(position);
                     listaIngresos.remove(position);
                     ingresosAdapter.updateList(listaIngresos);
 
@@ -132,6 +135,7 @@ public class IngresosFragment extends Fragment {
                     }, 4500);
                     break;
                 case ItemTouchHelper.LEFT:
+                    editarItem(listaIngresos.get(position).getIdIngreso());
                     break;
             }
 
@@ -218,6 +222,15 @@ public class IngresosFragment extends Fragment {
                     }
                 });
 
+    }
+
+    private void editarItem(String id) {
+        Intent myIntent = new Intent(getContext(), EditarActivity.class);
+        Bundle myBundle = new Bundle();
+        myBundle.putString("idDoc", id);
+        myBundle.putInt("fragment", 0);
+        myIntent.putExtras(myBundle);
+        startActivity(myIntent);
     }
 
     @Override

@@ -24,10 +24,25 @@ public class EditarActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
+        EditarIngresoFragment editarIngresoFragment = new EditarIngresoFragment();
 
         Bundle myBundle = this.getIntent().getExtras();
         int fragment = myBundle.getInt("fragment");
-        idDoc = myBundle.getString("idDoc");
+        String idDoc = myBundle.getString("idDoc");
+
+        Bundle bundleFragment = new Bundle();
+        bundleFragment.putString("idDoc", idDoc);
+
+
+        switch (fragment) {
+            case 0:
+                editarIngresoFragment.setArguments(bundleFragment);
+                getSupportFragmentManager().beginTransaction().add(R.id.editar_container_fragment, editarIngresoFragment).commit();
+                getSupportActionBar().setTitle("Editar Ingreso");
+                break;
+            default:
+                break;
+        }
     }
 
 

@@ -73,7 +73,8 @@
             android:paddingEnd="16dp"
             android:text="&#8942;"
             android:textSize="18sp"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="gone"/>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
