@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -51,6 +52,7 @@ public class AgregarIngresoFragment extends Fragment {
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
+    private ImageButton imageButtonSelecFecha;
 
     public AgregarIngresoFragment() {}
 
@@ -102,7 +104,8 @@ public class AgregarIngresoFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.imageButton).setOnClickListener(new View.OnClickListener() {
+        imageButtonSelecFecha = view.findViewById(R.id.imageButton);
+        imageButtonSelecFecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 seleccionarFecha();
@@ -126,6 +129,7 @@ public class AgregarIngresoFragment extends Fragment {
                         etConceptoLayout.setEnabled(false);
                         etMontoLayout.setEnabled(false);
                         btnGuardar.setEnabled(false);
+                        imageButtonSelecFecha.setEnabled(false);
                     } else {
                        Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
                     }
@@ -192,6 +196,7 @@ public class AgregarIngresoFragment extends Fragment {
                         etConceptoLayout.setEnabled(true);
                         etMontoLayout.setEnabled(true);
                         btnGuardar.setEnabled(true);
+                        imageButtonSelecFecha.setEnabled(true);
                     }
                 });
 
