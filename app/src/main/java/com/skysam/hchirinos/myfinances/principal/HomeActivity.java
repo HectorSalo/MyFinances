@@ -100,7 +100,7 @@ public class HomeActivity extends AppCompatActivity {
             case android.R.id.home:
                 abrirBottomDrawer();
                 break;
-            case R.id.menu_cerrrar_sesion:
+            case R.id.menu_cerrar_sesion:
                 confirmarCerrarSesion();
                 break;
             default:

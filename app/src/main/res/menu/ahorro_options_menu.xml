@@ -5,4 +5,8 @@
         android:id="@+id/menu_cerrar_sesion"
         android:title="@string/menu_cerrar_sesion" />
 
+    <item
+        android:id="@+id/menu_descontar_ahorro"
+        android:title="@string/menu_descontar_ahorro" />
+
 </menu>
