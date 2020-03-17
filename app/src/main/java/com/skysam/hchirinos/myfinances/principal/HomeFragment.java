@@ -53,13 +53,14 @@ public class HomeFragment extends Fragment {
     private PieChart pieBalance;
     private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
     private ProgressBar progressBar;
-    private TextView tvCotizacionDolar;
+    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal;
     private SharedPreferences sharedPreferences;
     private float valorCotizacion;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Calendar calendar = Calendar.getInstance();
     private int mesSelected;
+    private LinearLayout linearLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -87,6 +88,9 @@ public class HomeFragment extends Fragment {
         pieBalance = view.findViewById(R.id.pie_balance);
         progressBar = view.findViewById(R.id.progressBar_pie);
         tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
+        linearLayout = view.findViewById(R.id.linearLayout_resultado_balance);
+        tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
+        tvMontoTotal = view.findViewById(R.id.textView_monto_total);
         Spinner spinner = view.findViewById(R.id.spinner_meses);
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
@@ -333,6 +337,18 @@ public class HomeFragment extends Fragment {
 
         pieBalance.setData(pieData);
         pieBalance.invalidate();
+
+        float montoTotal = montoIngresos + montoAhorros + montoPrestamos - montoGastos - montoDeudas;
+        if (montoTotal > 0) {
+            tvSuperDeficit.setText("Tiene un superávit de:");
+            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+        } else if (montoTotal < 0) {
+            tvSuperDeficit.setText("Tiene un déficit de:");
+            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
+        } else if (montoTotal == 0) {
+            tvSuperDeficit.setText("Balance en cero");
+        }
+        tvMontoTotal.setText("$" + montoTotal);
     }
 
 

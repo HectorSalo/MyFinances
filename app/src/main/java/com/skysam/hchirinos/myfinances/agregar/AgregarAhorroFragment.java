@@ -62,7 +62,7 @@ public class AgregarAhorroFragment extends Fragment {
         etConcepto = view.findViewById(R.id.et_concepto);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto);
         etMonto = view.findViewById(R.id.et_monto);
-        etOrigen = view.findViewById(R.id.textView_origen);
+        etOrigen = view.findViewById(R.id.et_origen);
         etOrigenLayout = view.findViewById(R.id.outlined_origen);
         etMontoLayout = view.findViewById(R.id.outlined_monto);
         rbBs = view.findViewById(R.id.radioButton_bolivares);
@@ -110,15 +110,18 @@ public class AgregarAhorroFragment extends Fragment {
         }
 
         if (montovalido && conceptoValido) {
+
             guardarDatos();
         }
     }
 
     private void guardarDatos() {
+        String origen = etOrigen.getText().toString();
         progressBar.setVisibility(View.VISIBLE);
         etMontoLayout.setEnabled(false);
         etConceptoLayout.setEnabled(false);
         etOrigenLayout.setEnabled(false);
+        btnGuardar.setEnabled(false);
         Calendar calendar = Calendar.getInstance();
         Date fechaIngreso = calendar.getTime();
         boolean dolar = false;
@@ -129,11 +132,16 @@ public class AgregarAhorroFragment extends Fragment {
             dolar = false;
         }
 
+        if(origen.isEmpty()) {
+            origen = null;
+        }
+
         Map<String, Object> docData = new HashMap<>();
         docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
         docData.put(VariablesEstaticas.BD_MONTO, monto);
         docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
         docData.put(VariablesEstaticas.BD_DOLAR, dolar);
+        docData.put(VariablesEstaticas.BD_ORIGEN, origen);
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

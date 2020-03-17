@@ -9,7 +9,7 @@
     <string name="menu_ingresos">Ingresos Fijos</string>
     <string name="menu_ahorros">Ahorros</string>
     <string name="menu_prestamos">Préstamos realizados</string>
-    <string name="menu_egresos">Gastos Fijos</string>
+    <string name="menu_egresos">Gastos</string>
     <string name="menu_gastos_ocasionales">Gastos Ocasionales</string>
     <string name="menu_deudas">Deudas</string>
     <string name="menu_cerrar_sesion">Cerrar Sesión</string>
