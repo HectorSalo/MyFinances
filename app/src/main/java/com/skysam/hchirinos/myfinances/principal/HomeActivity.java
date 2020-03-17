@@ -26,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private BottomSheetDialog bottomSheetDialog;
     private HomeFragment homeFragment;
     private IngresosFragment ingresosFragment;
+    private AhorrosFragment ahorrosFragment;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
     private int agregar;
@@ -77,6 +78,7 @@ public class HomeActivity extends AppCompatActivity {
 
         homeFragment = new HomeFragment();
         ingresosFragment = new IngresosFragment();
+        ahorrosFragment = new AhorrosFragment();
 
         getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, homeFragment, "home").commit();
     }
@@ -138,7 +140,7 @@ public class HomeActivity extends AppCompatActivity {
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_ahorros:
-                        Toast.makeText(HomeActivity.this,"Item 2 Clicked",Toast.LENGTH_SHORT).show();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ahorrosFragment, "ahorros").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
                         agregar = 2;

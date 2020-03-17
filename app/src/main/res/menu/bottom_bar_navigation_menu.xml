@@ -21,6 +21,10 @@
         android:id="@+id/menu_egresos"
         android:title="@string/menu_egresos"
         android:icon="@drawable/ic_egresos_24dp"/>
+    <item
+        android:id="@+id/menu_gastos_ocasionales"
+        android:title="@string/menu_gastos_ocasionales"
+        android:icon="@drawable/ic_gastos_ocasionales_24dp"/>
 
     <item
         android:id="@+id/menu_deudas"
