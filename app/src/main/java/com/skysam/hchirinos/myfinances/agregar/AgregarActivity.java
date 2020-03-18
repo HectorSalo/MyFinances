@@ -34,8 +34,16 @@ public class AgregarActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("Agregar un Ingreso Fijo");
                 break;
             case 1:
+                boolean descontar = getIntent().getBooleanExtra("descontar", false);
+                Bundle bundleFragment = new Bundle();
+                bundleFragment.putBoolean("descontar", descontar);
+                agregarAhorroFragment.setArguments(bundleFragment);
                 getSupportFragmentManager().beginTransaction().add(R.id.agregar_container_fragment, agregarAhorroFragment).commit();
-                getSupportActionBar().setTitle("Agregar Ahorro");
+                if (descontar) {
+                    getSupportActionBar().setTitle("Descontar Ahorro");
+                } else {
+                    getSupportActionBar().setTitle("Agregar Ahorro");
+                }
                 break;
             case 2:
                 getSupportActionBar().setTitle("Agregar un Préstamo Realizado");

@@ -30,6 +30,8 @@ public class HomeActivity extends AppCompatActivity {
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
     private int agregar;
+    private Menu menuGeneral;
+    private MenuItem itemDescontarAhorro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case 2:
                         intent.putExtra("agregar", 1);
+                        intent.putExtra("descontar", false);
                         startActivity(intent);
                         break;
                     case 3:
@@ -88,6 +91,9 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
+        menuGeneral = menu;
+        itemDescontarAhorro = menuGeneral.findItem(R.id.menu_descontar_ahorro);
+        itemDescontarAhorro.setVisible(false);
         return true;
     }
 
@@ -102,6 +108,12 @@ public class HomeActivity extends AppCompatActivity {
                 break;
             case R.id.menu_cerrar_sesion:
                 confirmarCerrarSesion();
+                break;
+            case R.id.menu_descontar_ahorro:
+                Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
+                intent.putExtra("agregar", 1);
+                intent.putExtra("descontar", true);
+                startActivity(intent);
                 break;
             default:
                 break;
@@ -131,6 +143,7 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
                         agregar = 0;
                         bottomSheetDialog.dismiss();
+                        itemDescontarAhorro.setVisible(false);
                         break;
                     case R.id.menu_ingresos:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
@@ -138,6 +151,7 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
                         agregar = 1;
                         bottomSheetDialog.dismiss();
+                        itemDescontarAhorro.setVisible(false);
                         break;
                     case R.id.menu_ahorros:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ahorrosFragment, "ahorros").commit();
@@ -145,6 +159,7 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
                         agregar = 2;
                         bottomSheetDialog.dismiss();
+                        itemDescontarAhorro.setVisible(true);
                         break;
                     case R.id.menu_prestamos:
                         Toast.makeText(HomeActivity.this,"Item 3 Clicked",Toast.LENGTH_SHORT).show();

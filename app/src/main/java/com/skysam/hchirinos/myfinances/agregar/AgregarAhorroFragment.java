@@ -44,6 +44,7 @@ public class AgregarAhorroFragment extends Fragment {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ProgressBar progressBar;
     private Button btnGuardar;
+    private boolean descontar;
 
     public AgregarAhorroFragment(){}
 
@@ -69,6 +70,11 @@ public class AgregarAhorroFragment extends Fragment {
         rbDolar = view.findViewById(R.id.radioButton_dolares);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ahorro);
+
+        descontar = getArguments().getBoolean("descontar");
+        if (descontar) {
+            etOrigenLayout.setVisibility(View.GONE);
+        }
 
         rbBs.setChecked(true);
 
@@ -142,7 +148,7 @@ public class AgregarAhorroFragment extends Fragment {
         docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
         docData.put(VariablesEstaticas.BD_DOLAR, dolar);
         docData.put(VariablesEstaticas.BD_ORIGEN, origen);
-
+        docData.put(VariablesEstaticas.BD_DESCONTAR, descontar);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

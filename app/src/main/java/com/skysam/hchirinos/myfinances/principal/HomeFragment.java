@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment {
     private Calendar calendar = Calendar.getInstance();
     private int mesSelected;
     private LinearLayout linearLayout;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -135,6 +136,13 @@ public class HomeFragment extends Fragment {
 
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
+
+        sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+        montoIngresos = sharedPreferences.getFloat(VariablesEstaticas.BD_INGRESOS, 1);
+        montoAhorros = sharedPreferences.getFloat(VariablesEstaticas.BD_AHORROS, 1);
+        montoPrestamos = sharedPreferences.getFloat(VariablesEstaticas.BD_PRESTAMOS, 1);
+        montoDeudas = sharedPreferences.getFloat(VariablesEstaticas.BD_DEUDAS, 1);
+        montoGastos = sharedPreferences.getFloat(VariablesEstaticas.BD_GASTOS, 1);
 
         db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
                 .get()
@@ -380,8 +388,6 @@ public class HomeFragment extends Fragment {
 
 
     private void actualizarCotizacion() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
         valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
 
