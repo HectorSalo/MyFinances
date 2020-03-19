@@ -1,5 +1,7 @@
 package com.skysam.hchirinos.myfinances.agregar;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,7 +96,11 @@ public class AgregarAhorroFragment extends Fragment {
         concepto = etConcepto.getText().toString();
         String montoS = etMonto.getText().toString();
         boolean conceptoValido;
-        boolean montovalido;
+        boolean montovalido = false;
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+        float ahorrosDisponible = sharedPreferences.getFloat("ahorros_disponible", 1);
+        float valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
 
         if (!concepto.isEmpty()) {
             conceptoValido = true;
@@ -105,7 +111,26 @@ public class AgregarAhorroFragment extends Fragment {
         if (!montoS.isEmpty()) {
             monto = Double.parseDouble(montoS);
             if (monto > 0) {
-                montovalido = true;
+                if (descontar) {
+                    if (rbDolar.isChecked()) {
+                        if (monto <= ahorrosDisponible) {
+                            montovalido = true;
+                        } else {
+                            montovalido = false;
+                            etMontoLayout.setError("No hay fondos suficientes. Ingrese un monto menor");
+                        }
+                    } else if (rbBs.isChecked()) {
+                        double montoFinal = monto / valorCotizacion;
+                        if (montoFinal <= ahorrosDisponible) {
+                            montovalido = true;
+                        } else {
+                            montovalido = false;
+                            etMontoLayout.setError("No hay fondos suficientes. Ingrese un monto menor");
+                        }
+                    }
+                } else {
+                    montovalido = true;
+                }
             } else {
                 montovalido = false;
                 etMontoLayout.setError("El monto debe ser mayor a cero");
@@ -114,6 +139,7 @@ public class AgregarAhorroFragment extends Fragment {
             montovalido = false;
             etMontoLayout.setError("Campo obligatorio");
         }
+
 
         if (montovalido && conceptoValido) {
 

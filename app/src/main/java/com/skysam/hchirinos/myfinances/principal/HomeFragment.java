@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Calendar calendar = Calendar.getInstance();
-    private int mesSelected;
+    private int mesSelected, mesItemAhorro;
     private LinearLayout linearLayout;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -97,11 +97,11 @@ public class HomeFragment extends Fragment {
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
 
-        montoIngresos = 1;
-        montoAhorros = 1;
-        montoDeudas = 1;
-        montoGastos = 1;
-        montoPrestamos = 1;
+        montoIngresos = 0;
+        montoAhorros = 0;
+        montoDeudas = 0;
+        montoGastos = 0;
+        montoPrestamos = 0;
 
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
@@ -137,13 +137,6 @@ public class HomeFragment extends Fragment {
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
 
-        sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-        montoIngresos = sharedPreferences.getFloat(VariablesEstaticas.BD_INGRESOS, 1);
-        montoAhorros = sharedPreferences.getFloat(VariablesEstaticas.BD_AHORROS, 1);
-        montoPrestamos = sharedPreferences.getFloat(VariablesEstaticas.BD_PRESTAMOS, 1);
-        montoDeudas = sharedPreferences.getFloat(VariablesEstaticas.BD_DEUDAS, 1);
-        montoGastos = sharedPreferences.getFloat(VariablesEstaticas.BD_GASTOS, 1);
-
         db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -157,7 +150,7 @@ public class HomeFragment extends Fragment {
                                 calendar.setTime(date);
                                 int mes = calendar.get(Calendar.MONTH);
 
-                                if (mes == mesSelected) {
+                                if (mesSelected >= mes) {
                                     double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
                                     boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
 
@@ -194,13 +187,28 @@ public class HomeFragment extends Fragment {
                             double montototal = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
-                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+                                Date date = document.getDate(VariablesEstaticas.BD_FECHA_INGRESO);
+                                calendar.setTime(date);
+                                mesItemAhorro = calendar.get(Calendar.MONTH);
 
-                                if (dolar) {
-                                    montototal = montototal + montoDetal;
-                                } else {
-                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                if (mesSelected >= mesItemAhorro) {
+                                    boolean descontar = document.getBoolean(VariablesEstaticas.BD_DESCONTAR);
+                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                    if (descontar) {
+                                        if (dolar) {
+                                            montototal = montototal - montoDetal;
+                                        } else {
+                                            montototal = montototal - (montoDetal / valorCotizacion);
+                                        }
+                                    } else {
+                                        if (dolar) {
+                                            montototal = montototal + montoDetal;
+                                        } else {
+                                            montototal = montototal + (montoDetal / valorCotizacion);
+                                        }
+                                    }
                                 }
                             }
                             montoAhorros = (float) montototal;
@@ -357,6 +365,12 @@ public class HomeFragment extends Fragment {
             tvSuperDeficit.setText("Balance en cero");
         }
         tvMontoTotal.setText("$" + montoTotal);
+
+        if (mesSelected == mesItemAhorro) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putFloat("ahorros_disponible", montoAhorros);
+            editor.commit();
+        }
     }
 
 

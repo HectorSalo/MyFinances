@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
@@ -47,7 +48,12 @@ public class AhorrosAdapter extends RecyclerView.Adapter<AhorrosAdapter.ViewHold
             holder.origen.setVisibility(View.GONE);
         }
 
-        holder.fechaIngreso.setText("Agregado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaAhorros.get(i).getFechaIngreso()));
+        if (listaAhorros.get(i).isDescontar()) {
+            holder.fechaIngreso.setText("Descontado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaAhorros.get(i).getFechaIngreso()));
+            holder.fechaIngreso.setTextColor(ContextCompat.getColor(context, R.color.md_red_700));
+        } else {
+            holder.fechaIngreso.setText("Agregado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaAhorros.get(i).getFechaIngreso()));
+        }
 
         if (listaAhorros.get(i).isDolar()) {
             holder.monto.setText("$" + listaAhorros.get(i).getMonto());

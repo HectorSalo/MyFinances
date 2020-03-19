@@ -137,7 +137,7 @@ public class AhorrosFragment extends Fragment {
 
         CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_AHORROS);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_MONTO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -149,6 +149,7 @@ public class AhorrosFragment extends Fragment {
                         ahorro.setOrigen(doc.getString(VariablesEstaticas.BD_ORIGEN));
                         ahorro.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
                         ahorro.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
+                        ahorro.setDescontar(doc.getBoolean(VariablesEstaticas.BD_DESCONTAR));
                         ahorro.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
 
                         listaAhorros.add(ahorro);
