@@ -18,4 +18,5 @@ public class VariablesEstaticas {
     public static final String BD_ORIGEN = "origen";
     public static final String BD_FECHA_INGRESO = "fechaIngreso";
     public static final String BD_DESCONTAR = "descontar";
+    public static final String BD_PRESTAMO = "prestamo";
 }

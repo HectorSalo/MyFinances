@@ -137,7 +137,7 @@ public class AhorrosFragment extends Fragment {
 
         CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_AHORROS);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
+        Query query = reference.whereEqualTo(VariablesEstaticas.BD_PRESTAMO, false).orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

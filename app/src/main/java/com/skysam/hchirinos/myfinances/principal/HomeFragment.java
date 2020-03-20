@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
     private PieChart pieBalance;
     private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
     private ProgressBar progressBar;
-    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal;
+    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma;
     private SharedPreferences sharedPreferences;
     private float valorCotizacion;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -90,6 +90,7 @@ public class HomeFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar_pie);
         tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
         linearLayout = view.findViewById(R.id.linearLayout_resultado_balance);
+        tvSuma = view.findViewById(R.id.textView_suma);
         tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
         Spinner spinner = view.findViewById(R.id.spinner_meses);
@@ -185,6 +186,7 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             double montototal = 0;
+                            double montoTotalPrestamos = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Date date = document.getDate(VariablesEstaticas.BD_FECHA_INGRESO);
@@ -195,6 +197,7 @@ public class HomeFragment extends Fragment {
                                     boolean descontar = document.getBoolean(VariablesEstaticas.BD_DESCONTAR);
                                     double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
                                     boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+                                    boolean prestamo = document.getBoolean(VariablesEstaticas.BD_PRESTAMO);
 
                                     if (descontar) {
                                         if (dolar) {
@@ -209,42 +212,18 @@ public class HomeFragment extends Fragment {
                                             montototal = montototal + (montoDetal / valorCotizacion);
                                         }
                                     }
+
+                                    if (prestamo) {
+                                        if (dolar) {
+                                            montoTotalPrestamos = montoTotalPrestamos + montoDetal;
+                                        } else {
+                                            montoTotalPrestamos = montoTotalPrestamos + (montoDetal / valorCotizacion);
+                                        }
+                                    }
                                 }
                             }
                             montoAhorros = (float) montototal;
-                            cargarPrestamos();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting data: ", e);
-            }
-        });
-    }
-
-    private void cargarPrestamos() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_PRESTAMOS)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
-                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
-
-                                if (dolar) {
-                                    montototal = montototal + montoDetal;
-                                } else {
-                                    montototal = montototal + (montoDetal / valorCotizacion);
-                                }
-                            }
-                            montoPrestamos = (float) montototal;
+                            montoPrestamos = (float) montoTotalPrestamos;
                             cargarGastos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -257,7 +236,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
 
     private void cargarGastos() {
         db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_GASTOS)
@@ -364,6 +342,7 @@ public class HomeFragment extends Fragment {
         } else if (montoTotal == 0) {
             tvSuperDeficit.setText("Balance en cero");
         }
+        tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
         tvMontoTotal.setText("$" + montoTotal);
 
         if (mesSelected == mesItemAhorro) {

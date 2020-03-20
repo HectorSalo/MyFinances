@@ -175,6 +175,7 @@ public class AgregarAhorroFragment extends Fragment {
         docData.put(VariablesEstaticas.BD_DOLAR, dolar);
         docData.put(VariablesEstaticas.BD_ORIGEN, origen);
         docData.put(VariablesEstaticas.BD_DESCONTAR, descontar);
+        docData.put(VariablesEstaticas.BD_PRESTAMO, false);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
