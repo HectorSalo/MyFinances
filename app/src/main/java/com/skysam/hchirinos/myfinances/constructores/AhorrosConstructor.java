@@ -3,18 +3,28 @@ package com.skysam.hchirinos.myfinances.constructores;
 import java.util.Date;
 
 public class AhorrosConstructor {
-    private String concepto, origen;
+    private String concepto, origen, idAhorro;
     private double monto;
     private boolean dolar, descontar;
     private Date fechaIngreso;
 
-    public AhorrosConstructor(String concepto, String origen, double monto, boolean dolar, Date fechaIngreso, boolean descontar) {
+    public AhorrosConstructor(String idAhorro, String concepto, String origen, double monto, boolean dolar, Date fechaIngreso, boolean descontar) {
+        this.idAhorro = idAhorro;
         this.concepto = concepto;
         this.origen = origen;
         this.monto = monto;
         this.dolar = dolar;
         this.fechaIngreso = fechaIngreso;
         this.descontar = descontar;
+    }
+
+
+    public String getIdAhorro() {
+        return idAhorro;
+    }
+
+    public void setIdAhorro(String idAhorro) {
+        this.idAhorro = idAhorro;
     }
 
     public AhorrosConstructor() {

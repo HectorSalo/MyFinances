@@ -97,6 +97,7 @@ public class PrestamosFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                         AhorrosConstructor prestamo = new AhorrosConstructor();
 
+                        prestamo.setIdAhorro(doc.getId());
                         prestamo.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
                         prestamo.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
                         prestamo.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));

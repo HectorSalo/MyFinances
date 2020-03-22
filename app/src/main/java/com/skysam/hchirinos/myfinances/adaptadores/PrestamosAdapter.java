@@ -3,6 +3,7 @@ package com.skysam.hchirinos.myfinances.adaptadores;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.ViewHolder> {
     private ArrayList<AhorrosConstructor> listaPrestamos;
@@ -40,7 +50,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull final PrestamosAdapter.ViewHolder holder, int position) {
-        int i = position;
+        final int i = position;
 
         holder.destinatario.setText(listaPrestamos.get(i).getConcepto());
 
@@ -62,7 +72,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu_cobro:
-                                ingresarCobro();
+                                ingresarCobro(i);
                                 break;
                             default:
                                 break;
@@ -99,10 +109,20 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
         notifyDataSetChanged();
     }
 
-    private void ingresarCobro() {
+    private void ingresarCobro(final int position) {
+        boolean b = listaPrestamos.get(position).isDolar();
+        final double montoOriginal = listaPrestamos.get(position).getMonto();
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
+        TextView textView = v.findViewById(R.id.textView_cotizacion);
         final EditText editText = v.findViewById(R.id.editText_cotizacion);
+
+
+        if (b) {
+            textView.setText("$");
+        } else {
+            textView.setText("Bs. ");
+        }
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto cobrado")
                 .setView(v)
@@ -110,14 +130,43 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!editText.getText().toString().isEmpty()) {
-                            float valor = Float.parseFloat(editText.getText().toString());
+                            double valor = Double.parseDouble(editText.getText().toString());
                             if (valor > 0) {
-
+                                double total = montoOriginal - valor;
+                                if (total >= 0) {
+                                    actualizarMonto(position, total);
+                                } else {
+                                    Toast.makeText(context, "No puede cobrar un monto mayor al préstamo", Toast.LENGTH_SHORT).show();
+                                }
                             } else {
                                 Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }).show();
+    }
+
+    private void actualizarMonto(final int position, final double montoNuevo) {
+        String idDoc = listaPrestamos.get(position).getIdAhorro();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_AHORROS).document(idDoc)
+                .update(VariablesEstaticas.BD_MONTO, montoNuevo)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
+                        listaPrestamos.get(position).setMonto(montoNuevo);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                        Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
