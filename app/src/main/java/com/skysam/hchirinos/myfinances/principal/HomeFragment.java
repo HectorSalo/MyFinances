@@ -57,9 +57,8 @@ public class HomeFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private float valorCotizacion;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
     private Calendar calendar = Calendar.getInstance();
-    private int mesSelected, mesItemAhorro;
+    private int mesSelected, mesItemAhorro, yearSelected;
     private LinearLayout linearLayout;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -85,7 +84,6 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
         pieBalance = view.findViewById(R.id.pie_balance);
         progressBar = view.findViewById(R.id.progressBar_pie);
         tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
@@ -106,6 +104,7 @@ public class HomeFragment extends Fragment {
 
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
+        yearSelected = calendar.get(Calendar.YEAR);
 
         spinner.setSelection(mesSelected);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -138,7 +137,7 @@ public class HomeFragment extends Fragment {
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
 
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
+        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -147,11 +146,7 @@ public class HomeFragment extends Fragment {
                             double montototal = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                Date date = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
-                                calendar.setTime(date);
-                                int mes = calendar.get(Calendar.MONTH);
 
-                                if (mesSelected >= mes) {
                                     double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
                                     boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
 
@@ -160,10 +155,10 @@ public class HomeFragment extends Fragment {
                                     } else {
                                         montototal = montototal + (montoDetal / valorCotizacion);
                                     }
-                                }
                             }
                             montoIngresos = (float) montototal;
-                            cargarAhorros();
+                            //cargarAhorros();
+                            cargarFolios();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -179,7 +174,7 @@ public class HomeFragment extends Fragment {
 
 
     private void cargarAhorros() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_AHORROS)
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_AHORROS)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -238,7 +233,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarGastos() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_GASTOS)
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_GASTOS)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -271,7 +266,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarDeudas() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(auth.getUid()).collection(VariablesEstaticas.BD_DEUDAS)
+        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_DEUDAS)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

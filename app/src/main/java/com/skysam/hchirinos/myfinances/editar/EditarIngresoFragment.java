@@ -50,7 +50,7 @@ public class EditarIngresoFragment extends Fragment {
 
     public EditarIngresoFragment() {}
 
-    private String conceptoViejo, conceptoNuevo, idDoc;
+    private String conceptoViejo, conceptoNuevo, idDoc, collection;
     private double montoNuevo, montoViejo;
     private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo;
     private TextInputEditText etConcepto, etMonto;
@@ -99,6 +99,7 @@ public class EditarIngresoFragment extends Fragment {
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         idDoc = getArguments().getString("idDoc");
+        collection = getArguments().getString("collection");
 
         fechaNueva = new Date();
         fechaNueva = null;
@@ -131,7 +132,7 @@ public class EditarIngresoFragment extends Fragment {
         btnEditar.setEnabled(false);
         btnSelecFecha.setEnabled(false);
 
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(collection).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -290,7 +291,7 @@ public class EditarIngresoFragment extends Fragment {
             }
         }
 
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(idDoc)
+        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(idDoc)
                 .update(item)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

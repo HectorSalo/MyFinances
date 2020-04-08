@@ -17,7 +17,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +43,9 @@ import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import com.skysam.hchirinos.myfinances.editar.EditarActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -56,6 +62,7 @@ public class IngresosFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private int mesSelected, yearSelected;
 
 
     public IngresosFragment() {
@@ -78,9 +85,32 @@ public class IngresosFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
 
+        Calendar calendar = Calendar.getInstance();
+        yearSelected = calendar.get(Calendar.YEAR);
+        mesSelected = calendar.get(Calendar.MONTH);
+
         progressBar = view.findViewById(R.id.progressBar_ingresos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
+        Spinner spinner = view.findViewById(R.id.spinner_ingreso);
+
+        List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
+        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
+        spinner.setAdapter(adapterMeses);
+
+        spinner.setSelection(mesSelected);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mesSelected = position;
+                cargarIngresos();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         recyclerView = view.findViewById(R.id.rv_ingresos);
 
@@ -88,8 +118,6 @@ public class IngresosFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         fragmentCreado = true;
-
-        cargarIngresos();
 
         return view;
     }
@@ -158,7 +186,6 @@ public class IngresosFragment extends Fragment {
     };
 
     private void cargarIngresos() {
-
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
         listaIngresos = new ArrayList<>();
@@ -167,7 +194,7 @@ public class IngresosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ingresosAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_INGRESOS);
+        CollectionReference reference = db.collection(VariablesEstaticas.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         Query query = reference.orderBy(VariablesEstaticas.BD_MONTO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -229,6 +256,7 @@ public class IngresosFragment extends Fragment {
         Bundle myBundle = new Bundle();
         myBundle.putString("idDoc", id);
         myBundle.putInt("fragment", 0);
+        myBundle.putString("collection", yearSelected + "-" + mesSelected);
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
     }

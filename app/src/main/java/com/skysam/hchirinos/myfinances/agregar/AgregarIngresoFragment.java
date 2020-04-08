@@ -53,6 +53,8 @@ public class AgregarIngresoFragment extends Fragment {
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton imageButtonSelecFecha;
+    private int mesSelec, anualSelec, diaSelec;
+    private Calendar calendarSelec;
 
     public AgregarIngresoFragment() {}
 
@@ -176,36 +178,38 @@ public class AgregarIngresoFragment extends Fragment {
         docData.put(VariablesEstaticas.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, tipoFrecuencia);
 
-
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS)
-                .add(docData)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        Objects.requireNonNull(getActivity()).finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnGuardar.setEnabled(true);
-                        imageButtonSelecFecha.setEnabled(true);
-                    }
-                });
-
-
+        for (int j = mesSelec; j < 12; j++) {
+            final int finalJ = j;
+            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(anualSelec + "-" + finalJ).document(String.valueOf(fechaSelec.getTime()))
+                    .set(docData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot written succesfully");
+                            if (finalJ == 11) {
+                                progressBar.setVisibility(View.GONE);
+                                Objects.requireNonNull(getActivity()).finish();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error adding document", e);
+                            Toast.makeText(getContext(), "Error al guardar en el mes " + (finalJ + 1) + ". Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnGuardar.setEnabled(true);
+                            imageButtonSelecFecha.setEnabled(true);
+                        }
+                    });
+        }
     }
 
 
     private void seleccionarFecha() {
-        final Calendar calendarSelec = Calendar.getInstance();
+        calendarSelec = Calendar.getInstance();
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH);
@@ -215,6 +219,9 @@ public class AgregarIngresoFragment extends Fragment {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendarSelec.set(year, month, dayOfMonth);
+                diaSelec = dayOfMonth;
+                mesSelec = month;
+                anualSelec = year;
                 fechaSelec = calendarSelec.getTime();
                 tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec));
             }
