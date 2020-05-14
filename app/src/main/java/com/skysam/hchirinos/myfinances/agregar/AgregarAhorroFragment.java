@@ -155,6 +155,8 @@ public class AgregarAhorroFragment extends Fragment {
         etOrigenLayout.setEnabled(false);
         btnGuardar.setEnabled(false);
         Calendar calendar = Calendar.getInstance();
+        int mes = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
         Date fechaIngreso = calendar.getTime();
         boolean dolar = false;
 
@@ -179,27 +181,32 @@ public class AgregarAhorroFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_AHORROS)
-                .add(docData)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        Objects.requireNonNull(getActivity()).finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        etOrigenLayout.setEnabled(true);
-                        btnGuardar.setEnabled(true);
-                    }
-                });
+        for (int j = mes; j < 12; j++) {
+            final int finalJ = j;
+            db.collection(VariablesEstaticas.BD_AHORROS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+                    .set(docData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot written succesfully");
+                            if (finalJ == 11) {
+                                progressBar.setVisibility(View.GONE);
+                                requireActivity().finish();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error adding document", e);
+                            Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            etOrigenLayout.setEnabled(true);
+                            btnGuardar.setEnabled(true);
+                        }
+                    });
+        }
     }
 }

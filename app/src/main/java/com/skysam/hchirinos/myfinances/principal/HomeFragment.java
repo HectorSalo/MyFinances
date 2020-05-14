@@ -144,21 +144,77 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             double montototal = 0;
+                            int mesCobro = 0;
+                            int yearCobro = 0;
+
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
+                                Calendar calendarInicial = Calendar.getInstance();
+                                Calendar calendarCobro = Calendar.getInstance();
+                                Date fechaInicial = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
+                                double duracionFrecuencia = document.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
+                                int duracionFrecuenciaInt = (int) duracionFrecuencia;
+                                String tipoFrecuencia = document.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA);
+                                int multiploCobranza = 0;
 
-                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
-                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+                                calendarInicial.setTime(fechaInicial);
+                                mesCobro = calendarInicial.get(Calendar.MONTH);
+                                yearCobro = calendarInicial.get(Calendar.YEAR);
 
-                                    if (dolar) {
-                                        montototal = montototal + montoDetal;
-                                    } else {
-                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                if (mesCobro == mesSelected) {
+                                    multiploCobranza = 1;
+                                }
+
+                                if (tipoFrecuencia.equals("Dias")) {
+                                    for (int j = 1; (mesCobro <= mesSelected && yearCobro == yearSelected); j++) {
+                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
+                                        calendarCobro.setTime(calendarInicial.getTime());
+                                        mesCobro = calendarCobro.get(Calendar.MONTH);
+                                        yearCobro = calendarCobro.get(Calendar.YEAR);
+                                        calendarInicial.setTime(fechaInicial);
+
+                                        if (mesCobro == mesSelected) {
+                                            multiploCobranza = multiploCobranza + 1;
+                                        }
                                     }
+                                } else if (tipoFrecuencia.equals("Semanas")) {
+                                    for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
+                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
+                                        calendarCobro.setTime(calendarInicial.getTime());
+                                        mesCobro = calendarCobro.get(Calendar.MONTH);
+                                        yearCobro = calendarCobro.get(Calendar.YEAR);
+                                        calendarInicial.setTime(fechaInicial);
+
+                                        if (mesCobro == mesSelected) {
+                                            multiploCobranza = multiploCobranza + 1;
+                                        }
+                                    }
+                                } else if (tipoFrecuencia.equals("Meses")) {
+                                    for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
+                                        calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
+                                        calendarCobro.setTime(calendarInicial.getTime());
+                                        mesCobro = calendarCobro.get(Calendar.MONTH);
+                                        yearCobro = calendarCobro.get(Calendar.YEAR);
+                                        calendarInicial.setTime(fechaInicial);
+
+                                        if (mesCobro == mesSelected) {
+                                            multiploCobranza = multiploCobranza + 1;
+                                        }
+                                    }
+                                }
+
+
+                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                if (dolar) {
+                                   montototal = montototal + (montoDetal * multiploCobranza);
+                                } else {
+                                   montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
+                                }
                             }
                             montoIngresos = (float) montototal;
-                            //cargarAhorros();
-                            cargarFolios();
+                            cargarAhorros();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -174,7 +230,7 @@ public class HomeFragment extends Fragment {
 
 
     private void cargarAhorros() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_AHORROS)
+        db.collection(VariablesEstaticas.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -219,7 +275,8 @@ public class HomeFragment extends Fragment {
                             }
                             montoAhorros = (float) montototal;
                             montoPrestamos = (float) montoTotalPrestamos;
-                            cargarGastos();
+                            cargarFolios();
+                            //cargarGastos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -310,7 +367,7 @@ public class HomeFragment extends Fragment {
         pieBalance.setRotationEnabled(false);
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(montoIngresos, Objects.requireNonNull(getContext()).getString(R.string.pie_ingresos)));
+        pieEntries.add(new PieEntry(montoIngresos, requireContext().getString(R.string.pie_ingresos)));
         pieEntries.add(new PieEntry(montoAhorros, getContext().getString(R.string.pie_ahorros)));
         pieEntries.add(new PieEntry(montoPrestamos, getContext().getString(R.string.pie_prestamos)));
         pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
@@ -319,7 +376,7 @@ public class HomeFragment extends Fragment {
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         pieDataSet.setValueTextSize(18);
-        pieDataSet.setColors(ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.md_green_300), ContextCompat.getColor(getContext(), R.color.md_green_700), ContextCompat.getColor(getContext(), R.color.md_light_green_A700),
+        pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300), ContextCompat.getColor(getContext(), R.color.md_green_700), ContextCompat.getColor(getContext(), R.color.md_light_green_A700),
                 ContextCompat.getColor(getContext(), R.color.md_red_400), ContextCompat.getColor(getContext(), R.color.md_red_900));
         pieDataSet.setFormSize(16);
         PieData pieData = new PieData(pieDataSet);

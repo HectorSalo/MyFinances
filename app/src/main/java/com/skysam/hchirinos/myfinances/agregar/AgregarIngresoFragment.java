@@ -53,7 +53,7 @@ public class AgregarIngresoFragment extends Fragment {
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton imageButtonSelecFecha;
-    private int mesSelec, anualSelec, diaSelec;
+    private int mesSelec, anualSelec;
     private Calendar calendarSelec;
 
     public AgregarIngresoFragment() {}
@@ -92,7 +92,7 @@ public class AgregarIngresoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(Objects.requireNonNull(getContext()), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         fechaSelec = new Date();
@@ -188,7 +188,7 @@ public class AgregarIngresoFragment extends Fragment {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
                             if (finalJ == 11) {
                                 progressBar.setVisibility(View.GONE);
-                                Objects.requireNonNull(getActivity()).finish();
+                                requireActivity().finish();
                             }
                         }
                     })
@@ -215,11 +215,10 @@ public class AgregarIngresoFragment extends Fragment {
         int month = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(Objects.requireNonNull(getContext()), new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendarSelec.set(year, month, dayOfMonth);
-                diaSelec = dayOfMonth;
                 mesSelec = month;
                 anualSelec = year;
                 fechaSelec = calendarSelec.getTime();

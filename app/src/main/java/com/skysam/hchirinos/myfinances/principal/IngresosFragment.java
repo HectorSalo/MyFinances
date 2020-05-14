@@ -234,20 +234,26 @@ public class IngresosFragment extends Fragment {
 
 
     private void deleteItemSwipe(String id) {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Delete", "Error deleting document", e);
-                    }
-                });
+        for (int i = mesSelected; i < 12; i++) {
+            final int finalI = i;
+            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                            if (finalI == 11) {
+                                Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("Delete", "Error deleting document", e);
+                        }
+                    });
+        }
 
     }
 
@@ -256,7 +262,8 @@ public class IngresosFragment extends Fragment {
         Bundle myBundle = new Bundle();
         myBundle.putString("idDoc", id);
         myBundle.putInt("fragment", 0);
-        myBundle.putString("collection", yearSelected + "-" + mesSelected);
+        myBundle.putInt("mes", mesSelected);
+        myBundle.putInt("year", yearSelected);
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
     }

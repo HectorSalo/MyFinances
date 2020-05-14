@@ -50,9 +50,9 @@ public class EditarIngresoFragment extends Fragment {
 
     public EditarIngresoFragment() {}
 
-    private String conceptoViejo, conceptoNuevo, idDoc, collection;
+    private String conceptoViejo, conceptoNuevo, idDoc;
     private double montoNuevo, montoViejo;
-    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo;
+    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia;
@@ -95,11 +95,12 @@ public class EditarIngresoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia_editar);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(Objects.requireNonNull(getContext()), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         idDoc = getArguments().getString("idDoc");
-        collection = getArguments().getString("collection");
+        mesSelected = getArguments().getInt("mes");
+        yearSelected = getArguments().getInt("year");
 
         fechaNueva = new Date();
         fechaNueva = null;
@@ -132,7 +133,7 @@ public class EditarIngresoFragment extends Fragment {
         btnEditar.setEnabled(false);
         btnSelecFecha.setEnabled(false);
 
-        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(collection).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -206,7 +207,7 @@ public class EditarIngresoFragment extends Fragment {
         int month = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(Objects.requireNonNull(getContext()), new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendarSelec.set(year, month, dayOfMonth);
@@ -291,29 +292,36 @@ public class EditarIngresoFragment extends Fragment {
             }
         }
 
-        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(VariablesEstaticas.BD_INGRESOS).document(idDoc)
-                .update(item)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        Objects.requireNonNull(getActivity()).finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                        Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
-                        btnSelecFecha.setEnabled(true);
-                    }
-                });
+        for (int i = mesSelected; i < 12; i++) {
+            final int finalI = i;
+            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+                    .update(item)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully updated!");
+                            if (finalI == 11) {
+                                Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                                requireActivity().finish();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnEditar.setEnabled(true);
+                            btnSelecFecha.setEnabled(true);
+                        }
+                    });
+        }
+
+
 
     }
 }

@@ -29,11 +29,13 @@ public class EditarActivity extends AppCompatActivity {
         Bundle myBundle = this.getIntent().getExtras();
         int fragment = myBundle.getInt("fragment");
         String idDoc = myBundle.getString("idDoc");
-        String collection = myBundle.getString("collection");
+        int mes = myBundle.getInt("mes");
+        int year = myBundle.getInt("year");
 
         Bundle bundleFragment = new Bundle();
         bundleFragment.putString("idDoc", idDoc);
-        bundleFragment.putString("collection", collection);
+        bundleFragment.putInt("mes", mes);
+        bundleFragment.putInt("year", year);
 
 
         switch (fragment) {
