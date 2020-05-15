@@ -237,7 +237,6 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             double montototal = 0;
-                            double montoTotalPrestamos = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Date date = document.getDate(VariablesEstaticas.BD_FECHA_INGRESO);
@@ -245,38 +244,53 @@ public class HomeFragment extends Fragment {
                                 mesItemAhorro = calendar.get(Calendar.MONTH);
 
                                 if (mesSelected >= mesItemAhorro) {
-                                    boolean descontar = document.getBoolean(VariablesEstaticas.BD_DESCONTAR);
                                     double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
                                     boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
-                                    boolean prestamo = document.getBoolean(VariablesEstaticas.BD_PRESTAMO);
 
-                                    if (descontar) {
-                                        if (dolar) {
-                                            montototal = montototal - montoDetal;
-                                        } else {
-                                            montototal = montototal - (montoDetal / valorCotizacion);
-                                        }
-                                    } else {
                                         if (dolar) {
                                             montototal = montototal + montoDetal;
                                         } else {
                                             montototal = montototal + (montoDetal / valorCotizacion);
                                         }
-                                    }
-
-                                    if (prestamo) {
-                                        if (dolar) {
-                                            montoTotalPrestamos = montoTotalPrestamos + montoDetal;
-                                        } else {
-                                            montoTotalPrestamos = montoTotalPrestamos + (montoDetal / valorCotizacion);
-                                        }
-                                    }
                                 }
                             }
                             montoAhorros = (float) montototal;
-                            montoPrestamos = (float) montoTotalPrestamos;
-                            cargarFolios();
-                            //cargarGastos();
+                            cargarPrestamos();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting data: ", e);
+            }
+        });
+    }
+
+    private void cargarPrestamos() {
+        db.collection(VariablesEstaticas.BD_PRESTAMOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            double montototal = 0;
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                    if (dolar) {
+                                        montototal = montototal + montoDetal;
+                                    } else {
+                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                    }
+
+                            }
+                            montoPrestamos = (float) montototal;
+                            cargarGastos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -290,7 +304,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarGastos() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_GASTOS)
+        db.collection(VariablesEstaticas.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -309,7 +323,8 @@ public class HomeFragment extends Fragment {
                                 }
                             }
                             montoGastos = (float) montototal;
-                            cargarDeudas();
+                            cargarFolios();
+                            //cargarDeudas();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }

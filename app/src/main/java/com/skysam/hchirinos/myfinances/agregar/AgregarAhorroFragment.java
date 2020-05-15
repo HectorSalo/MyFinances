@@ -46,7 +46,6 @@ public class AgregarAhorroFragment extends Fragment {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ProgressBar progressBar;
     private Button btnGuardar;
-    private boolean descontar;
 
     public AgregarAhorroFragment(){}
 
@@ -73,13 +72,7 @@ public class AgregarAhorroFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ahorro);
 
-        descontar = getArguments().getBoolean("descontar");
-        if (descontar) {
-            etOrigenLayout.setVisibility(View.GONE);
-        }
-
         rbBs.setChecked(true);
-
 
         btnGuardar = view.findViewById(R.id.button_guardar);
         btnGuardar.setOnClickListener(new View.OnClickListener() {
@@ -98,10 +91,6 @@ public class AgregarAhorroFragment extends Fragment {
         boolean conceptoValido;
         boolean montovalido = false;
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-        float ahorrosDisponible = sharedPreferences.getFloat("ahorros_disponible", 1);
-        float valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
-
         if (!concepto.isEmpty()) {
             conceptoValido = true;
         } else {
@@ -111,26 +100,7 @@ public class AgregarAhorroFragment extends Fragment {
         if (!montoS.isEmpty()) {
             monto = Double.parseDouble(montoS);
             if (monto > 0) {
-                if (descontar) {
-                    if (rbDolar.isChecked()) {
-                        if (monto <= ahorrosDisponible) {
-                            montovalido = true;
-                        } else {
-                            montovalido = false;
-                            etMontoLayout.setError("No hay fondos suficientes. Ingrese un monto menor");
-                        }
-                    } else if (rbBs.isChecked()) {
-                        double montoFinal = monto / valorCotizacion;
-                        if (montoFinal <= ahorrosDisponible) {
-                            montovalido = true;
-                        } else {
-                            montovalido = false;
-                            etMontoLayout.setError("No hay fondos suficientes. Ingrese un monto menor");
-                        }
-                    }
-                } else {
                     montovalido = true;
-                }
             } else {
                 montovalido = false;
                 etMontoLayout.setError("El monto debe ser mayor a cero");
@@ -140,9 +110,7 @@ public class AgregarAhorroFragment extends Fragment {
             etMontoLayout.setError("Campo obligatorio");
         }
 
-
         if (montovalido && conceptoValido) {
-
             guardarDatos();
         }
     }
@@ -176,8 +144,6 @@ public class AgregarAhorroFragment extends Fragment {
         docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
         docData.put(VariablesEstaticas.BD_DOLAR, dolar);
         docData.put(VariablesEstaticas.BD_ORIGEN, origen);
-        docData.put(VariablesEstaticas.BD_DESCONTAR, descontar);
-        docData.put(VariablesEstaticas.BD_PRESTAMO, false);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

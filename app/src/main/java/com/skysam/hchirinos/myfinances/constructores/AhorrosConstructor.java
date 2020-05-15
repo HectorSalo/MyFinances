@@ -5,17 +5,16 @@ import java.util.Date;
 public class AhorrosConstructor {
     private String concepto, origen, idAhorro;
     private double monto;
-    private boolean dolar, descontar;
+    private boolean dolar;
     private Date fechaIngreso;
 
-    public AhorrosConstructor(String idAhorro, String concepto, String origen, double monto, boolean dolar, Date fechaIngreso, boolean descontar) {
+    public AhorrosConstructor(String idAhorro, String concepto, String origen, double monto, boolean dolar, Date fechaIngreso) {
         this.idAhorro = idAhorro;
         this.concepto = concepto;
         this.origen = origen;
         this.monto = monto;
         this.dolar = dolar;
         this.fechaIngreso = fechaIngreso;
-        this.descontar = descontar;
     }
 
 
@@ -28,14 +27,6 @@ public class AhorrosConstructor {
     }
 
     public AhorrosConstructor() {
-    }
-
-    public boolean isDescontar() {
-        return descontar;
-    }
-
-    public void setDescontar(boolean descontar) {
-        this.descontar = descontar;
     }
 
     public String getConcepto() {

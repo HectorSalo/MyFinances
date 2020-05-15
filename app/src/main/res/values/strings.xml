@@ -9,7 +9,7 @@
     <string name="menu_ingresos">Ingresos Fijos</string>
     <string name="menu_ahorros">Ahorros</string>
     <string name="menu_prestamos">Préstamos realizados</string>
-    <string name="menu_egresos">Gastos Fijos</string>
+    <string name="menu_egresos">Gastos</string>
     <string name="menu_deudas">Deudas</string>
     <string name="menu_cerrar_sesion">Cerrar Sesión</string>
     <string name="menu_descontar_ahorro">Descontar Ahorro</string>
@@ -19,7 +19,7 @@
     <string name="pie_ingresos">Ingresos</string>
     <string name="pie_ahorros">Ahorros</string>
     <string name="pie_prestamos">Préstamos</string>
-    <string name="pie_egresos">Gastos Fijos</string>
+    <string name="pie_egresos">Gastos</string>
     <string name="pie_deudas">Deudas</string>
 
 
@@ -46,9 +46,15 @@
     <string name="btn_guardar">Guardar</string>
     <string name="btn_editar">Actualizar</string>
     <string name="previous">Previous</string>
+    <string name="gasto_fijo">Gasto periódico</string>
+    <string name="gasto_mes">Gasto único</string>
+    <string name="escoger_mes">Escoja mes</string>
     <string name="sin_lista">No hay ítems guardados en esta lista. Presione el botón ubicado en la esquina inferior derecha para agregar el primero.</string>
 
     <string name="menu_editar">Editar</string>
     <string name="menu_eliminar">Eliminar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

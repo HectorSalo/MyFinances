@@ -35,10 +35,13 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.ViewHolder> {
     private ArrayList<AhorrosConstructor> listaPrestamos;
     private Context context;
+    private int year, mes;
 
-    public PrestamosAdapter(ArrayList<AhorrosConstructor> listaPrestamos, Context context) {
+    public PrestamosAdapter(ArrayList<AhorrosConstructor> listaPrestamos, Context context, int year, int mes) {
         this.listaPrestamos = listaPrestamos;
         this.context = context;
+        this.mes = mes;
+        this.year = year;
     }
 
     @NonNull
@@ -151,22 +154,28 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_AHORROS).document(idDoc)
-                .update(VariablesEstaticas.BD_MONTO, montoNuevo)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
-                        listaPrestamos.get(position).setMonto(montoNuevo);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                        Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        for (int j = mes; j < 12; j++) {
+            final int finalJ = j;
+            db.collection(VariablesEstaticas.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+                    .update(VariablesEstaticas.BD_MONTO, montoNuevo)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully updated!");
+                            if (finalJ == 11) {
+                                Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
+                                listaPrestamos.get(position).setMonto(montoNuevo);
+                                updateList(listaPrestamos);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 }

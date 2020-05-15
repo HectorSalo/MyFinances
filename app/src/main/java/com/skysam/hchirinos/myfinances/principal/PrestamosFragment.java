@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +35,9 @@ import com.skysam.hchirinos.myfinances.adaptadores.PrestamosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 public class PrestamosFragment extends Fragment {
@@ -45,6 +51,7 @@ public class PrestamosFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private int mesSelected, yearSelected;
 
 
     public PrestamosFragment() {
@@ -65,16 +72,36 @@ public class PrestamosFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Calendar calendar = Calendar.getInstance();
+        yearSelected = calendar.get(Calendar.YEAR);
+        mesSelected = calendar.get(Calendar.MONTH);
 
         progressBar = view.findViewById(R.id.progressBar_prestamos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
 
+        Spinner spinner = view.findViewById(R.id.spinner_prestamo);
+
+        List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
+        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
+        spinner.setAdapter(adapterMeses);
+
+        spinner.setSelection(mesSelected);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mesSelected = position;
+                cargarPrestamos();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         recyclerView = view.findViewById(R.id.rv_prestamos);
 
         fragmentCreado = true;
-
-        cargarPrestamos();
     }
 
 
@@ -82,15 +109,14 @@ public class PrestamosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
         listaPrestamos = new ArrayList<>();
-        prestamosAdapter = new PrestamosAdapter(listaPrestamos, getContext());
+        prestamosAdapter = new PrestamosAdapter(listaPrestamos, getContext(), yearSelected, mesSelected);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(prestamosAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(userID).collection(VariablesEstaticas.BD_AHORROS);
+        CollectionReference reference = db.collection(VariablesEstaticas.BD_PRESTAMOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        Query query = reference.whereEqualTo(VariablesEstaticas.BD_PRESTAMO, true).orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

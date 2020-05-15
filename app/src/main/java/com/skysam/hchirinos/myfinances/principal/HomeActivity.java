@@ -59,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case 2:
                         intent.putExtra("agregar", 1);
-                        intent.putExtra("descontar", false);
                         startActivity(intent);
                         break;
                     case 3:
@@ -112,10 +111,6 @@ public class HomeActivity extends AppCompatActivity {
                 confirmarCerrarSesion();
                 break;
             case R.id.menu_descontar_ahorro:
-                Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
-                intent.putExtra("agregar", 1);
-                intent.putExtra("descontar", true);
-                startActivity(intent);
                 break;
             default:
                 break;
@@ -145,7 +140,6 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
                         agregar = 0;
                         bottomSheetDialog.dismiss();
-                        itemDescontarAhorro.setVisible(false);
                         break;
                     case R.id.menu_ingresos:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
@@ -153,7 +147,6 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
                         agregar = 1;
                         bottomSheetDialog.dismiss();
-                        itemDescontarAhorro.setVisible(false);
                         break;
                     case R.id.menu_ahorros:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ahorrosFragment, "ahorros").commit();
@@ -161,7 +154,6 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
                         agregar = 2;
                         bottomSheetDialog.dismiss();
-                        itemDescontarAhorro.setVisible(true);
                         break;
                     case R.id.menu_prestamos:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, prestamosFragment, "prestamos").commit();
@@ -169,7 +161,6 @@ public class HomeActivity extends AppCompatActivity {
                         floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
                         agregar = 3;
                         bottomSheetDialog.dismiss();
-                        itemDescontarAhorro.setVisible(false);
                         break;
                     case R.id.menu_egresos:
                         Toast.makeText(HomeActivity.this,"Item 4 Clicked",Toast.LENGTH_SHORT).show();
