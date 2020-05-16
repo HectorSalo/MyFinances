@@ -3,7 +3,7 @@ package com.skysam.hchirinos.myfinances.constructores;
 import java.util.Date;
 
 public class IngresosConstructor {
-    private String concepto, tipoFrecuencia, idIngreso;
+    private String concepto, tipoFrecuencia, idIngreso, idGasto;
     private double monto;
     private boolean dolar;
     private int duracionFrecuencia;
@@ -76,5 +76,13 @@ public class IngresosConstructor {
 
     public void setFechaIncial(Date fechaIncial) {
         this.fechaIncial = fechaIncial;
+    }
+
+    public String getIdGasto() {
+        return idGasto;
+    }
+
+    public void setIdGasto(String idGasto) {
+        this.idGasto = idGasto;
     }
 }

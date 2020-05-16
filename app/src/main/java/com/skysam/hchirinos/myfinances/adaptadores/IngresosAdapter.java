@@ -90,32 +90,6 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
 
         holder.tvProximoCobro.setText("Fecha próximo cobro: " + new SimpleDateFormat("EEE d MMM yyyy").format(calendarInicial.getTime()));
 
-        /*holder.tvMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
-                popupMenu.inflate(R.menu.ingresos_popmenu);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_editar:
-                                break;
-
-                            case R.id.menu_eliminar:
-                                break;
-
-                            default:
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.show();
-            }
-        });*/
-
-
     }
 
     @Override

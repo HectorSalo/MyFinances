@@ -1,12 +1,6 @@
 package com.skysam.hchirinos.myfinances.agregar;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +10,15 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
@@ -31,24 +27,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class AgregarPrestamoFragment extends Fragment {
 
-    private TextInputEditText etDestinatario, etMonto;
-    private TextInputLayout etDestinatarioLayout, etMontoLayout;
-    private String destinatario;
+public class AgregarDeudaFragment extends Fragment {
+
+    public AgregarDeudaFragment() {
+        // Required empty public constructor
+    }
+
+    private TextInputEditText etPrestamista, etMonto, etConcepto;
+    private TextInputLayout etPrestamistaLayout, etMontoLayout, etConceptoLayout;
+    private String prestamista, concepto;
     private double monto;
     private RadioButton rbBs, rbDolar;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ProgressBar progressBar;
     private Button btnGuardar;
-
-    public AgregarPrestamoFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,20 +55,22 @@ public class AgregarPrestamoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_agregar_prestamo, container, false);
+        return inflater.inflate(R.layout.fragment_agregar_deuda, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etDestinatario = view.findViewById(R.id.et_destinatario);
-        etDestinatarioLayout = view.findViewById(R.id.outlined_destinatario);
+        etPrestamista = view.findViewById(R.id.et_prestamista);
+        etPrestamistaLayout = view.findViewById(R.id.outlined_prestamista);
         etMonto = view.findViewById(R.id.et_monto);
         etMontoLayout = view.findViewById(R.id.outlined_monto);
+        etConcepto = view.findViewById(R.id.et_concepto);
+        etConceptoLayout = view.findViewById(R.id.outlined_concepto);
         rbBs = view.findViewById(R.id.radioButton_bolivares);
         rbDolar = view.findViewById(R.id.radioButton_dolares);
 
-        progressBar = view.findViewById(R.id.progressBar_agregar_prestamo);
+        progressBar = view.findViewById(R.id.progressBar);
 
         rbBs.setChecked(true);
 
@@ -86,19 +84,29 @@ public class AgregarPrestamoFragment extends Fragment {
         });
     }
 
+
     private void validarDatos() {
-        etDestinatarioLayout.setError(null);
+        etPrestamistaLayout.setError(null);
         etMontoLayout.setError(null);
-        destinatario = etDestinatario.getText().toString();
+        etConceptoLayout.setError(null);
+        prestamista = etPrestamista.getText().toString();
+        concepto = etConcepto.getText().toString();
         String montoS = etMonto.getText().toString();
         boolean destinatarioValido;
+        boolean conceptoValido;
         boolean montovalido = false;
 
-        if (!destinatario.isEmpty()) {
+        if (!prestamista.isEmpty()) {
             destinatarioValido = true;
         } else {
             destinatarioValido = false;
-            etDestinatarioLayout.setError("Campo obligatorio");
+            etPrestamistaLayout.setError("Campo obligatorio");
+        }
+        if (!concepto.isEmpty()) {
+            conceptoValido = true;
+        } else {
+            conceptoValido = false;
+            etConceptoLayout.setError("Campo obligatorio");
         }
         if (!montoS.isEmpty()) {
             monto = Double.parseDouble(montoS);
@@ -114,7 +122,7 @@ public class AgregarPrestamoFragment extends Fragment {
         }
 
 
-        if (montovalido && destinatarioValido) {
+        if (montovalido && destinatarioValido && conceptoValido) {
             guardarDatos();
         }
     }
@@ -123,7 +131,8 @@ public class AgregarPrestamoFragment extends Fragment {
     private void guardarDatos() {
         progressBar.setVisibility(View.VISIBLE);
         etMontoLayout.setEnabled(false);
-        etDestinatarioLayout.setEnabled(false);
+        etPrestamistaLayout.setEnabled(false);
+        etConceptoLayout.setEnabled(false);
         btnGuardar.setEnabled(false);
         Calendar calendar = Calendar.getInstance();
         int mes = calendar.get(Calendar.MONTH);
@@ -138,7 +147,8 @@ public class AgregarPrestamoFragment extends Fragment {
         }
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_CONCEPTO, destinatario);
+        docData.put(VariablesEstaticas.BD_PRESTAMISTA, prestamista);
+        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
         docData.put(VariablesEstaticas.BD_MONTO, monto);
         docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
         docData.put(VariablesEstaticas.BD_DOLAR, dolar);
@@ -147,7 +157,7 @@ public class AgregarPrestamoFragment extends Fragment {
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -165,7 +175,8 @@ public class AgregarPrestamoFragment extends Fragment {
                             Log.w(TAG, "Error adding document", e);
                             Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.GONE);
-                            etDestinatarioLayout.setEnabled(true);
+                            etPrestamistaLayout.setEnabled(true);
+                            etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);
                             btnGuardar.setEnabled(true);
                         }

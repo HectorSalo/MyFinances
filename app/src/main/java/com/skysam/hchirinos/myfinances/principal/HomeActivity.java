@@ -28,6 +28,8 @@ public class HomeActivity extends AppCompatActivity {
     private IngresosFragment ingresosFragment;
     private AhorrosFragment ahorrosFragment;
     private PrestamosFragment prestamosFragment;
+    private GastosFragment gastosFragment;
+    private DeudasFragment deudasFragment;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
     private int agregar;
@@ -83,6 +85,8 @@ public class HomeActivity extends AppCompatActivity {
         ingresosFragment = new IngresosFragment();
         ahorrosFragment = new AhorrosFragment();
         prestamosFragment = new PrestamosFragment();
+        gastosFragment = new GastosFragment();
+        deudasFragment = new DeudasFragment();
 
         getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, homeFragment, "home").commit();
     }
@@ -93,8 +97,6 @@ public class HomeActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
         menuGeneral = menu;
-        itemDescontarAhorro = menuGeneral.findItem(R.id.menu_descontar_ahorro);
-        itemDescontarAhorro.setVisible(false);
         return true;
     }
 
@@ -109,8 +111,6 @@ public class HomeActivity extends AppCompatActivity {
                 break;
             case R.id.menu_cerrar_sesion:
                 confirmarCerrarSesion();
-                break;
-            case R.id.menu_descontar_ahorro:
                 break;
             default:
                 break;
@@ -163,14 +163,14 @@ public class HomeActivity extends AppCompatActivity {
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_egresos:
-                        Toast.makeText(HomeActivity.this,"Item 4 Clicked",Toast.LENGTH_SHORT).show();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, gastosFragment, "gastos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
                         agregar = 4;
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_deudas:
-                        Toast.makeText(HomeActivity.this,"Item 5 Clicked",Toast.LENGTH_SHORT).show();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, deudasFragment, "deudas").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
                         agregar = 5;

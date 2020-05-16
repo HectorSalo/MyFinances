@@ -28,6 +28,7 @@ public class AgregarActivity extends AppCompatActivity {
         AgregarAhorroFragment agregarAhorroFragment = new AgregarAhorroFragment();
         AgregarPrestamoFragment agregarPrestamoFragment = new AgregarPrestamoFragment();
         AgregarGastoFragment agregarGastoFragment = new AgregarGastoFragment();
+        AgregarDeudaFragment agregarDeudaFragment = new AgregarDeudaFragment();
 
         int opcionAgregar = getIntent().getIntExtra("agregar", 0);
         switch (opcionAgregar) {
@@ -48,6 +49,7 @@ public class AgregarActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("Agregar un Gasto");
                 break;
             case 4:
+                getSupportFragmentManager().beginTransaction().add(R.id.agregar_container_fragment, agregarDeudaFragment).commit();
                 getSupportActionBar().setTitle("Agregar una Deuda");
                 break;
             default:

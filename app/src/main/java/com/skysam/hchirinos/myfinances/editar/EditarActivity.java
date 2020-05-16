@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.principal.GastosFragment;
 
 import java.util.Objects;
 
@@ -25,6 +26,7 @@ public class EditarActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         EditarIngresoFragment editarIngresoFragment = new EditarIngresoFragment();
+        EditarGastoFragment editarGastoFragment = new EditarGastoFragment();
 
         Bundle myBundle = this.getIntent().getExtras();
         int fragment = myBundle.getInt("fragment");
@@ -43,6 +45,14 @@ public class EditarActivity extends AppCompatActivity {
                 editarIngresoFragment.setArguments(bundleFragment);
                 getSupportFragmentManager().beginTransaction().add(R.id.editar_container_fragment, editarIngresoFragment).commit();
                 getSupportActionBar().setTitle("Editar Ingreso");
+                break;
+
+            case 1:
+                boolean mesUnico = myBundle.getBoolean("mesUnico");
+                bundleFragment.putBoolean("mesUnico", mesUnico);
+                editarGastoFragment.setArguments(bundleFragment);
+                getSupportFragmentManager().beginTransaction().add(R.id.editar_container_fragment, editarGastoFragment).commit();
+                getSupportActionBar().setTitle("Editar Gasto");
                 break;
             default:
                 break;

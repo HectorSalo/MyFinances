@@ -3,7 +3,7 @@ package com.skysam.hchirinos.myfinances.constructores;
 import java.util.Date;
 
 public class AhorrosConstructor {
-    private String concepto, origen, idAhorro;
+    private String concepto, origen, idAhorro, idDeuda, prestamista;
     private double monto;
     private boolean dolar;
     private Date fechaIngreso;
@@ -67,5 +67,21 @@ public class AhorrosConstructor {
 
     public void setFechaIngreso(Date fechaIngreso) {
         this.fechaIngreso = fechaIngreso;
+    }
+
+    public String getIdDeuda() {
+        return idDeuda;
+    }
+
+    public void setIdDeuda(String idDeuda) {
+        this.idDeuda = idDeuda;
+    }
+
+    public String getPrestamista() {
+        return prestamista;
+    }
+
+    public void setPrestamista(String prestamista) {
+        this.prestamista = prestamista;
     }
 }

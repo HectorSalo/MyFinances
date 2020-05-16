@@ -217,12 +217,14 @@ public class HomeFragment extends Fragment {
                             cargarAhorros();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "Error getting data: ", e);
+                progressBar.setVisibility(View.GONE);
             }
         });
 
@@ -258,12 +260,14 @@ public class HomeFragment extends Fragment {
                             cargarPrestamos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "Error getting data: ", e);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -293,12 +297,14 @@ public class HomeFragment extends Fragment {
                             cargarGastos();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e(TAG, "Error getting data: ", e);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -311,34 +317,105 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             double montototal = 0;
+                            int mesPago = 0;
+                            int yearPago = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
-                                boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
 
-                                if (dolar) {
-                                    montototal = montototal + montoDetal;
+                                String tipoFrecuencia = document.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA);
+                                if (tipoFrecuencia != null) {
+                                    Calendar calendarInicial = Calendar.getInstance();
+                                    Calendar calendarPago = Calendar.getInstance();
+                                    Date fechaInicial = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
+                                    double duracionFrecuencia = document.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
+                                    int duracionFrecuenciaInt = (int) duracionFrecuencia;
+
+                                    int multiploCobranza = 0;
+
+                                    calendarInicial.setTime(fechaInicial);
+                                    mesPago = calendarInicial.get(Calendar.MONTH);
+                                    yearPago = calendarInicial.get(Calendar.YEAR);
+
+                                    if (mesPago == mesSelected) {
+                                        multiploCobranza = 1;
+                                    }
+
+
+                                    if (tipoFrecuencia.equals("Dias")) {
+                                        for (int j = 1; (mesPago <= mesSelected && yearPago == yearSelected); j++) {
+                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
+                                            calendarPago.setTime(calendarInicial.getTime());
+                                            mesPago = calendarPago.get(Calendar.MONTH);
+                                            yearPago = calendarPago.get(Calendar.YEAR);
+                                            calendarInicial.setTime(fechaInicial);
+
+                                            if (mesPago == mesSelected) {
+                                                multiploCobranza = multiploCobranza + 1;
+                                            }
+                                        }
+                                    } else if (tipoFrecuencia.equals("Semanas")) {
+                                        for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
+                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
+                                            calendarPago.setTime(calendarInicial.getTime());
+                                            mesPago = calendarPago.get(Calendar.MONTH);
+                                            yearPago = calendarPago.get(Calendar.YEAR);
+                                            calendarInicial.setTime(fechaInicial);
+
+                                            if (mesPago == mesSelected) {
+                                                multiploCobranza = multiploCobranza + 1;
+                                            }
+                                        }
+                                    } else if (tipoFrecuencia.equals("Meses")) {
+                                        for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
+                                            calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
+                                            calendarPago.setTime(calendarInicial.getTime());
+                                            mesPago = calendarPago.get(Calendar.MONTH);
+                                            yearPago = calendarPago.get(Calendar.YEAR);
+                                            calendarInicial.setTime(fechaInicial);
+
+                                            if (mesPago == mesSelected) {
+                                                multiploCobranza = multiploCobranza + 1;
+                                            }
+                                        }
+                                    }
+
+                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                    if (dolar) {
+                                        montototal = montototal + (montoDetal * multiploCobranza);
+                                    } else {
+                                        montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
+                                    }
                                 } else {
-                                    montototal = montototal + (montoDetal / valorCotizacion);
+                                    double montoDetal = document.getDouble(VariablesEstaticas.BD_MONTO);
+                                    boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+
+                                    if (dolar) {
+                                        montototal = montototal + montoDetal;
+                                    } else {
+                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                    }
                                 }
                             }
                             montoGastos = (float) montototal;
-                            cargarFolios();
-                            //cargarDeudas();
+                            cargarDeudas();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                progressBar.setVisibility(View.GONE);
                 Log.e(TAG, "Error getting data: ", e);
             }
         });
     }
 
     private void cargarDeudas() {
-        db.collection(VariablesEstaticas.BD_PROPIETARIOS).document(user.getUid()).collection(VariablesEstaticas.BD_DEUDAS)
+        db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

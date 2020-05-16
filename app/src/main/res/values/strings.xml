@@ -12,7 +12,7 @@
     <string name="menu_egresos">Gastos</string>
     <string name="menu_deudas">Deudas</string>
     <string name="menu_cerrar_sesion">Cerrar Sesión</string>
-    <string name="menu_descontar_ahorro">Descontar Ahorro</string>
+    <string name="menu_abono">Abonar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
 
 
@@ -43,6 +43,7 @@
     <string name="fecha">Fecha:</string>
     <string name="origen">Origen de los fondos:</string>
     <string name="destinatario">Destinatario:</string>
+    <string name="prestamista">Prestamista:</string>
     <string name="btn_guardar">Guardar</string>
     <string name="btn_editar">Actualizar</string>
     <string name="previous">Previous</string>

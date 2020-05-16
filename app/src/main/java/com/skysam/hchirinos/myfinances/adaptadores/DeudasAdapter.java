@@ -2,7 +2,6 @@ package com.skysam.hchirinos.myfinances.adaptadores;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,17 +27,20 @@ import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.ViewHolder> {
-    private ArrayList<AhorrosConstructor> listaPrestamos;
+public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder> {
+
+    private ArrayList<AhorrosConstructor> listaDeudas;
     private Context context;
     private int year, mes;
 
-    public PrestamosAdapter(ArrayList<AhorrosConstructor> listaPrestamos, Context context, int year, int mes) {
-        this.listaPrestamos = listaPrestamos;
+    public DeudasAdapter() {
+    }
+
+    public DeudasAdapter(ArrayList<AhorrosConstructor> listaDeudas, Context context, int year, int mes) {
+        this.listaDeudas = listaDeudas;
         this.context = context;
         this.mes = mes;
         this.year = year;
@@ -46,38 +48,38 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
     @NonNull
     @Override
-    public PrestamosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public DeudasAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, null, false);
-        return new ViewHolder(view);
+        return new DeudasAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PrestamosAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final DeudasAdapter.ViewHolder holder, int position) {
         final int i = position;
 
-        holder.concepto.setVisibility(View.GONE);
+        holder.concepto.setText(listaDeudas.get(i).getConcepto());
+        holder.prestamista.setText(listaDeudas.get(i).getPrestamista());
 
-        holder.destinatario.setText(listaPrestamos.get(i).getConcepto());
+        holder.fechaIngreso.setText("Agregado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaDeudas.get(i).getFechaIngreso()));
 
-        if (listaPrestamos.get(i).isDolar()) {
-            holder.monto.setText("$" + listaPrestamos.get(i).getMonto());
+
+        if (listaDeudas.get(i).isDolar()) {
+            holder.monto.setText("$" + listaDeudas.get(i).getMonto());
         } else {
-            holder.monto.setText("Bs. " + listaPrestamos.get(i).getMonto());
+            holder.monto.setText("Bs. " + listaDeudas.get(i).getMonto());
         }
-
-        holder.fechaIngreso.setText("Préstamo realizado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaPrestamos.get(i).getFechaIngreso()));
 
         holder.tvMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
-                popupMenu.inflate(R.menu.prestamos_popmenu);
+                popupMenu.inflate(R.menu.deudas_popmenu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.menu_cobro:
-                                ingresarCobro(i);
+                            case R.id.menu_abono:
+                                ingresarAbono(i);
                                 break;
                             default:
                                 break;
@@ -93,16 +95,16 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
     @Override
     public int getItemCount() {
-        return listaPrestamos.size();
+        return listaDeudas.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView destinatario, monto, fechaIngreso, concepto, tvMenu;
+        TextView concepto, prestamista, monto, fechaIngreso, tvMenu;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            destinatario = itemView.findViewById(R.id.textView_destinatario);
             concepto = itemView.findViewById(R.id.textView_concepto);
+            prestamista = itemView.findViewById(R.id.textView_destinatario);
             monto = itemView.findViewById(R.id.textView_monto);
             fechaIngreso = itemView.findViewById(R.id.textView_fecha_ingreso);
             tvMenu = itemView.findViewById(R.id.tvmenu_prestamo);
@@ -110,14 +112,15 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
     }
 
     public void updateList (ArrayList<AhorrosConstructor> newList) {
-        listaPrestamos = new ArrayList<>();
-        listaPrestamos.addAll(newList);
+        listaDeudas = new ArrayList<>();
+        listaDeudas.addAll(newList);
         notifyDataSetChanged();
     }
 
-    private void ingresarCobro(final int position) {
-        boolean b = listaPrestamos.get(position).isDolar();
-        final double montoOriginal = listaPrestamos.get(position).getMonto();
+
+    private void ingresarAbono(final int position) {
+        boolean b = listaDeudas.get(position).isDolar();
+        final double montoOriginal = listaDeudas.get(position).getMonto();
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
         TextView textView = v.findViewById(R.id.textView_cotizacion);
@@ -130,7 +133,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
             textView.setText("Bs. ");
         }
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-        dialog.setTitle("Ingrese el monto cobrado")
+        dialog.setTitle("Ingrese el monto a abonar")
                 .setView(v)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -142,7 +145,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                                 if (total >= 0) {
                                     actualizarMonto(position, total);
                                 } else {
-                                    Toast.makeText(context, "No puede cobrar un monto mayor al préstamo", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "No puede abonar un monto mayor a la deuda", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
@@ -153,13 +156,13 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
     }
 
     private void actualizarMonto(final int position, final double montoNuevo) {
-        String idDoc = listaPrestamos.get(position).getIdAhorro();
+        String idDoc = listaDeudas.get(position).getIdDeuda();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
                     .update(VariablesEstaticas.BD_MONTO, montoNuevo)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -167,8 +170,8 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                             if (finalJ == 11) {
                                 Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
-                                listaPrestamos.get(position).setMonto(montoNuevo);
-                                updateList(listaPrestamos);
+                                listaDeudas.get(position).setMonto(montoNuevo);
+                                updateList(listaDeudas);
                             }
                         }
                     })
