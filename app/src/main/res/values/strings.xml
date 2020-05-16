@@ -12,6 +12,7 @@
     <string name="menu_egresos">Gastos</string>
     <string name="menu_deudas">Deudas</string>
     <string name="menu_cerrar_sesion">Cerrar Sesión</string>
+    <string name="menu_acerca">Desarrollado por...</string>
     <string name="menu_abono">Abonar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
 

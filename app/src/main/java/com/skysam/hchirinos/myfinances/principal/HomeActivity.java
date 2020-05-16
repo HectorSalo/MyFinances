@@ -112,6 +112,9 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.menu_cerrar_sesion:
                 confirmarCerrarSesion();
                 break;
+            case R.id.menu_acerca:
+                startActivity(new Intent(this, AcercaActivity.class));
+                break;
             default:
                 break;
         }
