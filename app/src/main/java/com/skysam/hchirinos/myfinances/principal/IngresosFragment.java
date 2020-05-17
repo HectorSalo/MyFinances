@@ -85,9 +85,19 @@ public class IngresosFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
 
+        fragmentCreado = false;
+
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
         mesSelected = calendar.get(Calendar.MONTH);
+
+        recyclerView = view.findViewById(R.id.rv_ingresos);
+
+        listaIngresos = new ArrayList<>();
+        ingresosAdapter = new IngresosAdapter(listaIngresos, getContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(ingresosAdapter);
 
         progressBar = view.findViewById(R.id.progressBar_ingresos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
@@ -103,7 +113,9 @@ public class IngresosFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                cargarIngresos();
+                if (fragmentCreado) {
+                    cargarIngresos();
+                }
             }
 
             @Override
@@ -112,12 +124,9 @@ public class IngresosFragment extends Fragment {
             }
         });
 
-        recyclerView = view.findViewById(R.id.rv_ingresos);
-
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemSwipe);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        fragmentCreado = true;
 
         return view;
     }
@@ -188,11 +197,8 @@ public class IngresosFragment extends Fragment {
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
+
         listaIngresos = new ArrayList<>();
-        ingresosAdapter = new IngresosAdapter(listaIngresos, getContext());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(ingresosAdapter);
 
         CollectionReference reference = db.collection(VariablesEstaticas.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
@@ -218,6 +224,7 @@ public class IngresosFragment extends Fragment {
 
                     }
                     ingresosAdapter.updateList(listaIngresos);
+
                     if (listaIngresos.isEmpty()) {
                         tvSinLista.setVisibility(View.VISIBLE);
                     } else {
@@ -230,6 +237,7 @@ public class IngresosFragment extends Fragment {
                 }
             }
         });
+
     }
 
 
@@ -271,11 +279,7 @@ public class IngresosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!fragmentCreado) {
-            cargarIngresos();
-        }
-        fragmentCreado = false;
-
+        cargarIngresos();
+        fragmentCreado = true;
     }
 }

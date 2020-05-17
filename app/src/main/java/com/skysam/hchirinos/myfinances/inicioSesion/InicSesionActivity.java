@@ -42,7 +42,7 @@ public class InicSesionActivity extends AppCompatActivity {
     private Button buttonIniciarSesion, buttonRegistrar, buttonRestablecimientoPass;
     private ImageButton buttonGoogle;
     private GoogleSignInClient mGoogleSignInClient;
-    private int RC_SIGN_IN = 200;
+    private int RC_SIGN_IN = 101;
     private String TAG = "MsjSesion";
 
     @Override
@@ -232,6 +232,8 @@ public class InicSesionActivity extends AppCompatActivity {
                 Log.w(TAG, "Google sign in failed", e);
                 // ...
             }
+        } else {
+            Log.e(TAG, "Failed");
         }
     }
 

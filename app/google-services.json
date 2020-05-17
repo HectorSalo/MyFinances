@@ -60,11 +60,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "383252820495-sbmmn49oagh67fdpf212gi46hrlani17.apps.googleusercontent.com",
+          "client_id": "383252820495-urjikma5568u7tfhd62c1bfkkvnvrd6j.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.skysam.hchirinos.myfinances",
-            "certificate_hash": "3d0cd8a51cc8115f9c14940c8fb6cfe1b5be6930"
+            "certificate_hash": "d827183ffa2847f9b61136ed17fedfabdf0dfd96"
           }
         },
         {

@@ -41,6 +41,7 @@ import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -474,6 +475,7 @@ public class HomeFragment extends Fragment {
         PieData pieData = new PieData(pieDataSet);
 
         pieBalance.setData(pieData);
+        pieBalance.getLegend().setTextColor(ContextCompat.getColor(requireContext(), R.color.md_teal_700));
         pieBalance.invalidate();
 
         float montoTotal = montoIngresos + montoAhorros + montoPrestamos - montoGastos - montoDeudas;
@@ -485,6 +487,7 @@ public class HomeFragment extends Fragment {
             linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
         } else if (montoTotal == 0) {
             tvSuperDeficit.setText("Balance en cero");
+            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
         }
         tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
         tvMontoTotal.setText("$" + montoTotal);

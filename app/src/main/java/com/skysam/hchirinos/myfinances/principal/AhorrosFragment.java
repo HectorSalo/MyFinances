@@ -97,6 +97,15 @@ public class AhorrosFragment extends Fragment {
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
 
+        listaAhorros = new ArrayList<>();
+
+        recyclerView = view.findViewById(R.id.rv_ahorros);
+
+        ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(ahorrosAdapter);
+
         Spinner spinner = view.findViewById(R.id.spinner_ahorro);
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
@@ -116,12 +125,12 @@ public class AhorrosFragment extends Fragment {
             }
         });
 
-        recyclerView = view.findViewById(R.id.rv_ahorros);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemSwipe);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         fragmentCreado = true;
+        Toast.makeText(getContext(), "onCreate", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -339,6 +348,7 @@ public class AhorrosFragment extends Fragment {
 
         if (!fragmentCreado) {
             cargarAhorros();
+            Toast.makeText(getContext(), "onResume", Toast.LENGTH_SHORT).show();
         }
         fragmentCreado = false;
 

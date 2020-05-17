@@ -91,7 +91,7 @@ public class PrestamosFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                cargarPrestamos();
+                //cargarPrestamos();
             }
 
             @Override
@@ -150,11 +150,7 @@ public class PrestamosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!fragmentCreado) {
-            cargarPrestamos();
-        }
-        fragmentCreado = false;
+        cargarPrestamos();
     }
 
 }
