@@ -85,7 +85,7 @@ public class IngresosFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
 
-        fragmentCreado = false;
+        fragmentCreado = true;
 
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
@@ -113,7 +113,7 @@ public class IngresosFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                if (fragmentCreado) {
+                if (!fragmentCreado) {
                     cargarIngresos();
                 }
             }
@@ -235,6 +235,8 @@ public class IngresosFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+
+                fragmentCreado = false;
             }
         });
 
@@ -280,6 +282,5 @@ public class IngresosFragment extends Fragment {
     public void onResume() {
         super.onResume();
         cargarIngresos();
-        fragmentCreado = true;
     }
 }

@@ -82,6 +82,8 @@ public class PrestamosFragment extends Fragment {
 
         Spinner spinner = view.findViewById(R.id.spinner_prestamo);
 
+        fragmentCreado = true;
+
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
@@ -91,7 +93,9 @@ public class PrestamosFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                //cargarPrestamos();
+                if (!fragmentCreado) {
+                    cargarPrestamos();
+                }
             }
 
             @Override
@@ -100,8 +104,6 @@ public class PrestamosFragment extends Fragment {
         });
 
         recyclerView = view.findViewById(R.id.rv_prestamos);
-
-        fragmentCreado = true;
     }
 
 
@@ -143,6 +145,7 @@ public class PrestamosFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                fragmentCreado = false;
             }
         });
     }

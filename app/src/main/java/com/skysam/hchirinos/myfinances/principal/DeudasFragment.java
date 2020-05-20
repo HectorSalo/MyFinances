@@ -81,6 +81,8 @@ public class DeudasFragment extends Fragment {
 
         Spinner spinner = view.findViewById(R.id.spinner);
 
+        fragmentCreado = true;
+
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
@@ -90,7 +92,9 @@ public class DeudasFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                cargarDeudas();
+                if (!fragmentCreado) {
+                    cargarDeudas();
+                }
             }
 
             @Override
@@ -99,8 +103,6 @@ public class DeudasFragment extends Fragment {
         });
 
         recyclerView = view.findViewById(R.id.rv_deudas);
-
-        fragmentCreado = true;
     }
 
 
@@ -143,6 +145,7 @@ public class DeudasFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                fragmentCreado = false;
             }
         });
     }
@@ -150,11 +153,7 @@ public class DeudasFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!fragmentCreado) {
-            cargarDeudas();
-        }
-        fragmentCreado = false;
+        cargarDeudas();
     }
 
 }

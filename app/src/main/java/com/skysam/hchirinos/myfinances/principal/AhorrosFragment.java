@@ -112,12 +112,16 @@ public class AhorrosFragment extends Fragment {
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
 
+        fragmentCreado = true;
+
         spinner.setSelection(mesSelected);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                cargarAhorros();
+                if (!fragmentCreado) {
+                    cargarAhorros();
+                }
             }
 
             @Override
@@ -130,7 +134,6 @@ public class AhorrosFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         fragmentCreado = true;
-        Toast.makeText(getContext(), "onCreate", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -231,6 +234,7 @@ public class AhorrosFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                fragmentCreado = false;
             }
         });
     }
@@ -345,12 +349,6 @@ public class AhorrosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!fragmentCreado) {
-            cargarAhorros();
-            Toast.makeText(getContext(), "onResume", Toast.LENGTH_SHORT).show();
-        }
-        fragmentCreado = false;
-
+        cargarAhorros();
     }
 }

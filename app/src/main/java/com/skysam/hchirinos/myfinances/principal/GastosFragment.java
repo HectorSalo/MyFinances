@@ -95,6 +95,8 @@ public class GastosFragment extends Fragment {
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
         Spinner spinner = view.findViewById(R.id.spinner_gastos);
 
+        fragmentCreado = true;
+
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
@@ -104,7 +106,9 @@ public class GastosFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
-                cargarGastos();
+                if (!fragmentCreado) {
+                    cargarGastos();
+                }
             }
 
             @Override
@@ -117,8 +121,6 @@ public class GastosFragment extends Fragment {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemSwipe);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        fragmentCreado = true;
     }
 
 
@@ -233,6 +235,7 @@ public class GastosFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                fragmentCreado = false;
             }
         });
     }
@@ -305,12 +308,7 @@ public class GastosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!fragmentCreado) {
-            cargarGastos();
-        }
-        fragmentCreado = false;
-
+        cargarGastos();
     }
 
 }
