@@ -72,7 +72,7 @@ public class AgregarAhorroFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ahorro);
 
-        rbBs.setChecked(true);
+        rbDolar.setChecked(true);
 
         btnGuardar = view.findViewById(R.id.button_guardar);
         btnGuardar.setOnClickListener(new View.OnClickListener() {

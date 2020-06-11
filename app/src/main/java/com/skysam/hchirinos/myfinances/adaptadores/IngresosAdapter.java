@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,15 +77,15 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
 
         if (tipoFrecuencia.equals("Dias")) {
             for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * j));
+                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia));
             }
         } else if (tipoFrecuencia.equals("Semanas")) {
             for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * j * 7));
+                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * 7));
             }
         } else if (tipoFrecuencia.equals("Meses")) {
             for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                calendarInicial.add(Calendar.MONTH, (duracionFrecuencia * j));
+                calendarInicial.add(Calendar.MONTH, (duracionFrecuencia));
             }
         }
 

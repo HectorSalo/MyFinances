@@ -143,7 +143,11 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             if (valor > 0) {
                                 double total = montoOriginal - valor;
                                 if (total >= 0) {
-                                    actualizarMonto(position, total);
+                                    if (total == 0) {
+                                        eliminarDeuda(position);
+                                    } else {
+                                        actualizarMonto(position, total);
+                                    }
                                 } else {
                                     Toast.makeText(context, "No puede abonar un monto mayor a la deuda", Toast.LENGTH_SHORT).show();
                                 }
@@ -171,6 +175,36 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             if (finalJ == 11) {
                                 Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
                                 listaDeudas.get(position).setMonto(montoNuevo);
+                                updateList(listaDeudas);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    private void eliminarDeuda(final int position) {
+        String idDoc = listaDeudas.get(position).getIdDeuda();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        for (int j = mes; j < 12; j++) {
+            final int finalJ = j;
+            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            if (finalJ == 11) {
+                                Toast.makeText(context, "Deuda pagada por completo", Toast.LENGTH_SHORT).show();
+                                listaDeudas.remove(position);
                                 updateList(listaDeudas);
                             }
                         }

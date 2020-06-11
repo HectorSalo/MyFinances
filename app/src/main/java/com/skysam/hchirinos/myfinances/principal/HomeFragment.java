@@ -38,6 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -145,61 +146,54 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             double montototal = 0;
-                            int mesCobro = 0;
-                            int yearCobro = 0;
+                            int mesCobro;
+                            int yearCobro;
 
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Calendar calendarInicial = Calendar.getInstance();
-                                Calendar calendarCobro = Calendar.getInstance();
                                 Date fechaInicial = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
                                 double duracionFrecuencia = document.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
                                 int duracionFrecuenciaInt = (int) duracionFrecuencia;
                                 String tipoFrecuencia = document.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA);
-                                int multiploCobranza = 0;
+                                int multiploIngreso = 0;
 
                                 calendarInicial.setTime(fechaInicial);
                                 mesCobro = calendarInicial.get(Calendar.MONTH);
                                 yearCobro = calendarInicial.get(Calendar.YEAR);
 
                                 if (mesCobro == mesSelected) {
-                                    multiploCobranza = 1;
+                                    multiploIngreso = 1;
                                 }
 
                                 if (tipoFrecuencia.equals("Dias")) {
                                     for (int j = 1; (mesCobro <= mesSelected && yearCobro == yearSelected); j++) {
-                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
-                                        calendarCobro.setTime(calendarInicial.getTime());
-                                        mesCobro = calendarCobro.get(Calendar.MONTH);
-                                        yearCobro = calendarCobro.get(Calendar.YEAR);
-                                        calendarInicial.setTime(fechaInicial);
+                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt));
+                                        mesCobro = calendarInicial.get(Calendar.MONTH);
+                                        yearCobro = calendarInicial.get(Calendar.YEAR);
 
                                         if (mesCobro == mesSelected) {
-                                            multiploCobranza = multiploCobranza + 1;
+                                            multiploIngreso = multiploIngreso + 1;
                                         }
                                     }
                                 } else if (tipoFrecuencia.equals("Semanas")) {
                                     for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
-                                        calendarCobro.setTime(calendarInicial.getTime());
-                                        mesCobro = calendarCobro.get(Calendar.MONTH);
-                                        yearCobro = calendarCobro.get(Calendar.YEAR);
-                                        calendarInicial.setTime(fechaInicial);
+                                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * 7));
+                                        mesCobro = calendarInicial.get(Calendar.MONTH);
+                                        yearCobro = calendarInicial.get(Calendar.YEAR);
 
                                         if (mesCobro == mesSelected) {
-                                            multiploCobranza = multiploCobranza + 1;
+                                            multiploIngreso = multiploIngreso + 1;
                                         }
                                     }
                                 } else if (tipoFrecuencia.equals("Meses")) {
                                     for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                        calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
-                                        calendarCobro.setTime(calendarInicial.getTime());
-                                        mesCobro = calendarCobro.get(Calendar.MONTH);
-                                        yearCobro = calendarCobro.get(Calendar.YEAR);
-                                        calendarInicial.setTime(fechaInicial);
+                                        calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt));
+                                        mesCobro = calendarInicial.get(Calendar.MONTH);
+                                        yearCobro = calendarInicial.get(Calendar.YEAR);
 
                                         if (mesCobro == mesSelected) {
-                                            multiploCobranza = multiploCobranza + 1;
+                                            multiploIngreso = multiploIngreso + 1;
                                         }
                                     }
                                 }
@@ -209,9 +203,9 @@ public class HomeFragment extends Fragment {
                                 boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
 
                                 if (dolar) {
-                                   montototal = montototal + (montoDetal * multiploCobranza);
+                                   montototal = montototal + (montoDetal * multiploIngreso);
                                 } else {
-                                   montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
+                                   montototal = montototal + ((montoDetal / valorCotizacion) * multiploIngreso);
                                 }
                             }
                             montoIngresos = (float) montototal;
@@ -453,49 +447,52 @@ public class HomeFragment extends Fragment {
 
     private void cargarFolios() {
 
-        pieBalance.setDescription(null);
-        pieBalance.setCenterText("Balance Mensual\n($)");
-        pieBalance.setCenterTextSize(24);
-        pieBalance.setDrawEntryLabels(false);
-        pieBalance.setRotationEnabled(false);
+        if (getContext() != null) {
 
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry(montoIngresos, requireContext().getString(R.string.pie_ingresos)));
-        pieEntries.add(new PieEntry(montoAhorros, getContext().getString(R.string.pie_ahorros)));
-        pieEntries.add(new PieEntry(montoPrestamos, getContext().getString(R.string.pie_prestamos)));
-        pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
-        pieEntries.add(new PieEntry(montoDeudas, getContext().getString(R.string.pie_deudas)));
+            pieBalance.setDescription(null);
+            pieBalance.setCenterText("Balance Mensual\n($)");
+            pieBalance.setCenterTextSize(24);
+            pieBalance.setDrawEntryLabels(false);
+            pieBalance.setRotationEnabled(false);
+
+            ArrayList<PieEntry> pieEntries = new ArrayList<>();
+            pieEntries.add(new PieEntry(montoIngresos, requireContext().getString(R.string.pie_ingresos)));
+            pieEntries.add(new PieEntry(montoAhorros, getContext().getString(R.string.pie_ahorros)));
+            pieEntries.add(new PieEntry(montoPrestamos, getContext().getString(R.string.pie_prestamos)));
+            pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
+            pieEntries.add(new PieEntry(montoDeudas, getContext().getString(R.string.pie_deudas)));
 
 
-        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
-        pieDataSet.setValueTextSize(18);
-        pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300), ContextCompat.getColor(getContext(), R.color.md_green_700), ContextCompat.getColor(getContext(), R.color.md_light_green_A700),
-                ContextCompat.getColor(getContext(), R.color.md_red_400), ContextCompat.getColor(getContext(), R.color.md_red_900));
-        pieDataSet.setFormSize(16);
-        PieData pieData = new PieData(pieDataSet);
+            PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
+            pieDataSet.setValueTextSize(18);
+            pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300), ContextCompat.getColor(getContext(), R.color.md_green_700), ContextCompat.getColor(getContext(), R.color.md_light_green_A700),
+                    ContextCompat.getColor(getContext(), R.color.md_red_400), ContextCompat.getColor(getContext(), R.color.md_red_900));
+            pieDataSet.setFormSize(16);
+            PieData pieData = new PieData(pieDataSet);
 
-        pieBalance.setData(pieData);
-        pieBalance.getLegend().setTextColor(ContextCompat.getColor(requireContext(), R.color.md_teal_700));
-        pieBalance.invalidate();
+            pieBalance.setData(pieData);
+            pieBalance.getLegend().setTextColor(ContextCompat.getColor(requireContext(), R.color.md_teal_700));
+            pieBalance.invalidate();
 
-        float montoTotal = montoIngresos + montoAhorros + montoPrestamos - montoGastos - montoDeudas;
-        if (montoTotal > 0) {
-            tvSuperDeficit.setText("Tiene un superávit de:");
-            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
-        } else if (montoTotal < 0) {
-            tvSuperDeficit.setText("Tiene un déficit de:");
-            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
-        } else if (montoTotal == 0) {
-            tvSuperDeficit.setText("Balance en cero");
-            linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
-        }
-        tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
-        tvMontoTotal.setText("$" + montoTotal);
+            float montoTotal = montoIngresos + montoAhorros + montoPrestamos - montoGastos - montoDeudas;
+            if (montoTotal > 0) {
+                tvSuperDeficit.setText("Tiene un superávit de:");
+                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+            } else if (montoTotal < 0) {
+                tvSuperDeficit.setText("Tiene un déficit de:");
+                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
+            } else if (montoTotal == 0) {
+                tvSuperDeficit.setText("Balance en cero");
+                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+            }
+            tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
+            tvMontoTotal.setText("$" + montoTotal);
 
-        if (mesSelected == mesItemAhorro) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putFloat("ahorros_disponible", montoAhorros);
-            editor.commit();
+            if (mesSelected == mesItemAhorro) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putFloat("ahorros_disponible", montoAhorros);
+                editor.commit();
+            }
         }
     }
 

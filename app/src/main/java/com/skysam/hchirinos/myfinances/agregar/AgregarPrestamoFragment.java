@@ -74,7 +74,7 @@ public class AgregarPrestamoFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_agregar_prestamo);
 
-        rbBs.setChecked(true);
+        rbDolar.setChecked(true);
 
 
         btnGuardar = view.findViewById(R.id.button_guardar);

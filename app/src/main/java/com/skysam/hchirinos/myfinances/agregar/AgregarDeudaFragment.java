@@ -72,7 +72,7 @@ public class AgregarDeudaFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar);
 
-        rbBs.setChecked(true);
+        rbDolar.setChecked(true);
 
 
         btnGuardar = view.findViewById(R.id.button_guardar);

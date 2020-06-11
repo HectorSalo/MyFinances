@@ -103,7 +103,7 @@ public class AgregarGastoFragment extends Fragment {
         final LinearLayout linearLayoutEscogerMes = view.findViewById(R.id.linearLayout_escoger_mes);
         final RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup_frecuencia);
 
-        rbBs.setChecked(true);
+        rbDolar.setChecked(true);
         rbGastoFijo.setChecked(true);
         rbDias.setChecked(true);
 

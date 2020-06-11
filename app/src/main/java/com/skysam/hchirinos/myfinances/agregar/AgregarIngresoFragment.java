@@ -84,7 +84,7 @@ public class AgregarIngresoFragment extends Fragment {
         rbMeses = view.findViewById(R.id.radioButton_meses);
         tvFecha = view.findViewById(R.id.textView_fecha_inicio);
 
-        rbBs.setChecked(true);
+        rbDolar.setChecked(true);
         rbDias.setChecked(true);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ingreso);
