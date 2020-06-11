@@ -53,12 +53,73 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:383252820495:android:cdaf54d9195a8d22efa97a",
+        "android_client_info": {
+          "package_name": "com.skysam.datossegurosFirebaseFinal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383252820495-hrrduvi5pb782d1gt54kmfq4q3roc8ep.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skysam.datossegurosFirebaseFinal",
+            "certificate_hash": "b9e8a06fcf32d2a62fab28d76ddc44b1d0860542"
+          }
+        },
+        {
+          "client_id": "383252820495-5bhekpm2a5amtquvpbu7e0lptgje8k8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skysam.datossegurosFirebaseFinal",
+            "certificate_hash": "3d0cd8a51cc8115f9c14940c8fb6cfe1b5be6930"
+          }
+        },
+        {
+          "client_id": "383252820495-j4484e93g1fqea328b7kutktqadfv673.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skysam.datossegurosFirebaseFinal",
+            "certificate_hash": "d827183ffa2847f9b61136ed17fedfabdf0dfd96"
+          }
+        },
+        {
+          "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIdj6CQXIMGWtDeIcPoBrZr6RmG6QpQlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383252820495-b8f7drtkpjv46fscgu79poncqdhur7f6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:383252820495:android:a52d8e8ceb1521c9efa97a",
         "android_client_info": {
           "package_name": "com.skysam.hchirinos.myfinances"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "383252820495-n55oicd67iq08i555fcsk0fcs39h04ir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skysam.hchirinos.myfinances",
+            "certificate_hash": "172977ead8e851ffa849b95b4ae584dc83602994"
+          }
+        },
         {
           "client_id": "383252820495-urjikma5568u7tfhd62c1bfkkvnvrd6j.apps.googleusercontent.com",
           "client_type": 1,
