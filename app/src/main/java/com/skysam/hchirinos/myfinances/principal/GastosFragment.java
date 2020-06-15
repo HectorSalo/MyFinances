@@ -39,6 +39,7 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import com.skysam.hchirinos.myfinances.adaptadores.GastosAdapter;
 import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
+import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import com.skysam.hchirinos.myfinances.editar.EditarActivity;
 
@@ -303,6 +304,25 @@ public class GastosFragment extends Fragment {
 
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
+    }
+
+    public void buscarItem(String text) {
+        if (listaGastos.isEmpty()) {
+            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+        } else {
+            String userInput = text.toLowerCase();
+            final ArrayList<IngresosConstructor> newList = new ArrayList<>();
+
+            for (IngresosConstructor name : listaGastos) {
+
+                if (name.getConcepto().toLowerCase().contains(userInput)) {
+                    newList.add(name);
+                }
+            }
+
+            gastosAdapter.updateList(newList);
+
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_cerrar_sesion"
@@ -8,5 +9,11 @@
     <item
         android:id="@+id/menu_acerca"
         android:title="@string/menu_acerca" />
+    <item
+        android:id="@+id/menu_buscar"
+        android:title="@string/menu_acerca"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_search_24"/>
 
 </menu>

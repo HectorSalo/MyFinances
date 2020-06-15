@@ -150,6 +150,25 @@ public class DeudasFragment extends Fragment {
         });
     }
 
+    public void buscarItem(String text) {
+        if (listaDeudas.isEmpty()) {
+            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+        } else {
+            String userInput = text.toLowerCase();
+            final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
+
+            for (AhorrosConstructor name : listaDeudas) {
+
+                if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
+                    newList.add(name);
+                }
+            }
+
+            deudasAdapter.updateList(newList);
+
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();

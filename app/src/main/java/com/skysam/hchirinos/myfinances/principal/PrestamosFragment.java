@@ -150,6 +150,25 @@ public class PrestamosFragment extends Fragment {
         });
     }
 
+    public void buscarItem(String text) {
+        if (listaPrestamos.isEmpty()) {
+            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+        } else {
+            String userInput = text.toLowerCase();
+            final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
+
+            for (AhorrosConstructor name : listaPrestamos) {
+
+                if (name.getConcepto().toLowerCase().contains(userInput)) {
+                    newList.add(name);
+                }
+            }
+
+            prestamosAdapter.updateList(newList);
+
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();

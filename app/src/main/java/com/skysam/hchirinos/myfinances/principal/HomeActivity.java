@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -21,7 +23,7 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.agregar.AgregarActivity;
 import com.skysam.hchirinos.myfinances.inicioSesion.InicSesionActivity;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     private BottomSheetDialog bottomSheetDialog;
     private HomeFragment homeFragment;
@@ -34,7 +36,8 @@ public class HomeActivity extends AppCompatActivity {
     private FloatingActionButton floatingActionButton;
     private int agregar;
     private Menu menuGeneral;
-    private MenuItem itemDescontarAhorro;
+    private MenuItem itemBuscar;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +100,10 @@ public class HomeActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
         menuGeneral = menu;
+        itemBuscar = menu.findItem(R.id.menu_buscar);
+        itemBuscar.setVisible(false);
+        searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setOnQueryTextListener(this);
         return true;
     }
 
@@ -141,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, homeFragment, "home").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
                         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
+                        itemBuscar.setVisible(false);
                         agregar = 0;
                         bottomSheetDialog.dismiss();
                         break;
@@ -148,6 +156,8 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
+                        itemBuscar.setVisible(true);
+                        searchView.setIconified(true);
                         agregar = 1;
                         bottomSheetDialog.dismiss();
                         break;
@@ -155,6 +165,8 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ahorrosFragment, "ahorros").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
+                        itemBuscar.setVisible(true);
+                        searchView.setIconified(true);
                         agregar = 2;
                         bottomSheetDialog.dismiss();
                         break;
@@ -162,6 +174,8 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, prestamosFragment, "prestamos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
+                        itemBuscar.setVisible(true);
+                        searchView.setIconified(true);
                         agregar = 3;
                         bottomSheetDialog.dismiss();
                         break;
@@ -169,6 +183,8 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, gastosFragment, "gastos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_gastos_24dp);
+                        itemBuscar.setVisible(true);
+                        searchView.setIconified(true);
                         agregar = 4;
                         bottomSheetDialog.dismiss();
                         break;
@@ -176,6 +192,8 @@ public class HomeActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, deudasFragment, "deudas").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorros_deudas_24dp);
+                        itemBuscar.setVisible(true);
+                        searchView.setIconified(true);
                         agregar = 5;
                         bottomSheetDialog.dismiss();
                         break;
@@ -243,6 +261,37 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        confirmarCerrarSesion();
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+        } else {
+            confirmarCerrarSesion();
+        }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        switch (agregar) {
+            case 1:
+                ingresosFragment.buscarItem(newText);
+                break;
+            case 2:
+                ahorrosFragment.buscarItem(newText);
+                break;
+            case 3:
+                prestamosFragment.buscarItem(newText);
+                break;
+            case 4:
+                gastosFragment.buscarItem(newText);
+                break;
+            case 5:
+                deudasFragment.buscarItem(newText);
+                break;
+        }
+        return false;
     }
 }

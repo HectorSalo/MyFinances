@@ -55,7 +55,7 @@ public class IngresosFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private IngresosAdapter ingresosAdapter;
-    private ArrayList<IngresosConstructor> listaIngresos;
+    private ArrayList<IngresosConstructor> listaIngresos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -276,6 +276,26 @@ public class IngresosFragment extends Fragment {
         myBundle.putInt("year", yearSelected);
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
+    }
+
+
+    public void buscarItem(String text) {
+        if (listaIngresos.isEmpty()) {
+            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+        } else {
+            String userInput = text.toLowerCase();
+            newList = new ArrayList<>();
+
+            for (IngresosConstructor name : listaIngresos) {
+
+                if (name.getConcepto().toLowerCase().contains(userInput)) {
+                    newList.add(name);
+                }
+            }
+
+            ingresosAdapter.updateList(newList);
+
+        }
     }
 
     @Override
