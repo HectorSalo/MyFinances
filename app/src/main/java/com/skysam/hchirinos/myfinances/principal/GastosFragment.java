@@ -56,7 +56,7 @@ public class GastosFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private GastosAdapter gastosAdapter;
-    private ArrayList<IngresosConstructor> listaGastos;
+    private ArrayList<IngresosConstructor> listaGastos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -164,7 +164,21 @@ public class GastosFragment extends Fragment {
                     }, 4500);
                     break;
                 case ItemTouchHelper.LEFT:
-                    editarItem(position);
+                    if (newList != null) {
+                        if (newList.isEmpty()) {
+                            String id = listaGastos.get(position).getIdGasto();
+                            String tipoFrecuencia = listaGastos.get(position).getTipoFrecuencia();
+                            editarItem(id, tipoFrecuencia);
+                        } else {
+                            String id = newList.get(position).getIdGasto();
+                            String tipoFrecuencia = newList.get(position).getTipoFrecuencia();
+                            editarItem(id, tipoFrecuencia);
+                        }
+                    } else {
+                        String id = listaGastos.get(position).getIdGasto();
+                        String tipoFrecuencia = listaGastos.get(position).getTipoFrecuencia();
+                        editarItem(id, tipoFrecuencia);
+                    }
                     break;
             }
 
@@ -285,10 +299,7 @@ public class GastosFragment extends Fragment {
 
     }
 
-    private void editarItem(int position) {
-        String id = listaGastos.get(position).getIdGasto();
-        String tipoFrecuencia = listaGastos.get(position).getTipoFrecuencia();
-
+    private void editarItem(String id, String tipoFrecuencia) {
         Intent myIntent = new Intent(getContext(), EditarActivity.class);
         Bundle myBundle = new Bundle();
         myBundle.putString("idDoc", id);
@@ -311,7 +322,7 @@ public class GastosFragment extends Fragment {
             Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
         } else {
             String userInput = text.toLowerCase();
-            final ArrayList<IngresosConstructor> newList = new ArrayList<>();
+            newList = new ArrayList<>();
 
             for (IngresosConstructor name : listaGastos) {
 
@@ -319,9 +330,7 @@ public class GastosFragment extends Fragment {
                     newList.add(name);
                 }
             }
-
             gastosAdapter.updateList(newList);
-
         }
     }
 

@@ -33,4 +33,10 @@
         <item name="drawerArrowStyle">@color/colorPrimary</item>
     </style>
 
+    <style name="AppTheme.Convertidor" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

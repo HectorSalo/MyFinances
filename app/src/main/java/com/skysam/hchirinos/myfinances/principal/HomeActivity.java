@@ -122,6 +122,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.menu_acerca:
                 startActivity(new Intent(this, AcercaActivity.class));
                 break;
+            case R.id.menu_calculadora:
+                startActivity(new Intent(this, CalculadoraActivity.class));
+                break;
             default:
                 break;
         }

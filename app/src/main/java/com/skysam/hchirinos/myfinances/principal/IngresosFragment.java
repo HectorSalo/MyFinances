@@ -141,7 +141,7 @@ public class IngresosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
-            IngresosConstructor itemSwipe = new IngresosConstructor();
+            IngresosConstructor itemSwipe, itemSwipeBuscar;
             itemSwipe = listaIngresos.get(position);
 
             switch (direction) {
@@ -172,7 +172,15 @@ public class IngresosFragment extends Fragment {
                     }, 4500);
                     break;
                 case ItemTouchHelper.LEFT:
-                    editarItem(listaIngresos.get(position).getIdIngreso());
+                    if (newList != null) {
+                        if (newList.isEmpty()) {
+                            editarItem(listaIngresos.get(position).getIdIngreso());
+                        } else {
+                            editarItem(newList.get(position).getIdIngreso());
+                        }
+                    } else {
+                        editarItem(listaIngresos.get(position).getIdIngreso());
+                    }
                     break;
             }
 

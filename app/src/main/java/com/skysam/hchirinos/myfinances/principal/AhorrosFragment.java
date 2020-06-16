@@ -64,7 +64,7 @@ public class AhorrosFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private AhorrosAdapter ahorrosAdapter;
-    private ArrayList<AhorrosConstructor> listaAhorros;
+    private ArrayList<AhorrosConstructor> listaAhorros, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -174,7 +174,24 @@ public class AhorrosFragment extends Fragment {
                     }, 4500);
                 break;
                 case ItemTouchHelper.LEFT:
-                    editarItem(position);
+                    if (newList != null) {
+                        if (newList.isEmpty()) {
+                            String monto = String.valueOf(listaAhorros.get(position).getMonto());
+                            final String idDoc = listaAhorros.get(position).getIdAhorro();
+                            final boolean dolar = listaAhorros.get(position).isDolar();
+                            editarItem(monto, idDoc, dolar);
+                        } else {
+                            String monto = String.valueOf(newList.get(position).getMonto());
+                            final String idDoc = newList.get(position).getIdAhorro();
+                            final boolean dolar = newList.get(position).isDolar();
+                            editarItem(monto, idDoc, dolar);
+                        }
+                    } else {
+                        String monto = String.valueOf(listaAhorros.get(position).getMonto());
+                        final String idDoc = listaAhorros.get(position).getIdAhorro();
+                        final boolean dolar = listaAhorros.get(position).isDolar();
+                        editarItem(monto, idDoc, dolar);
+                    }
                     break;
             }
         }
@@ -239,16 +256,13 @@ public class AhorrosFragment extends Fragment {
         });
     }
 
-    private void editarItem(final int position) {
-        String montoS = String.valueOf(listaAhorros.get(position).getMonto());
-        final String idDoc = listaAhorros.get(position).getIdAhorro();
-        final boolean dolar = listaAhorros.get(position).isDolar();
+    private void editarItem(String monto, final String idDoc, boolean dolar) {
         LayoutInflater inflater = LayoutInflater.from(coordinatorLayout.getContext());
         View v = inflater.inflate(R.layout.layout_editar_ahorro, null);
         final TextInputEditText textInputEditText = v.findViewById(R.id.et_monto);
         final RadioButton radioButtonDolar = v.findViewById(R.id.radioButton_dolares);
         RadioButton radioButtonBolivares = v.findViewById(R.id.radioButton_bolivares);
-        textInputEditText.setText(montoS);
+        textInputEditText.setText(monto);
         if (dolar) {
             radioButtonDolar.setChecked(true);
         } else {
@@ -352,7 +366,7 @@ public class AhorrosFragment extends Fragment {
             Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
         } else {
             String userInput = text.toLowerCase();
-            final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
+            newList = new ArrayList<>();
 
             for (AhorrosConstructor name : listaAhorros) {
 

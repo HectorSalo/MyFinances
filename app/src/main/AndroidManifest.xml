@@ -10,7 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".principal.AcercaActivity"></activity>
+        <activity android:name=".principal.CalculadoraActivity"
+            android:theme="@style/AppTheme.Convertidor"
+            android:label="@string/title_activity_calculadora"></activity>
+        <activity android:name=".principal.AcercaActivity" />
         <activity
             android:name=".editar.EditarActivity"
             android:label="@string/title_activity_editar" />
@@ -26,7 +29,7 @@
             android:name=".agregar.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".principal.HomeActivity"></activity>
+        <activity android:name=".principal.HomeActivity" />
     </application>
 
 </manifest>
