@@ -3,6 +3,8 @@ package com.skysam.hchirinos.myfinances.principal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -124,6 +126,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 break;
             case R.id.menu_calculadora:
                 startActivity(new Intent(this, CalculadoraActivity.class));
+                break;
+            case R.id.menu_lista_gastos:
+                startActivity(new Intent(this, ListaGastosActivity.class));
                 break;
             default:
                 break;

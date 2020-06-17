@@ -10,9 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".principal.CalculadoraActivity"
-            android:theme="@style/AppTheme.Convertidor"
-            android:label="@string/title_activity_calculadora"></activity>
+        <activity android:name=".principal.ListaGastosActivity"
+            android:label="@string/title_activity_lista_gastos"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".principal.CalculadoraActivity"
+            android:label="@string/title_activity_calculadora"
+            android:theme="@style/AppTheme.Convertidor" />
         <activity android:name=".principal.AcercaActivity" />
         <activity
             android:name=".editar.EditarActivity"

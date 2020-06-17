@@ -4,6 +4,7 @@
     <string name="title_activity_agregar">Agregar</string>
     <string name="title_activity_editar">Editar</string>
     <string name="title_activity_calculadora">Convertidor</string>
+    <string name="title_activity_lista_gastos">Gastos Pendientes</string>
 
 
     <string name="menu_inicio">Inicio</string>
@@ -13,7 +14,7 @@
     <string name="menu_egresos">Gastos</string>
     <string name="menu_deudas">Deudas</string>
     <string name="menu_cerrar_sesion">Cerrar Sesión</string>
-    <string name="menu_acerca">Desarrollado por...</string>
+    <string name="menu_acerca">Desarrollado por&#8230;</string>
     <string name="menu_abono">Abonar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
 
