@@ -14,6 +14,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 public class CalculadoraActivity extends AppCompatActivity {
 
     private TextInputLayout layoutBolivares, layoutDolares;
@@ -43,7 +47,11 @@ public class CalculadoraActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String monto = String.valueOf(s);
-                convertirMoneda(monto, true);
+                if (monto.isEmpty()) {
+                    convertirMoneda("0", true);
+                } else {
+                    convertirMoneda(monto, true);
+                }
             }
 
             @Override
@@ -61,7 +69,7 @@ public class CalculadoraActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String monto = String.valueOf(s);
-                convertirMoneda(monto, false);
+                //convertirMoneda(monto, false);
             }
 
             @Override
@@ -77,10 +85,10 @@ public class CalculadoraActivity extends AppCompatActivity {
 
         if (bolivares) {
             montoTotal = montoIngresado / valorCotizacion;
-            etDolares.setText("$" + montoTotal);
+            etDolares.setText("" + montoTotal);
         } else {
             montoTotal = montoIngresado * valorCotizacion;
-            etBolivares.setText("Bs. " + montoTotal);
+            etBolivares.setText("" + montoTotal);
         }
     }
 }
