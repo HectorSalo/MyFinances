@@ -61,6 +61,9 @@
     <string name="calculadora_bolivares">Bolívares:</string>
     <string name="calculadora_dolares">Dólares:</string>
 
+    <string name="btn_nueva_lista">Nueva Lista</string>
+    <string name="btn_nuevo_item">Nuevo Ítem</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

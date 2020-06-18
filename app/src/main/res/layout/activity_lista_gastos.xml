@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     tools:context=".principal.ListaGastosActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -19,11 +21,12 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            android:layout_height="?attr/actionBarSize" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
+        android:id="@+id/relativeLayout2"
         android:layout_width="0dp"
         android:layout_height="150dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,17 +39,44 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:drawableTop="@drawable/ic_list_add_48"
-            android:text="Nueva Lista"
+            android:text="@string/btn_nueva_lista"
             android:textAllCaps="false"
+            android:textColor="?android:attr/colorBackground"
             android:textSize="18sp"
             app:iconPadding="4dp" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_listas"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@id/button"
             android:layout_alignParentEnd="true"
-            />
+            android:layout_toEndOf="@id/button" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2">
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#AA4769"
+            android:text="@string/btn_nuevo_item"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_add_item_list_32dp"
+            app:iconGravity="textEnd"
+            app:iconPadding="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_items_lista"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/button2" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
