@@ -63,6 +63,9 @@
 
     <string name="btn_nueva_lista">Nueva Lista</string>
     <string name="btn_nuevo_item">Nuevo Ítem</string>
+    <string name="sin_listas">No hay listas creadas.</string>
+    <string name="sin_items">No hay ítems guardados en esta lista.</string>
+    <string name="sin_lista_seleccionada">Seleccione una lista para ver los ítems.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
