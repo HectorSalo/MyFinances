@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class ItemGastosConstructor {
 
-    private String concepto, categoria;
+    private String concepto;
     private double montoAproximado;
     private Date fechaAproximada, fechaIngreso;
     private boolean checkeado;
@@ -20,13 +20,6 @@ public class ItemGastosConstructor {
         this.concepto = concepto;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
 
     public double getMontoAproximado() {
         return montoAproximado;

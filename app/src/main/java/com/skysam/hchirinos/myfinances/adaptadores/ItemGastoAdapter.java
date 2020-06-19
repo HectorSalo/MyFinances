@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor;
+import com.skysam.hchirinos.myfinances.constructores.ListasConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,5 +62,11 @@ public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.View
             fechaAprox = itemView.findViewById(R.id.textView_fecha_aproximada);
             fechaIngreso = itemView.findViewById(R.id.textView_fecha_ingreso);
         }
+    }
+
+    public void updateList (ArrayList<ItemGastosConstructor> newList) {
+        listaItems = new ArrayList<>();
+        listaItems.addAll(newList);
+        notifyDataSetChanged();
     }
 }
