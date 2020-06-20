@@ -124,17 +124,17 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         tvInfoLista.setText(getResources().getString(R.string.sin_lista_seleccionada));
 
-        cargarTodasListas();
+        cargarTodasListas(true);
     }
 
-    private void cargarTodasListas() {
+    private void cargarTodasListas(final boolean inicio) {
         String userID = user.getUid();
 
         listListas = new ArrayList<>();
 
         CollectionReference reference = db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(userID).collection(VariablesEstaticas.BD_TODAS_LISTAS);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -158,6 +158,12 @@ public class ListaGastosActivity extends AppCompatActivity {
                     } else {
                         tvSinListas.setVisibility(View.GONE);
                         recyclerListas.setVisibility(View.VISIBLE);
+
+                        if (!inicio) {
+                            idLista = listListas.get(0).getIdLista();
+                            nombreLista = listListas.get(0).getNombreLista();
+                            cargarLista();
+                        }
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
@@ -226,7 +232,7 @@ public class ListaGastosActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
-                            cargarTodasListas();
+                            cargarTodasListas(false);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -266,7 +272,8 @@ public class ListaGastosActivity extends AppCompatActivity {
         });
 
         if (listItems.isEmpty()) {
-            tvInfoLista.setText(getResources().getString(R.string.sin_items));
+            String sinItems = getResources().getString(R.string.sin_items) + " " + nombreLista;
+            tvInfoLista.setText(sinItems);
         } else {
             tvInfoLista.setText(nombreLista);
         }
