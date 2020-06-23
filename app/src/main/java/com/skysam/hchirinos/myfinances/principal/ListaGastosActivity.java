@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class ListaGastosActivity extends AppCompatActivity {
     private ItemGastoAdapter itemGastoAdapter;
     private ArrayList<ItemGastosConstructor> listItems;
     private ArrayList<ListasConstructor> listListas;
+    private TableLayout layoutItem;
     private TextView tvSinListas, tvInfoLista;
     private String idLista, nombreLista;
     private FirebaseUser user;
@@ -81,6 +83,7 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         tvSinListas = findViewById(R.id.tv_sin_listas);
         tvInfoLista = findViewById(R.id.tv_info_lista);
+        layoutItem = findViewById(R.id.layout_crear_item);
 
         listListas = new ArrayList<>();
         listItems = new ArrayList<>();
@@ -115,10 +118,20 @@ public class ListaGastosActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (idLista != null) {
-
+                    recyclerItems.setVisibility(View.GONE);
+                    layoutItem.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getApplicationContext(), "Debe seleccionar una lista para agregar un ítem.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        Button buttonCancelar = findViewById(R.id.button_cancelar);
+        buttonCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerItems.setVisibility(View.VISIBLE);
+                layoutItem.setVisibility(View.GONE);
             }
         });
 

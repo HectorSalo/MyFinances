@@ -67,6 +67,11 @@
     <string name="sin_items">No hay ítems guardados en: </string>
     <string name="sin_lista_seleccionada">Seleccione una lista para ver los ítems.</string>
 
+    <string name="monto_aproximado">Monto aproximado:</string>
+    <string name="fecha_aproximada">Fecha de gasto aproximada:</string>
+    <string name="actualizar">Actualizar</string>
+    <string name="cancelar">Cancelar</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
