@@ -37,10 +37,11 @@ import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
-public class ListasAdapter extends RecyclerView.Adapter<ListasAdapter.ViewHolder> implements View.OnClickListener {
+public class ListasAdapter extends RecyclerView.Adapter<ListasAdapter.ViewHolder> implements View.OnClickListener, View.OnLongClickListener {
 
     private ArrayList<ListasConstructor> listas;
     private View.OnClickListener listener;
+    private View.OnLongClickListener longClickListener;
     private Context context;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -55,6 +56,7 @@ public class ListasAdapter extends RecyclerView.Adapter<ListasAdapter.ViewHolder
     public ListasAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_listas, null, false);
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
         return new ViewHolder(view);
     }
 
@@ -88,6 +90,18 @@ public class ListasAdapter extends RecyclerView.Adapter<ListasAdapter.ViewHolder
         this.listener = listener;
     }
 
+    public void setOnLongClickListener (View.OnLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (longClickListener != null) {
+            longClickListener.onLongClick(v);
+        }
+        return true;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView nombre, cantidad;
         public ViewHolder(@NonNull View itemView) {
@@ -95,158 +109,8 @@ public class ListasAdapter extends RecyclerView.Adapter<ListasAdapter.ViewHolder
 
             nombre = itemView.findViewById(R.id.textView_nombre_lista);
             cantidad = itemView.findViewById(R.id.textView_cantidad_items);
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(final View v) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-                    dialog.setTitle("¿Qué desea hacer con la Lista?")
-                            .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    eliminarLista(getAdapterPosition(), v);
-                                }
-                            }).setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).setNegativeButton("Editar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            editarLista(getAdapterPosition());
-                        }
-                    }).show();
-                    return true;
-                }
-            });
         }
     }
-
-    private void editarLista(final int i) {
-        final String nombreActual = listas.get(i).getNombreLista();
-        final String idLista = listas.get(i).getIdLista();
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        final EditText editText = new EditText(context);
-        editText.setTextSize(24);
-        editText.setPadding(50, 75, 5, 5);
-        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        editText.setHint("Nombre:");
-        editText.setText(nombreActual);
-
-
-        layout.addView(editText);
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-        dialog.setTitle("Editar nombre de la lista")
-                .setView(layout)
-                .setPositiveButton("Actualizar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String nombre = editText.getText().toString();
-                        if (nombre.isEmpty()) {
-                            Toast.makeText(context, "Error al guardar: El nombre no puede estar vacío", Toast.LENGTH_LONG).show();
-                        } else {
-                            if (!nombre.equals(nombreActual)) {
-                                actualizarLista(nombre, idLista, i);
-                            }
-                        }
-                    }
-                }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
-    }
-
-    private void actualizarLista(final String nombre, String id, final int position) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(id)
-                .update(VariablesEstaticas.BD_NOMBRE, nombre)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                        listas.get(position).setNombreLista(nombre);
-                        updateList(listas);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(Constraints.TAG, "Error updating document", e);
-                        Toast.makeText(context, "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-    private void eliminarLista(final int i, View view) {
-        final ListasConstructor lista = listas.get(i);
-        listas.remove(i);
-        updateList(listas);
-
-        Snackbar snackbar = Snackbar.make(view, lista.getNombreLista() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listas.add(i, lista);
-                updateList(listas);
-            }
-        });
-        snackbar.show();
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!listas.contains(lista)) {
-                    Toast.makeText(context, "Eliminando lista", Toast.LENGTH_SHORT).show();
-                    deleteLista(lista.getIdLista());
-                }
-            }
-        }, 3000);
-    }
-
-    private void deleteLista(final String id) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                        deleteCollection(id);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Delete", "Error deleting document", e);
-                        Toast.makeText(context, "Error al borrar la lista. Intente nuevamente.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    private void deleteCollection(final String id) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(id)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(id).document(document.getId())
-                                        .delete();
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-        Toast.makeText(context, "Lista eliminada exitosamente", Toast.LENGTH_SHORT).show();
-    }
-
 
     public void updateList (ArrayList<ListasConstructor> newList) {
         listas = new ArrayList<>();

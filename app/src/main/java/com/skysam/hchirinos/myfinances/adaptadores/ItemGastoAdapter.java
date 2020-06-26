@@ -43,7 +43,13 @@ public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.View
 
         holder.concepto.setText(listaItems.get(position).getConcepto());
         holder.montoAprox.setText("$" + listaItems.get(position).getMontoAproximado());
-        holder.fechaAprox.setText("Realizar gasto el: " + df.format(listaItems.get(position).getFechaAproximada()));
+
+        if (listaItems.get(position).getFechaAproximada() != null) {
+            holder.fechaAprox.setText("Realizar gasto el: " + df.format(listaItems.get(position).getFechaAproximada()));
+        } else {
+            holder.fechaAprox.setText("Sin fecha aproximada");
+        }
+
         holder.fechaIngreso.setText("Ítem agregado el: " + df.format(listaItems.get(position).getFechaIngreso()));
     }
 
