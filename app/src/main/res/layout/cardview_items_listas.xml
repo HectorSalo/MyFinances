@@ -63,16 +63,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvmenu_ingresos"
-            android:layout_width="35dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:gravity="center"
-            android:paddingEnd="16dp"
-            android:text="&#8942;"
-            android:textSize="18sp"
-            android:textColor="@color/colorPrimaryDark" />
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

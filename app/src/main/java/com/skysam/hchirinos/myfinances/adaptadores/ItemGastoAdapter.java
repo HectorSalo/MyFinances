@@ -19,11 +19,12 @@ import com.skysam.hchirinos.myfinances.constructores.ListasConstructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.ViewHolder> {
+public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.ViewHolder> implements View.OnLongClickListener {
 
 
     private ArrayList<ItemGastosConstructor> listaItems;
     private Context context;
+    private View.OnLongClickListener longClickListener;
 
     public ItemGastoAdapter(ArrayList<ItemGastosConstructor> listaItems, Context context) {
         this.listaItems = listaItems;
@@ -34,6 +35,7 @@ public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.View
     @Override
     public ItemGastoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_items_listas, null, false);
+        view.setOnLongClickListener(this);
         return new ViewHolder(view);
     }
 
@@ -56,6 +58,18 @@ public class ItemGastoAdapter extends RecyclerView.Adapter<ItemGastoAdapter.View
     @Override
     public int getItemCount() {
         return listaItems.size();
+    }
+
+    public void setOnLongClickListener (View.OnLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (longClickListener != null) {
+            longClickListener.onLongClick(v);
+        }
+        return true;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

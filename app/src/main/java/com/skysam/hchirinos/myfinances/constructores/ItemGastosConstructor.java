@@ -4,12 +4,20 @@ import java.util.Date;
 
 public class ItemGastosConstructor {
 
-    private String concepto;
+    private String concepto, idItem;
     private double montoAproximado;
     private Date fechaAproximada, fechaIngreso;
     private boolean checkeado;
 
     public ItemGastosConstructor() {
+    }
+
+    public String getIdItem() {
+        return idItem;
+    }
+
+    public void setIdItem(String idItem) {
+        this.idItem = idItem;
     }
 
     public String getConcepto() {

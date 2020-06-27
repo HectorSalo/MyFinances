@@ -73,14 +73,16 @@ public class ListaGastosActivity extends AppCompatActivity {
     private TextView tvSinListas, tvInfoLista, tvFechaAproximada;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout layoutConcepto, layoutMonto;
-    private String idLista, nombreLista;
+    private String idLista, idItem, nombreLista, conceptoViejo, concepto;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private Date fechaIngreso, fechaSelec;
+    private Date fechaIngreso, fechaSelec, fechaViejaAproximada;
     private Button buttonGuardarActualizar, buttonCancelar;
     private ImageButton imageButtonSelecFecha;
     private ProgressBar progressBarListas, progressBarItems;
     private int cantidadItems, positionLista;
+    private double montoViejo, monto;
+    private boolean nuevoItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +160,10 @@ public class ListaGastosActivity extends AppCompatActivity {
                     layoutConcepto.setError(null);
                     etConcepto.setText("");
                     etMonto.setText("");
+                    tvFechaAproximada.setText(getResources().getString(R.string.fecha_aproximada));
                     fechaSelec = null;
+                    nuevoItem = true;
+                    cantidadItems = listListas.get(positionLista).getCantidadItems();
                 } else {
                     Toast.makeText(getApplicationContext(), "Debe seleccionar una lista para agregar un ítem.", Toast.LENGTH_SHORT).show();
                 }
@@ -286,6 +291,9 @@ public class ListaGastosActivity extends AppCompatActivity {
 
     }
 
+
+
+
     private void crearLista() {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -341,144 +349,6 @@ public class ListaGastosActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void cargarLista() {
-        progressBarItems.setVisibility(View.VISIBLE);
-        listItems = new ArrayList<>();
-
-        String userID = user.getUid();
-
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(userID).collection(idLista);
-
-        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.ASCENDING);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        ItemGastosConstructor item = new ItemGastosConstructor();
-
-                        item.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        item.setMontoAproximado(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        item.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
-                        item.setFechaAproximada(doc.getDate(VariablesEstaticas.BD_FECHA_APROXIMADA));
-
-                        listItems.add(item);
-                    }
-
-                    if (listItems.isEmpty()) {
-                        String sinItems = getResources().getString(R.string.sin_items) + " " + nombreLista;
-                        tvInfoLista.setText(sinItems);
-                    } else {
-                        tvInfoLista.setText(nombreLista);
-                    }
-
-                    itemGastoAdapter.updateList(listItems);
-                    progressBarItems.setVisibility(View.GONE);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    progressBarItems.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-
-
-    private void validarDatosGuardar() {
-        layoutMonto.setError(null);
-        layoutConcepto.setError(null);
-        String concepto = etConcepto.getText().toString();
-
-        if (!concepto.isEmpty()) {
-            if (!(etMonto.getText().toString().isEmpty())) {
-                double monto = Double.parseDouble(etMonto.getText().toString());
-                if (monto > 0) {
-                        guardarDatos(concepto, monto);
-                        layoutConcepto.setEnabled(false);
-                        layoutMonto.setEnabled(false);
-                        buttonCancelar.setEnabled(false);
-                        buttonGuardarActualizar.setEnabled(false);
-                        imageButtonSelecFecha.setEnabled(false);
-                } else {
-                    layoutMonto.setError("El monto debe ser mayor a cero");
-                }
-            } else {
-                layoutMonto.setError("Debe ingresar un monto");
-            }
-        } else {
-            layoutConcepto.setError("Debe ingresar un Concepto");
-        }
-    }
-
-    private void guardarDatos(String concepto, double monto) {
-        progressBarItems.setVisibility(View.VISIBLE);
-        Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
-        docData.put(VariablesEstaticas.BD_MONTO, monto);
-        docData.put(VariablesEstaticas.BD_FECHA_APROXIMADA, fechaSelec);
-        docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
-
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document()
-                    .set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot written succesfully");
-                            recyclerItems.setVisibility(View.VISIBLE);
-                            layoutItem.setVisibility(View.GONE);
-                            actualizarCantidadItems();
-                            cargarLista();
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                            Toast.makeText(getApplicationContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            layoutConcepto.setEnabled(true);
-                            layoutMonto.setEnabled(true);
-                            buttonGuardarActualizar.setEnabled(true);
-                            buttonCancelar.setEnabled(true);
-                            imageButtonSelecFecha.setEnabled(true);
-                            progressBarItems.setVisibility(View.GONE);
-                        }
-                    });
-        }
-
-    private void actualizarCantidadItems () {
-        final int cantidad = cantidadItems + 1;
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(idLista)
-                .update(VariablesEstaticas.BD_CANTIDAD_ITEMS, cantidad)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                        listListas.get(positionLista).setCantidadItems(cantidad);
-                        listasAdapter.updateList(listListas);
-                    }
-                });
-    }
-
-
-    private void seleccionarFecha() {
-        final Calendar calendarSelec = Calendar.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendarSelec.set(year, month, dayOfMonth);
-                fechaSelec = calendarSelec.getTime();
-                tvFechaAproximada.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec));
-            }
-        }, year, month, day);
-        datePickerDialog.show();
     }
 
     private void editarLista(final String nombreActual, final String idLista, final int i) {
@@ -605,6 +475,318 @@ public class ListaGastosActivity extends AppCompatActivity {
                 });
 
         Toast.makeText(getApplicationContext(), "Lista eliminada exitosamente", Toast.LENGTH_SHORT).show();
+    }
+
+    private void cargarLista() {
+        progressBarItems.setVisibility(View.VISIBLE);
+        listItems = new ArrayList<>();
+
+        String userID = user.getUid();
+
+        CollectionReference reference = db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(userID).collection(idLista);
+
+        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.ASCENDING);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                        ItemGastosConstructor item = new ItemGastosConstructor();
+
+                        item.setIdItem(doc.getId());
+                        item.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
+                        item.setMontoAproximado(doc.getDouble(VariablesEstaticas.BD_MONTO));
+                        item.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
+                        item.setFechaAproximada(doc.getDate(VariablesEstaticas.BD_FECHA_APROXIMADA));
+
+                        listItems.add(item);
+                    }
+
+                    if (listItems.isEmpty()) {
+                        String sinItems = getResources().getString(R.string.sin_items) + " " + nombreLista;
+                        tvInfoLista.setText(sinItems);
+                    } else {
+                        tvInfoLista.setText(nombreLista);
+                    }
+
+                    itemGastoAdapter.updateList(listItems);
+                    progressBarItems.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    progressBarItems.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        itemGastoAdapter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                cantidadItems = listListas.get(positionLista).getCantidadItems();
+                final View vista = v;
+                idItem = listItems.get(recyclerItems.getChildAdapterPosition(vista)).getIdItem();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(ListaGastosActivity.this);
+                dialog.setTitle("¿Qué desea hacer?")
+                        .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(), "Eliminando...", Toast.LENGTH_SHORT).show();
+                                eliminarItem();
+                            }
+                        }).setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).setNegativeButton("Editar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editarItem();
+                    }
+                }).show();
+                return true;
+            }
+        });
+    }
+
+
+
+    private void validarDatosGuardar() {
+        layoutMonto.setError(null);
+        layoutConcepto.setError(null);
+        concepto = etConcepto.getText().toString();
+
+        if (!concepto.isEmpty()) {
+            if (!(etMonto.getText().toString().isEmpty())) {
+                monto = Double.parseDouble(etMonto.getText().toString());
+                if (monto > 0) {
+                        layoutConcepto.setEnabled(false);
+                        layoutMonto.setEnabled(false);
+                        buttonCancelar.setEnabled(false);
+                        buttonGuardarActualizar.setEnabled(false);
+                        imageButtonSelecFecha.setEnabled(false);
+
+                        if (nuevoItem) {
+                            guardarDatos();
+                        } else {
+                            actualizarItem();
+                        }
+                } else {
+                    layoutMonto.setError("El monto debe ser mayor a cero");
+                }
+            } else {
+                layoutMonto.setError("Debe ingresar un monto");
+            }
+        } else {
+            layoutConcepto.setError("Debe ingresar un Concepto");
+        }
+    }
+
+    private void guardarDatos() {
+        progressBarItems.setVisibility(View.VISIBLE);
+        Map<String, Object> docData = new HashMap<>();
+        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
+        docData.put(VariablesEstaticas.BD_MONTO, monto);
+        docData.put(VariablesEstaticas.BD_FECHA_APROXIMADA, fechaSelec);
+        docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
+
+        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document()
+                    .set(docData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot written succesfully");
+                            recyclerItems.setVisibility(View.VISIBLE);
+                            layoutItem.setVisibility(View.GONE);
+                            actualizarCantidadItems(true);
+                            cargarLista();
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error adding document", e);
+                            Toast.makeText(getApplicationContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            layoutConcepto.setEnabled(true);
+                            layoutMonto.setEnabled(true);
+                            buttonGuardarActualizar.setEnabled(true);
+                            buttonCancelar.setEnabled(true);
+                            imageButtonSelecFecha.setEnabled(true);
+                            progressBarItems.setVisibility(View.GONE);
+                        }
+                    });
+        }
+
+    private void actualizarCantidadItems (boolean sumarItems) {
+        final int cantidad;
+        if (sumarItems) {
+            cantidad = cantidadItems + 1;
+        } else {
+            cantidad = cantidadItems - 1;
+        }
+
+        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(idLista)
+                .update(VariablesEstaticas.BD_CANTIDAD_ITEMS, cantidad)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
+                        listListas.get(positionLista).setCantidadItems(cantidad);
+                        listasAdapter.updateList(listListas);
+                    }
+                });
+    }
+
+
+    private void seleccionarFecha() {
+        final Calendar calendarSelec = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendarSelec.set(year, month, dayOfMonth);
+                fechaSelec = calendarSelec.getTime();
+                tvFechaAproximada.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec));
+            }
+        }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void editarItem() {
+        nuevoItem = false;
+        progressBarItems.setVisibility(View.VISIBLE);
+        recyclerItems.setVisibility(View.GONE);
+        layoutItem.setVisibility(View.VISIBLE);
+        layoutConcepto.setEnabled(false);
+        layoutMonto.setEnabled(false);
+        buttonCancelar.setEnabled(false);
+        buttonGuardarActualizar.setEnabled(false);
+        imageButtonSelecFecha.setEnabled(false);
+        layoutMonto.setError(null);
+        layoutConcepto.setError(null);
+        etConcepto.setText("");
+        etMonto.setText("");
+        fechaSelec = null;
+
+
+        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
+                        conceptoViejo = document.getString(VariablesEstaticas.BD_CONCEPTO);
+                        etConcepto.setText(conceptoViejo);
+
+                        montoViejo = document.getDouble(VariablesEstaticas.BD_MONTO);
+                        String montoS = String.valueOf(montoViejo);
+                        etMonto.setText(montoS);
+
+
+                        fechaViejaAproximada = document.getDate(VariablesEstaticas.BD_FECHA_APROXIMADA);
+                        if (fechaViejaAproximada != null) {
+                            tvFechaAproximada.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaViejaAproximada));
+                        } else {
+                            tvFechaAproximada.setText("Sin fecha establecida");
+                        }
+
+                        progressBarItems.setVisibility(View.GONE);
+                        layoutConcepto.setEnabled(true);
+                        layoutMonto.setEnabled(true);
+                        buttonCancelar.setEnabled(true);
+                        buttonGuardarActualizar.setEnabled(true);
+                        imageButtonSelecFecha.setEnabled(true);
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(getApplicationContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBarItems.setVisibility(View.GONE);
+                        recyclerItems.setVisibility(View.VISIBLE);
+                        layoutItem.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                    Toast.makeText(getApplicationContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    progressBarItems.setVisibility(View.GONE);
+                    recyclerItems.setVisibility(View.VISIBLE);
+                    layoutItem.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void actualizarItem() {
+        progressBarItems.setVisibility(View.VISIBLE);
+        layoutConcepto.setEnabled(false);
+        layoutMonto.setEnabled(false);
+        buttonCancelar.setEnabled(false);
+        buttonGuardarActualizar.setEnabled(false);
+        imageButtonSelecFecha.setEnabled(false);
+
+        Map<String, Object> item = new HashMap<>();
+
+        if (!conceptoViejo.equals(concepto)) {
+            item.put(VariablesEstaticas.BD_CONCEPTO, concepto);
+        }
+        if (monto != montoViejo) {
+            item.put(VariablesEstaticas.BD_MONTO, monto);
+        }
+
+        if(fechaSelec != null) {
+            if (!fechaSelec.equals(fechaViejaAproximada)) {
+                item.put(VariablesEstaticas.BD_FECHA_APROXIMADA, fechaSelec);
+            }
+        }
+
+            db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+                    .update(item)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                Toast.makeText(getApplicationContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                                progressBarItems.setVisibility(View.GONE);
+                            recyclerItems.setVisibility(View.VISIBLE);
+                            layoutItem.setVisibility(View.GONE);
+                            cargarLista();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                            Toast.makeText(getApplicationContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            progressBarItems.setVisibility(View.GONE);
+                            recyclerItems.setVisibility(View.VISIBLE);
+                            layoutItem.setVisibility(View.GONE);
+                        }
+                    });
+    }
+
+    private void eliminarItem() {
+        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                        Toast.makeText(getApplicationContext(), "Eliminado", Toast.LENGTH_SHORT).show();
+                        actualizarCantidadItems(false);
+                        cargarLista();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Delete", "Error deleting document", e);
+                        Toast.makeText(getApplicationContext(), "Error al borrar. Intente nuevamente.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
