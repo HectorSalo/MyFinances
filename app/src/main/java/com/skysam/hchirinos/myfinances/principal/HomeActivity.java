@@ -16,11 +16,18 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.agregar.AgregarActivity;
 import com.skysam.hchirinos.myfinances.inicioSesion.InicSesionActivity;
@@ -37,7 +44,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
     private int agregar;
-    private Menu menuGeneral;
     private MenuItem itemBuscar;
     private SearchView searchView;
 
@@ -101,7 +107,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
-        menuGeneral = menu;
         itemBuscar = menu.findItem(R.id.menu_buscar);
         itemBuscar.setVisible(false);
         searchView = (SearchView) itemBuscar.getActionView();
@@ -118,11 +123,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             case android.R.id.home:
                 abrirBottomDrawer();
                 break;
-            case R.id.menu_cerrar_sesion:
-                confirmarCerrarSesion();
-                break;
-            case R.id.menu_acerca:
-                startActivity(new Intent(this, AcercaActivity.class));
+            case R.id.menu_ajustes:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.menu_calculadora:
                 startActivity(new Intent(this, CalculadoraActivity.class));
@@ -263,8 +265,34 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void cerrarSesion() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseAuth.getInstance().signOut();
-        startActivity(new Intent(this, InicSesionActivity.class));
+
+        String providerId = "";
+
+        if (user != null) {
+            for (UserInfo profile : user.getProviderData()) {
+                providerId = profile.getProviderId();
+            }
+        }
+
+        if (providerId.equals("google.com")) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    startActivity(new Intent(getApplicationContext(), InicSesionActivity.class));
+                }
+            });
+        } else {
+            startActivity(new Intent(getApplicationContext(), InicSesionActivity.class));
+        }
     }
 
     @Override

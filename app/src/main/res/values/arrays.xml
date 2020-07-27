@@ -49,5 +49,29 @@
         <item>29</item>
         <item>30</item>
     </string-array>
+    <!-- Bloqueo Preference -->
+    <string-array name="bloqueo_entries">
+        <item>Sin Bloqueo</item>
+        <item>Huella</item>
+        <item>PIN</item>
+    </string-array>
+
+    <string-array name="bloqueo_values">
+        <item>sinBloqueo</item>
+        <item>huella</item>
+        <item>pin</item>
+    </string-array>
+
+    <string-array name="tema_entries">
+        <item>Definido por el Sistema</item>
+        <item>Oscuro</item>
+        <item>Claro</item>
+    </string-array>
+
+    <string-array name="tema_values">
+        <item>sistema</item>
+        <item>oscuro</item>
+        <item>claro</item>
+    </string-array>
 
 </resources>

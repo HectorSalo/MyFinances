@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        app:defaultValue="sinBloqueo"
+        app:entries="@array/bloqueo_entries"
+        app:entryValues="@array/bloqueo_values"
+        app:key="tipoBloqueo"
+        app:title="@string/tipo_bloqueo_title"
+        app:useSimpleSummaryProvider="true"
+        android:icon="@drawable/ic_bloqueo_24"/>
+
+    <SwitchPreferenceCompat
+        app:key="notificaciones"
+        app:summaryOff="@string/notificaiones_summary_off"
+        app:summaryOn="@string/notificaciones_summary_on"
+        app:title="@string/noitificaciones_title"
+        app:defaultValue="true"
+        android:icon="@drawable/ic_notifications_active_24"/>
+
+    <ListPreference
+        app:key="tema"
+        app:title="@string/tema_title"
+        app:entries="@array/tema_entries"
+        app:entryValues="@array/tema_values"
+        app:defaultValue="0"
+        app:useSimpleSummaryProvider="true"
+        android:icon="@drawable/ic_tema_24"
+        />
+
+
+</PreferenceScreen>

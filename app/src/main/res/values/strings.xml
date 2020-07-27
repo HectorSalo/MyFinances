@@ -13,9 +13,9 @@
     <string name="menu_prestamos">Préstamos realizados</string>
     <string name="menu_egresos">Gastos</string>
     <string name="menu_deudas">Deudas</string>
-    <string name="menu_cerrar_sesion">Cerrar Sesión</string>
-    <string name="menu_acerca">Desarrollado por&#8230;</string>
+    <string name="menu_ajustes">Ajustes</string>
     <string name="menu_abono">Abonar deuda</string>
+    <string name="menu_aumento">Aumentar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
 
 
@@ -74,5 +74,28 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">Ajustes</string>
+
+    <!-- Preference Titles -->
+    <string name="preferencias_header">Preferencias</string>
+    <string name="datos_personales">Datos Personales</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="acerca">Información de la App</string>
+    <string name="acerca_title">Desarrollado por&#8230;</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Preferencias Preferences -->
+    <string name="tipo_bloqueo_title">Bloqueo de la Aplicación</string>
+    <string name="tema_title">Tema</string>
+    <string name="noitificaciones_title">Notificaciones</string>
+    <string name="notificaciones_summary_on">Notificaciones activas</string>
+    <string name="notificaiones_summary_off">Notificaciones desactivadas</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 </resources>

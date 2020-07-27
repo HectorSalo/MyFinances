@@ -4,4 +4,8 @@
         android:title="@string/menu_abono"
         android:id="@+id/menu_abono"/>
 
+    <item
+        android:title="@string/menu_aumento"
+        android:id="@+id/menu_aumento"/>
+
 </menu>

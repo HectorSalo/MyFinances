@@ -81,6 +81,9 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             case R.id.menu_abono:
                                 ingresarAbono(i);
                                 break;
+                            case R.id.menu_aumento:
+                                ingresarAumento(i);
+                                break;
                             default:
                                 break;
                         }
@@ -173,7 +176,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                             if (finalJ == 11) {
-                                Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
                                 listaDeudas.get(position).setMonto(montoNuevo);
                                 updateList(listaDeudas);
                             }
@@ -183,7 +186,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -217,5 +220,39 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                         }
                     });
         }
+    }
+
+
+    private void ingresarAumento(final int position) {
+        boolean b = listaDeudas.get(position).isDolar();
+        final double montoOriginal = listaDeudas.get(position).getMonto();
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
+        TextView textView = v.findViewById(R.id.textView_cotizacion);
+        final EditText editText = v.findViewById(R.id.editText_cotizacion);
+
+
+        if (b) {
+            textView.setText("$");
+        } else {
+            textView.setText("Bs. ");
+        }
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        dialog.setTitle("Ingrese el monto de aumento")
+                .setView(v)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!editText.getText().toString().isEmpty()) {
+                            double valor = Double.parseDouble(editText.getText().toString());
+                            if (valor > 0) {
+                                double total = montoOriginal + valor;
+                                actualizarMonto(position, total);
+                            } else {
+                                Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }).show();
     }
 }

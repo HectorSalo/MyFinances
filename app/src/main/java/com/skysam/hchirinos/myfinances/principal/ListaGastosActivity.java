@@ -256,6 +256,12 @@ public class ListaGastosActivity extends AppCompatActivity {
                 nombreLista = listListas.get(recyclerListas.getChildAdapterPosition(v)).getNombreLista();
                 cantidadItems = listListas.get(recyclerListas.getChildAdapterPosition(v)).getCantidadItems();
                 positionLista = recyclerListas.getChildLayoutPosition(v);
+                recyclerItems.setVisibility(View.VISIBLE);
+                layoutItem.setVisibility(View.GONE);
+                layoutMonto.setError(null);
+                layoutConcepto.setError(null);
+                etConcepto.setText("");
+                etMonto.setText("");
 
                 if (!lista.equals(idLista)) {
                     idLista = lista;
