@@ -25,10 +25,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -37,7 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -171,16 +169,16 @@ public class AgregarIngresoFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
-        docData.put(VariablesEstaticas.BD_MONTO, monto);
-        docData.put(VariablesEstaticas.BD_FECHA_INCIAL, fechaSelec);
-        docData.put(VariablesEstaticas.BD_DOLAR, dolar);
-        docData.put(VariablesEstaticas.BD_DURACION_FRECUENCIA, duracionFrecuencia);
-        docData.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, tipoFrecuencia);
+        docData.put(Constantes.BD_CONCEPTO, concepto);
+        docData.put(Constantes.BD_MONTO, monto);
+        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_DOLAR, dolar);
+        docData.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuencia);
+        docData.put(Constantes.BD_TIPO_FRECUENCIA, tipoFrecuencia);
 
         for (int j = mesSelec; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(anualSelec + "-" + finalJ).document(String.valueOf(fechaSelec.getTime()))
+            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualSelec + "-" + finalJ).document(String.valueOf(fechaSelec.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

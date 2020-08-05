@@ -26,10 +26,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
-import com.skysam.hchirinos.myfinances.adaptadores.AhorrosAdapter;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.DeudasAdapter;
-import com.skysam.hchirinos.myfinances.adaptadores.PrestamosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
 import java.util.ArrayList;
@@ -115,7 +113,7 @@ public class DeudasFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(deudasAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_DEUDAS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constantes.BD_DEUDAS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -125,11 +123,11 @@ public class DeudasFragment extends Fragment {
                         AhorrosConstructor deuda = new AhorrosConstructor();
 
                         deuda.setIdDeuda(doc.getId());
-                        deuda.setPrestamista(doc.getString(VariablesEstaticas.BD_PRESTAMISTA));
-                        deuda.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        deuda.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
-                        deuda.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        deuda.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
+                        deuda.setPrestamista(doc.getString(Constantes.BD_PRESTAMISTA));
+                        deuda.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        deuda.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
+                        deuda.setMonto(doc.getDouble(Constantes.BD_MONTO));
+                        deuda.setFechaIngreso(doc.getDate(Constantes.BD_FECHA_INGRESO));
 
                         listaDeudas.add(deuda);
 

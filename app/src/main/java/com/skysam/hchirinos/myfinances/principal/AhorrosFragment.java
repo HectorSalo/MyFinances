@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.principal;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -34,20 +32,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.AhorrosAdapter;
-import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -221,7 +215,7 @@ public class AhorrosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ahorrosAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constantes.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -231,11 +225,11 @@ public class AhorrosFragment extends Fragment {
                         AhorrosConstructor ahorro = new AhorrosConstructor();
 
                         ahorro.setIdAhorro(doc.getId());
-                        ahorro.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        ahorro.setOrigen(doc.getString(VariablesEstaticas.BD_ORIGEN));
-                        ahorro.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
-                        ahorro.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        ahorro.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
+                        ahorro.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        ahorro.setOrigen(doc.getString(Constantes.BD_ORIGEN));
+                        ahorro.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
+                        ahorro.setMonto(doc.getDouble(Constantes.BD_MONTO));
+                        ahorro.setFechaIngreso(doc.getDate(Constantes.BD_FECHA_INGRESO));
 
                         listaAhorros.add(ahorro);
 
@@ -311,8 +305,8 @@ public class AhorrosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(VariablesEstaticas.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
-                    .update(VariablesEstaticas.BD_DOLAR, dolar, VariablesEstaticas.BD_MONTO, monto)
+            db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+                    .update(Constantes.BD_DOLAR, dolar, Constantes.BD_MONTO, monto)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -339,7 +333,7 @@ public class AhorrosFragment extends Fragment {
     private void deleteItemSwipe(String id) {
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(VariablesEstaticas.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+            db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

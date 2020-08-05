@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,12 +24,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
-import com.skysam.hchirinos.myfinances.adaptadores.AhorrosAdapter;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.PrestamosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
@@ -116,7 +113,7 @@ public class PrestamosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(prestamosAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_PRESTAMOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constantes.BD_PRESTAMOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -126,10 +123,10 @@ public class PrestamosFragment extends Fragment {
                         AhorrosConstructor prestamo = new AhorrosConstructor();
 
                         prestamo.setIdAhorro(doc.getId());
-                        prestamo.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        prestamo.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
-                        prestamo.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        prestamo.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
+                        prestamo.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        prestamo.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
+                        prestamo.setMonto(doc.getDouble(Constantes.BD_MONTO));
+                        prestamo.setFechaIngreso(doc.getDate(Constantes.BD_FECHA_INGRESO));
 
                         listaPrestamos.add(prestamo);
 

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.skysam.hchirinos.myfinances.R;
@@ -19,14 +20,14 @@ public class LaunchActivity extends AppCompatActivity {
 
         final LottieAnimationView lottieAnimationView = findViewById(R.id.lottieAnimationView);
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 lottieAnimationView.cancelAnimation();
             }
         }, 4000);
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(getApplicationContext(), InicSesionActivity.class);

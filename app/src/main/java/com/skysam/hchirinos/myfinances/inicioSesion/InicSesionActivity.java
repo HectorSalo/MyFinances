@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.principal.BloqueoActivity;
 import com.skysam.hchirinos.myfinances.principal.HomeActivity;
 
 public class InicSesionActivity extends AppCompatActivity {
@@ -107,7 +111,19 @@ public class InicSesionActivity extends AppCompatActivity {
         super.onStart();
 
         if (user != null) {
-            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+            SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+            String bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+            if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+            } else {
+                Intent intent = new Intent(this, BloqueoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, bloqueo);
+                bundle.putString("user", user.getUid());
+                bundle.putBoolean("inicio", true);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
         }
     }
 

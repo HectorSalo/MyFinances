@@ -37,7 +37,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
 import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import com.skysam.hchirinos.myfinances.editar.EditarActivity;
@@ -208,9 +208,9 @@ public class IngresosFragment extends Fragment {
 
         listaIngresos = new ArrayList<>();
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constantes.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_MONTO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(Constantes.BD_MONTO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -218,15 +218,15 @@ public class IngresosFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                         IngresosConstructor ingreso = new IngresosConstructor();
                         ingreso.setIdIngreso(doc.getId());
-                        ingreso.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        ingreso.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        ingreso.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
+                        ingreso.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        ingreso.setMonto(doc.getDouble(Constantes.BD_MONTO));
+                        ingreso.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
 
-                        double duracionFrecuencia = doc.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
+                        double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
                         int duracionFrecuenciaInt = (int) duracionFrecuencia;
                         ingreso.setDuracionFrecuencia(duracionFrecuenciaInt);
-                        ingreso.setFechaIncial(doc.getDate(VariablesEstaticas.BD_FECHA_INCIAL));
-                        ingreso.setTipoFrecuencia(doc.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA));
+                        ingreso.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
+                        ingreso.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
 
                         listaIngresos.add(ingreso);
 
@@ -254,7 +254,7 @@ public class IngresosFragment extends Fragment {
     private void deleteItemSwipe(String id) {
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

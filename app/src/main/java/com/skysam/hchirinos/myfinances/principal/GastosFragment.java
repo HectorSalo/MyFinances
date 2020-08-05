@@ -36,10 +36,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.GastosAdapter;
-import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
-import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import com.skysam.hchirinos.myfinances.editar.EditarActivity;
 
@@ -210,9 +208,9 @@ public class GastosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(gastosAdapter);
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_GASTOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constantes.BD_GASTOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_MONTO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(Constantes.BD_MONTO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -220,18 +218,18 @@ public class GastosFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                         IngresosConstructor gasto = new IngresosConstructor();
                         gasto.setIdGasto(doc.getId());
-                        gasto.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        gasto.setMonto(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        gasto.setDolar(doc.getBoolean(VariablesEstaticas.BD_DOLAR));
-                        gasto.setFechaIncial(doc.getDate(VariablesEstaticas.BD_FECHA_INCIAL));
-                        String tipoFrecuencia = doc.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA);
+                        gasto.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        gasto.setMonto(doc.getDouble(Constantes.BD_MONTO));
+                        gasto.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
+                        gasto.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
+                        String tipoFrecuencia = doc.getString(Constantes.BD_TIPO_FRECUENCIA);
 
                         if (tipoFrecuencia != null) {
-                            double duracionFrecuencia = doc.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
+                            double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
                             int duracionFrecuenciaInt = (int) duracionFrecuencia;
                             gasto.setDuracionFrecuencia(duracionFrecuenciaInt);
 
-                            gasto.setTipoFrecuencia(doc.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA));
+                            gasto.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
                         } else {
                             gasto.setTipoFrecuencia(null);
                         }
@@ -262,7 +260,7 @@ public class GastosFragment extends Fragment {
         if (tipoFrecuencia != null) {
             for (int i = mesSelected; i < 12; i++) {
                 final int finalI = i;
-                db.collection(VariablesEstaticas.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -281,7 +279,7 @@ public class GastosFragment extends Fragment {
                         });
             }
         } else {
-            db.collection(VariablesEstaticas.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
+            db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

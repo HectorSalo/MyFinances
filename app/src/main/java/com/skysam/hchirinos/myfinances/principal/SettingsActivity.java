@@ -25,12 +25,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.fragment.DialogFragmentNavigator;
 import androidx.preference.DialogPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 public class SettingsActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -95,6 +98,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         /*if (headerFragment.isAdded()) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         } else {
@@ -137,6 +141,58 @@ public class SettingsActivity extends AppCompatActivity implements
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferencias_preferences, rootKey);
+
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+            final String bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+
+            ListPreference listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
+
+            switch (bloqueo){
+                case Constantes.PREFERENCE_SIN_BLOQUEO:
+                    listaBloqueo.setValue(Constantes.PREFERENCE_SIN_BLOQUEO);
+                    break;
+                case Constantes.PREFERENCE_BLOQUEO_HUELLA:
+                    listaBloqueo.setValue(Constantes.PREFERENCE_BLOQUEO_HUELLA);
+                    break;
+                case Constantes.PREFERENCE_BLOQUEO_PIN:
+                    listaBloqueo.setValue(Constantes.PREFERENCE_BLOQUEO_PIN);
+                    break;
+            }
+
+
+            listaBloqueo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String bloqueoEscogido = (String) newValue;
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    switch (bloqueoEscogido){
+                        case Constantes.PREFERENCE_SIN_BLOQUEO:
+                            if (!bloqueoEscogido.equals(bloqueo)) {
+                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+                                editor.commit();
+                            }
+                            break;
+                        case Constantes.PREFERENCE_BLOQUEO_HUELLA:
+                            if (!bloqueoEscogido.equals(bloqueo)) {
+                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_HUELLA);
+                                editor.commit();
+                            }
+                            break;
+                        case Constantes.PREFERENCE_BLOQUEO_PIN:
+                            if (!bloqueoEscogido.equals(bloqueo)) {
+                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_PIN);
+                                editor.commit();
+                            }
+                            break;
+                    }
+                    return true;
+                }
+            });
+
         }
     }
 

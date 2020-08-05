@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -35,7 +34,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.errorprone.annotations.Var;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -45,10 +43,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.ItemGastoAdapter;
 import com.skysam.hchirinos.myfinances.adaptadores.ListasAdapter;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor;
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor;
 
@@ -206,9 +203,9 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         listListas = new ArrayList<>();
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(userID).collection(VariablesEstaticas.BD_TODAS_LISTAS);
+        CollectionReference reference = db.collection(Constantes.BD_LISTA_GASTOS).document(userID).collection(Constantes.BD_TODAS_LISTAS);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
+        Query query = reference.orderBy(Constantes.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -217,10 +214,10 @@ public class ListaGastosActivity extends AppCompatActivity {
                         ListasConstructor lista = new ListasConstructor();
 
                         lista.setIdLista(doc.getId());
-                        double cantidadD = doc.getDouble(VariablesEstaticas.BD_CANTIDAD_ITEMS);
+                        double cantidadD = doc.getDouble(Constantes.BD_CANTIDAD_ITEMS);
                         int cantidad = (int) cantidadD;
                         lista.setCantidadItems(cantidad);
-                        lista.setNombreLista(doc.getString(VariablesEstaticas.BD_NOMBRE));
+                        lista.setNombreLista(doc.getString(Constantes.BD_NOMBRE));
 
                         listListas.add(lista);
                     }
@@ -335,11 +332,11 @@ public class ListaGastosActivity extends AppCompatActivity {
 
     private void guardarLista(String nombre) {
         Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_NOMBRE, nombre);
-        docData.put(VariablesEstaticas.BD_CANTIDAD_ITEMS, 0);
-        docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
+        docData.put(Constantes.BD_NOMBRE, nombre);
+        docData.put(Constantes.BD_CANTIDAD_ITEMS, 0);
+        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
 
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document()
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document()
                 .set(docData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -395,8 +392,8 @@ public class ListaGastosActivity extends AppCompatActivity {
     }
 
     private void actualizarLista(final String nombre, String id, final int position) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(id)
-                .update(VariablesEstaticas.BD_NOMBRE, nombre)
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document(id)
+                .update(Constantes.BD_NOMBRE, nombre)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -441,7 +438,7 @@ public class ListaGastosActivity extends AppCompatActivity {
     }
 
     private void deleteLista(final String id) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(id)
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -460,7 +457,7 @@ public class ListaGastosActivity extends AppCompatActivity {
     }
 
     private void deleteCollection(final String id) {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(id)
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -468,7 +465,7 @@ public class ListaGastosActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(ContentValues.TAG, document.getId() + " => " + document.getData());
-                                db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(id).document(document.getId())
+                                db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(id).document(document.getId())
                                         .delete();
                             }
                             listItems.clear();
@@ -489,9 +486,9 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         String userID = user.getUid();
 
-        CollectionReference reference = db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(userID).collection(idLista);
+        CollectionReference reference = db.collection(Constantes.BD_LISTA_GASTOS).document(userID).collection(idLista);
 
-        Query query = reference.orderBy(VariablesEstaticas.BD_FECHA_INGRESO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(Constantes.BD_FECHA_INGRESO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -500,10 +497,10 @@ public class ListaGastosActivity extends AppCompatActivity {
                         ItemGastosConstructor item = new ItemGastosConstructor();
 
                         item.setIdItem(doc.getId());
-                        item.setConcepto(doc.getString(VariablesEstaticas.BD_CONCEPTO));
-                        item.setMontoAproximado(doc.getDouble(VariablesEstaticas.BD_MONTO));
-                        item.setFechaIngreso(doc.getDate(VariablesEstaticas.BD_FECHA_INGRESO));
-                        item.setFechaAproximada(doc.getDate(VariablesEstaticas.BD_FECHA_APROXIMADA));
+                        item.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
+                        item.setMontoAproximado(doc.getDouble(Constantes.BD_MONTO));
+                        item.setFechaIngreso(doc.getDate(Constantes.BD_FECHA_INGRESO));
+                        item.setFechaAproximada(doc.getDate(Constantes.BD_FECHA_APROXIMADA));
 
                         listItems.add(item);
                     }
@@ -589,12 +586,12 @@ public class ListaGastosActivity extends AppCompatActivity {
     private void guardarDatos() {
         progressBarItems.setVisibility(View.VISIBLE);
         Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
-        docData.put(VariablesEstaticas.BD_MONTO, monto);
-        docData.put(VariablesEstaticas.BD_FECHA_APROXIMADA, fechaSelec);
-        docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
+        docData.put(Constantes.BD_CONCEPTO, concepto);
+        docData.put(Constantes.BD_MONTO, monto);
+        docData.put(Constantes.BD_FECHA_APROXIMADA, fechaSelec);
+        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
 
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document()
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document()
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -630,8 +627,8 @@ public class ListaGastosActivity extends AppCompatActivity {
             cantidad = cantidadItems - 1;
         }
 
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(VariablesEstaticas.BD_TODAS_LISTAS).document(idLista)
-                .update(VariablesEstaticas.BD_CANTIDAD_ITEMS, cantidad)
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document(idLista)
+                .update(Constantes.BD_CANTIDAD_ITEMS, cantidad)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -678,7 +675,7 @@ public class ListaGastosActivity extends AppCompatActivity {
         fechaSelec = null;
 
 
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -686,15 +683,15 @@ public class ListaGastosActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(VariablesEstaticas.BD_CONCEPTO);
+                        conceptoViejo = document.getString(Constantes.BD_CONCEPTO);
                         etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(VariablesEstaticas.BD_MONTO);
+                        montoViejo = document.getDouble(Constantes.BD_MONTO);
                         String montoS = String.valueOf(montoViejo);
                         etMonto.setText(montoS);
 
 
-                        fechaViejaAproximada = document.getDate(VariablesEstaticas.BD_FECHA_APROXIMADA);
+                        fechaViejaAproximada = document.getDate(Constantes.BD_FECHA_APROXIMADA);
                         if (fechaViejaAproximada != null) {
                             tvFechaAproximada.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaViejaAproximada));
                         } else {
@@ -737,19 +734,19 @@ public class ListaGastosActivity extends AppCompatActivity {
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(concepto)) {
-            item.put(VariablesEstaticas.BD_CONCEPTO, concepto);
+            item.put(Constantes.BD_CONCEPTO, concepto);
         }
         if (monto != montoViejo) {
-            item.put(VariablesEstaticas.BD_MONTO, monto);
+            item.put(Constantes.BD_MONTO, monto);
         }
 
         if(fechaSelec != null) {
             if (!fechaSelec.equals(fechaViejaAproximada)) {
-                item.put(VariablesEstaticas.BD_FECHA_APROXIMADA, fechaSelec);
+                item.put(Constantes.BD_FECHA_APROXIMADA, fechaSelec);
             }
         }
 
-            db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+            db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
                     .update(item)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -775,7 +772,7 @@ public class ListaGastosActivity extends AppCompatActivity {
     }
 
     private void eliminarItem() {
-        db.collection(VariablesEstaticas.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

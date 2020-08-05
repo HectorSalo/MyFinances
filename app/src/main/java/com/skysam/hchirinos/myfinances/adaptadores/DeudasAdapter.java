@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
 
 import java.text.SimpleDateFormat;
@@ -169,8 +169,8 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
-                    .update(VariablesEstaticas.BD_MONTO, montoNuevo)
+            db.collection(Constantes.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+                    .update(Constantes.BD_MONTO, montoNuevo)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -199,7 +199,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constantes.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

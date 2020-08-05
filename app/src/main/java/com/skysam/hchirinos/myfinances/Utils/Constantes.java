@@ -1,6 +1,6 @@
 package com.skysam.hchirinos.myfinances.Utils;
 
-public class VariablesEstaticas {
+public class Constantes {
     public static final String BD_PROPIETARIOS = "propietarios";
     public static final String BD_INGRESOS= "ingresos";
     public static final String BD_AHORROS = "ahorros";
@@ -24,5 +24,10 @@ public class VariablesEstaticas {
     public static final String BD_NOMBRE = "nombre";
     public static final String BD_CANTIDAD_ITEMS = "cantidadItems";
     public static final String BD_FECHA_APROXIMADA = "fechaAproximada";
+
+    public static final String PREFERENCE_TIPO_BLOQUEO = "tipoBloqueo";
+    public static final String PREFERENCE_SIN_BLOQUEO = "sinBloqueo";
+    public static final String PREFERENCE_BLOQUEO_PIN = "pin";
+    public static final String PREFERENCE_BLOQUEO_HUELLA = "huella";
 
 }

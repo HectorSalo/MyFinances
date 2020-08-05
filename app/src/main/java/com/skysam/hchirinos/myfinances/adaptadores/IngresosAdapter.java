@@ -1,33 +1,16 @@
 package com.skysam.hchirinos.myfinances.adaptadores;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
 import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
-import com.skysam.hchirinos.myfinances.editar.EditarActivity;
-import com.skysam.hchirinos.myfinances.inicioSesion.InicSesionActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

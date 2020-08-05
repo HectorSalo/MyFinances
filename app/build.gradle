@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 3
         versionName "3.0.1"
 
@@ -53,3 +53,4 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'

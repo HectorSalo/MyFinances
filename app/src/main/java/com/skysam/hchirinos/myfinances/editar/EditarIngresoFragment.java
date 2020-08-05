@@ -26,13 +26,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.errorprone.annotations.Var;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -41,7 +40,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -133,7 +131,7 @@ public class EditarIngresoFragment extends Fragment {
         btnEditar.setEnabled(false);
         btnSelecFecha.setEnabled(false);
 
-        db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -141,25 +139,25 @@ public class EditarIngresoFragment extends Fragment {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(VariablesEstaticas.BD_CONCEPTO);
+                        conceptoViejo = document.getString(Constantes.BD_CONCEPTO);
                         etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(VariablesEstaticas.BD_MONTO);
+                        montoViejo = document.getDouble(Constantes.BD_MONTO);
                         String montoS = String.valueOf(montoViejo);
                         etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(VariablesEstaticas.BD_DOLAR);
+                        boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
                         if (dolar) {
                             rbDolar.setChecked(true);
                         } else {
                             rbBs.setChecked(true);
                         }
 
-                        double duracionFrecuenciaD = document.getDouble(VariablesEstaticas.BD_DURACION_FRECUENCIA);
+                        double duracionFrecuenciaD = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
                         duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
                         spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
 
-                        String tipoFrecuencia = document.getString(VariablesEstaticas.BD_TIPO_FRECUENCIA);
+                        String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
                         if (tipoFrecuencia.equals("Dias")) {
                             rbDias.setChecked(true);
                         } else if (tipoFrecuencia.equals("Semanas")) {
@@ -168,7 +166,7 @@ public class EditarIngresoFragment extends Fragment {
                             rbMeses.setChecked(true);
                         }
 
-                        fechaVieja = document.getDate(VariablesEstaticas.BD_FECHA_INCIAL);
+                        fechaVieja = document.getDate(Constantes.BD_FECHA_INCIAL);
                         tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaVieja));
 
                         progressBar.setVisibility(View.GONE);
@@ -263,38 +261,38 @@ public class EditarIngresoFragment extends Fragment {
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(conceptoNuevo)) {
-            item.put(VariablesEstaticas.BD_CONCEPTO, conceptoNuevo);
+            item.put(Constantes.BD_CONCEPTO, conceptoNuevo);
         }
         if (montoNuevo != montoViejo) {
-            item.put(VariablesEstaticas.BD_MONTO, montoNuevo);
+            item.put(Constantes.BD_MONTO, montoNuevo);
         }
         if (rbBs.isChecked()) {
-            item.put(VariablesEstaticas.BD_DOLAR, false);
+            item.put(Constantes.BD_DOLAR, false);
         }
         if (rbDolar.isChecked()) {
-            item.put(VariablesEstaticas.BD_DOLAR, true);
+            item.put(Constantes.BD_DOLAR, true);
         }
         if (duracionFrecuenciaNuevo != duracionFrecuenciaViejo) {
-            item.put(VariablesEstaticas.BD_DURACION_FRECUENCIA, duracionFrecuenciaNuevo);
+            item.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuenciaNuevo);
         }
         if (rbDias.isChecked()) {
-            item.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, "Dias");
+            item.put(Constantes.BD_TIPO_FRECUENCIA, "Dias");
         }
         if (rbSemanas.isChecked()) {
-            item.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, "Semanas");
+            item.put(Constantes.BD_TIPO_FRECUENCIA, "Semanas");
         }
         if (rbMeses.isChecked()) {
-            item.put(VariablesEstaticas.BD_TIPO_FRECUENCIA, "Meses");
+            item.put(Constantes.BD_TIPO_FRECUENCIA, "Meses");
         }
         if(fechaNueva != null) {
             if (!fechaNueva.equals(fechaVieja)) {
-                item.put(VariablesEstaticas.BD_FECHA_INCIAL, fechaNueva);
+                item.put(Constantes.BD_FECHA_INCIAL, fechaNueva);
             }
         }
 
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(VariablesEstaticas.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

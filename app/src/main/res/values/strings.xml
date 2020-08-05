@@ -72,8 +72,11 @@
     <string name="actualizar">Actualizar</string>
     <string name="cancelar">Cancelar</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Bloqueo Fragments -->
+    <string name="pin">PIN:</string>
+    <string name="repetir_pin">Repita PIN:</string>
+    <string name="btn_acceder">Acceder</string>
+
     <string name="title_activity_settings">Ajustes</string>
 
     <!-- Preference Titles -->

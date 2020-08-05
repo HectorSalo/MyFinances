@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.VariablesEstaticas;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -147,17 +147,17 @@ public class AgregarDeudaFragment extends Fragment {
         }
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(VariablesEstaticas.BD_PRESTAMISTA, prestamista);
-        docData.put(VariablesEstaticas.BD_CONCEPTO, concepto);
-        docData.put(VariablesEstaticas.BD_MONTO, monto);
-        docData.put(VariablesEstaticas.BD_FECHA_INGRESO, fechaIngreso);
-        docData.put(VariablesEstaticas.BD_DOLAR, dolar);
+        docData.put(Constantes.BD_PRESTAMISTA, prestamista);
+        docData.put(Constantes.BD_CONCEPTO, concepto);
+        docData.put(Constantes.BD_MONTO, monto);
+        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
+        docData.put(Constantes.BD_DOLAR, dolar);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(VariablesEstaticas.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+            db.collection(Constantes.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
