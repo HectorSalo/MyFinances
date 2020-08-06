@@ -1,13 +1,19 @@
 package com.skysam.hchirinos.myfinances.bloqueoFragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputLayout
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.principal.HomeActivity
 import kotlinx.android.synthetic.main.fragment_pin.*
 import kotlinx.android.synthetic.main.fragment_pin.view.*
 
@@ -34,11 +40,41 @@ class PinFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_pin, container, false)
 
+        val sharedPreferences = context?.getSharedPreferences(user, Constantes.CONTEXT_PREFERENCE)
+        val pinAlmacenado = sharedPreferences?.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000")
+
+        view.input_pin.errorIconDrawable = null
+        view.input_repetir_pin.errorIconDrawable = null
+
         if(inicio) {
             view.input_repetir_pin.visibility = View.GONE
             view.title_pin.text = "Ingrese PIN"
         } else {
-            view.title_pin.text = "Ingrese PIN Respaldo"
+            view.title_pin.text = "Ingrese PIN de Bloqueo"
+            view.lottieAnimationView.visibility = View.GONE
+        }
+
+        view.button.setOnClickListener {
+            button.hideKeyboard()
+            if (inicio) {
+                input_pin.error = null
+                if (pinAlmacenado == et_registrar_pin.text.toString()) {
+                    linearLayout.visibility = View.GONE
+                    lottieAnimationView.visibility = View.VISIBLE
+                    lottieAnimationView.setAnimation("huella_check.json")
+                    lottieAnimationView.playAnimation()
+                    Handler().postDelayed({
+                        context?.startActivity(Intent(context, HomeActivity::class.java))
+                    }, 2500)
+                } else {
+                    input_pin.error = "PIN incorrecto"
+                    lottieAnimationView.visibility = View.VISIBLE
+                    lottieAnimationView.setAnimation("huella_wrong.json")
+                    lottieAnimationView.playAnimation()
+                }
+            } else {
+
+            }
         }
 
         return view
@@ -53,5 +89,10 @@ class PinFragment : Fragment() {
                         putBoolean(ARG_PARAM2, inicio)
                     }
                 }
+    }
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

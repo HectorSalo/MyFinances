@@ -143,7 +143,7 @@ public class SettingsActivity extends AppCompatActivity implements
             setPreferencesFromResource(R.xml.preferencias_preferences, rootKey);
 
 
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
 
             final String bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
@@ -184,8 +184,13 @@ public class SettingsActivity extends AppCompatActivity implements
                             break;
                         case Constantes.PREFERENCE_BLOQUEO_PIN:
                             if (!bloqueoEscogido.equals(bloqueo)) {
-                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_PIN);
-                                editor.commit();
+                                Intent intent = new Intent(getContext(), BloqueoActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_PIN);
+                                bundle.putString("user", user.getUid());
+                                bundle.putBoolean("inicio", false);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
                             }
                             break;
                     }

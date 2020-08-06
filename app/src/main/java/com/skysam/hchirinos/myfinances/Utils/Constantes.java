@@ -29,5 +29,7 @@ public class Constantes {
     public static final String PREFERENCE_SIN_BLOQUEO = "sinBloqueo";
     public static final String PREFERENCE_BLOQUEO_PIN = "pin";
     public static final String PREFERENCE_BLOQUEO_HUELLA = "huella";
+    public static final String PREFERENCE_PIN_ALMACENADO = "pinAlmacenado";
+    public static final int CONTEXT_PREFERENCE = 0;
 
 }
