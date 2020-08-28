@@ -61,7 +61,7 @@ class PinFragment : Fragment() {
                 if (pinAlmacenado == et_registrar_pin.text.toString()) {
                     linearLayout.visibility = View.GONE
                     lottieAnimationView.visibility = View.VISIBLE
-                    lottieAnimationView.setAnimation("huella_check.json")
+                    lottieAnimationView.setAnimation("pin_check.json")
                     lottieAnimationView.playAnimation()
                     Handler().postDelayed({
                         context?.startActivity(Intent(context, HomeActivity::class.java))
@@ -69,7 +69,7 @@ class PinFragment : Fragment() {
                 } else {
                     input_pin.error = "PIN incorrecto"
                     lottieAnimationView.visibility = View.VISIBLE
-                    lottieAnimationView.setAnimation("huella_wrong.json")
+                    lottieAnimationView.setAnimation("pin_wrong.json")
                     lottieAnimationView.playAnimation()
                 }
             } else {

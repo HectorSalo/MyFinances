@@ -26,8 +26,4 @@ class BloqueoActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().add(R.id.container, pinFragment).commit()
         }
     }
-
-    override fun onBackPressed() {
-        startActivity(Intent(this, HomeActivity::class.java))
-    }
 }
