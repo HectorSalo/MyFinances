@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".inicioSesion.RegistrarActivity"
+    tools:context=".ui.inicioSesion.RegistrarActivity"
     android:background="@drawable/fondo_registrar">
 
     <com.google.android.material.textfield.TextInputLayout

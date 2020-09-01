@@ -12,8 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".principal.BloqueoActivity"/>
-        <activity android:name=".principal.LaunchActivity">
+        <activity android:name="com.skysam.hchirinos.myfinances.ui.ajustes.BloqueoActivity"/>
+        <activity android:name=".ui.inicioSesion.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,27 +21,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".principal.SettingsActivity"
+            android:name="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".principal.ListaGastosActivity"
+            android:name=".ui.inicio.ListaGastosActivity"
             android:label="@string/title_activity_lista_gastos"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".principal.CalculadoraActivity"
+            android:name="com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity"
             android:label="@string/title_activity_calculadora"
             android:theme="@style/AppTheme.Convertidor" />
-        <activity android:name=".principal.AcercaActivity" />
+        <activity android:name="com.skysam.hchirinos.myfinances.ui.general.AcercaActivity" />
         <activity
-            android:name=".editar.EditarActivity"
+            android:name=".ui.editar.EditarActivity"
             android:label="@string/title_activity_editar" />
-        <activity android:name=".inicioSesion.RegistrarActivity" />
-        <activity android:name=".inicioSesion.InicSesionActivity" />
+        <activity android:name=".ui.inicioSesion.RegistrarActivity" />
+        <activity android:name=".ui.inicioSesion.InicSesionActivity" />
         <activity
-            android:name=".agregar.AgregarActivity"
+            android:name=".ui.agregar.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".principal.HomeActivity" />
+        <activity android:name=".ui.inicio.HomeActivity" />
     </application>
 
 </manifest>

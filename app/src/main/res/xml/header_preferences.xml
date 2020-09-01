@@ -2,20 +2,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        app:fragment="com.skysam.hchirinos.myfinances.principal.SettingsActivity$PreferenciasFragment"
+        app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$PreferenciasFragment"
         app:icon="@drawable/ic_preferencias_white_24"
         app:key="preferencias_header"
         app:title="@string/preferencias_header" />
 
     <PreferenceCategory app:title="Perfil">
         <Preference
-            app:fragment="com.skysam.hchirinos.myfinances.principal.SettingsActivity$DatosPersonalesFragment"
+            app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$DatosPersonalesFragment"
             app:icon="@drawable/ic_datos_personales_24"
             app:key="datos_personales_header"
             app:title="@string/datos_personales" />
 
         <Preference
-            app:fragment="com.skysam.hchirinos.myfinances.principal.SettingsActivity$CerrarSesionFragment"
+            app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$CerrarSesionFragment"
             app:icon="@drawable/ic_cerrar_sesion_24"
             app:key="cerrar_sesion_header"
             app:title="@string/cerrar_sesion" />
@@ -27,7 +27,7 @@
             app:title="@string/acerca_title">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:targetClass="com.skysam.hchirinos.myfinances.principal.AcercaActivity"
+                android:targetClass="com.skysam.hchirinos.myfinances.ui.general.AcercaActivity"
                 android:targetPackage="com.skysam.hchirinos.myfinances" />
         </PreferenceScreen>
     </PreferenceCategory>

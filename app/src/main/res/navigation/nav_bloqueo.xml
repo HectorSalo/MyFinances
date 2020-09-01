@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/pinFragment">
+    <fragment
+        android:id="@+id/pinFragment"
+        android:name="com.skysam.hchirinos.myfinances.ui.ajustes.PinFragment"
+        android:label="PinFragment" >
+        <action
+            android:id="@+id/action_pinFragment_to_huellaFragment"
+            app:destination="@id/huellaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/huellaFragment"
+        android:name="com.skysam.hchirinos.myfinances.ui.ajustes.HuellaFragment"
+        android:label="HuellaFragment" >
+        <action
+            android:id="@+id/action_huellaFragment_to_pinFragment"
+            app:destination="@id/pinFragment" />
+    </fragment>
+</navigation>

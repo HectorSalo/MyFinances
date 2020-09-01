@@ -32,4 +32,6 @@ public class Constantes {
     public static final String PREFERENCE_PIN_ALMACENADO = "pinAlmacenado";
     public static final int CONTEXT_PREFERENCE = 0;
 
+    public static final String USER = "user";
+
 }
