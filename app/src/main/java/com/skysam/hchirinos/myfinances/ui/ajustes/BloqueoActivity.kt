@@ -20,16 +20,10 @@ class BloqueoActivity : AppCompatActivity() {
         val pinFragment = PinFragment.newInstance(user.toString(), inicio)
         val huellaFragment = HuellaFragment()
 
-        val finalHost = NavHostFragment.create(R.navigation.nav_bloqueo)
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment, finalHost)
-                .setPrimaryNavigationFragment(finalHost)
-                .commit()
-
         if (tipoBloqueo == Constantes.PREFERENCE_BLOQUEO_HUELLA) {
-            supportFragmentManager.beginTransaction().add(R.id.container, huellaFragment).commit()
+            supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment, huellaFragment).commit()
         } else {
-            supportFragmentManager.beginTransaction().add(R.id.container, pinFragment).commit()
+            supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment, pinFragment).commit()
         }
     }
 }
