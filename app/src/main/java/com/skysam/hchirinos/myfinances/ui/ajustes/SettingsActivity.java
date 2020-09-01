@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.ui.ajustes;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -27,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.databinding.DialogPinSettingsBinding;
+import com.skysam.hchirinos.myfinances.databinding.FragmentPinBinding;
 
 public class SettingsActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -89,19 +94,6 @@ public class SettingsActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        /*if (headerFragment.isAdded()) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        } else {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, headerFragment)
-                    .commit();
-            setTitle(R.string.title_activity_settings);
-        }*/
-    }
 
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
@@ -131,15 +123,24 @@ public class SettingsActivity extends AppCompatActivity implements
 
     public static class PreferenciasFragment extends PreferenceFragmentCompat {
 
+        private ListPreference listaBloqueo;
+        private DialogPinSettingsBinding dialogPinSettingsBinding;
+        private String bloqueo;
+        private boolean pinNuevo;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferencias_preferences, rootKey);
+
+            dialogPinSettingsBinding = DialogPinSettingsBinding.inflate(getLayoutInflater());
 
 
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
 
-            final String bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+            bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+
+            listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
 
             ListPreference listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
 
@@ -159,6 +160,7 @@ public class SettingsActivity extends AppCompatActivity implements
             listaBloqueo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
                     String bloqueoEscogido = (String) newValue;
                     SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -177,20 +179,56 @@ public class SettingsActivity extends AppCompatActivity implements
                             break;
                         case Constantes.PREFERENCE_BLOQUEO_PIN:
                             if (!bloqueoEscogido.equals(bloqueo)) {
-                                Intent intent = new Intent(getContext(), BloqueoActivity.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_PIN);
-                                bundle.putString(Constantes.USER, user.getUid());
-                                bundle.putBoolean("inicio", false);
-                                intent.putExtras(bundle);
-                                startActivity(intent);
+                                dialogPinSettingsBinding = DialogPinSettingsBinding.inflate(getLayoutInflater());
+                                if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+                                    pinNuevo = true;
+                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin));
+                                } else {
+                                    pinNuevo = false;
+                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
+                                    dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
+                                }
+                                crearDialogPin();
                             }
                             break;
                     }
                     return true;
                 }
             });
+        }
 
+        private void crearDialogPin() {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+            builder.setView(dialogPinSettingsBinding.getRoot());
+            builder.setCancelable(false);
+            builder.setPositiveButton(getString(R.string.btn_ingresar), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            }).setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    listaBloqueo.setValue(bloqueo);
+                }
+            });
+            final AlertDialog dialog = builder.create();
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String pin = dialogPinSettingsBinding.etRegistrarPin.getText().toString();
+                    if (pinNuevo) {
+                        String pinRepetir = dialogPinSettingsBinding.etPinRepetir.getText().toString();
+                        if (pin.equalsIgnoreCase(pinRepetir)) {
+                            dialog.dismiss();
+                        } else {
+                            dialogPinSettingsBinding.inputRepetirPin.setError("El PIN debe coincidir");
+                        }
+                    }
+
+                }
+            });
+            dialog.show();
         }
     }
 
@@ -218,19 +256,6 @@ public class SettingsActivity extends AppCompatActivity implements
 
                 }
             }).show();
-        }
-    }
-
-    public static class PinFragment extends Fragment {
-        @Nullable
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_pin, container, false);
-        }
-
-        @Override
-        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
         }
     }
 }

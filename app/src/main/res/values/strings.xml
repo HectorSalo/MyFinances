@@ -48,7 +48,7 @@
     <string name="destinatario">Destinatario:</string>
     <string name="prestamista">Prestamista:</string>
     <string name="btn_guardar">Guardar</string>
-    <string name="btn_editar">Actualizar</string>
+    <string name="btn_actualizar">Actualizar</string>
     <string name="previous">Previous</string>
     <string name="gasto_fijo">Gasto periódico</string>
     <string name="gasto_mes">Gasto único</string>
@@ -69,13 +69,15 @@
 
     <string name="monto_aproximado">Monto aproximado:</string>
     <string name="fecha_aproximada">Fecha de gasto aproximada:</string>
-    <string name="actualizar">Actualizar</string>
-    <string name="cancelar">Cancelar</string>
+    <string name="btn_cancelar">Cancelar</string>
 
     <!-- Bloqueo Fragments -->
     <string name="pin">PIN:</string>
     <string name="repetir_pin">Repita PIN:</string>
     <string name="btn_acceder">Acceder</string>
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="text_ingrese_pin">Ingrese PIN nuevo</string>
+    <string name="text_ingrese_pin_respaldo">Ingrse PIN de respaldo</string>
 
     <string name="title_activity_settings">Ajustes</string>
 

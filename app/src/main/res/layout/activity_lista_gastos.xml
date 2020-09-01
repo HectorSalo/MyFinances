@@ -224,7 +224,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="8dp"
-                    android:text="@string/cancelar"
+                    android:text="@string/btn_cancelar"
                     android:textAllCaps="false"
                     android:textSize="18sp" />
 
@@ -236,7 +236,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="8dp"
                     android:layoutDirection="inherit"
-                    android:text="@string/actualizar"
+                    android:text="@string/btn_actualizar"
                     android:textAllCaps="false"
                     android:textSize="18sp" />
             </TableRow>
