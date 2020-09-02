@@ -41,7 +41,7 @@
             android:name=".ui.agregar.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.inicio.HomeActivity" />
+        <activity android:name=".ui.inicio.HomeActivity"/>
     </application>
 
 </manifest>

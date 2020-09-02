@@ -30,6 +30,10 @@ public class Constantes {
     public static final String PREFERENCE_BLOQUEO_PIN = "pin";
     public static final String PREFERENCE_BLOQUEO_HUELLA = "huella";
     public static final String PREFERENCE_PIN_ALMACENADO = "pinAlmacenado";
+    public static final String PREFERENCE_TEMA = "tema";
+    public static final String PREFERENCE_TEMA_OSCURO = "temaOscuro";
+    public static final String PREFERENCE_TEMA_CLARO = "temaClaro";
+    public static final String PREFERENCE_TEMA_SISTEMA = "temaSistema";
     public static final int CONTEXT_PREFERENCE = 0;
 
     public static final String USER = "user";

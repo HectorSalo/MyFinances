@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.ui.ajustes
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.ui.inicio.HomeActivity
 import java.util.concurrent.Executor
 
 
@@ -24,6 +26,7 @@ class BloqueoActivity : AppCompatActivity() {
             crearDialogHuella();
             //supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment, huellaFragment).commit()
         } else {
+            startActivity(Intent(applicationContext, HomeActivity::class.java))
             //supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment, pinFragment).commit()
         }
     }
@@ -42,6 +45,7 @@ class BloqueoActivity : AppCompatActivity() {
                     override fun onAuthenticationSucceeded(
                             result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
+                        startActivity(Intent(applicationContext, HomeActivity::class.java))
                     }
 
                     override fun onAuthenticationFailed() {

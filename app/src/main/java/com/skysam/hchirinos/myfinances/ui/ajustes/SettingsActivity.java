@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.biometric.BiometricManager;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -54,6 +56,24 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+
+        switch (tema){
+            case Constantes.PREFERENCE_TEMA_SISTEMA:
+                setTheme(R.style.AppTheme);
+                break;
+            case Constantes.PREFERENCE_TEMA_OSCURO:
+                setTheme(R.style.AppThemeNight);
+                break;
+            case Constantes.PREFERENCE_TEMA_CLARO:
+                setTheme(R.style.AppThemeDay);
+                break;
+        }
+
         setContentView(R.layout.settings_activity);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -137,11 +157,11 @@ public class SettingsActivity extends AppCompatActivity implements
     public static class PreferenciasFragment extends PreferenceFragmentCompat {
 
         private SharedPreferences.Editor editor;
-        private ListPreference listaBloqueo;
+        private ListPreference listaBloqueo, listaTema;
         private DialogPinSettingsBinding dialogPinSettingsBinding;
         private DialogHuellaSettingsBinding dialogHuellaSettingsBinding;
-        private String bloqueo, pinRespaldo, bloqueoEscogido;
-        private boolean pinNuevo;
+        private String bloqueo, pinRespaldo, bloqueoEscogido, temaInicial, temaEscogido;
+        private boolean pinNuevo, guardarPin;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -149,12 +169,13 @@ public class SettingsActivity extends AppCompatActivity implements
 
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+            editor = sharedPreferences.edit();
 
             bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+            temaInicial = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
 
             listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
-
-            ListPreference listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
+            listaTema = findPreference(Constantes.PREFERENCE_TEMA);
 
             switch (bloqueo){
                 case Constantes.PREFERENCE_SIN_BLOQUEO:
@@ -168,28 +189,50 @@ public class SettingsActivity extends AppCompatActivity implements
                     break;
             }
 
+            switch (temaInicial) {
+                case Constantes.PREFERENCE_TEMA_SISTEMA:
+                    listaTema.setValue(Constantes.PREFERENCE_TEMA_SISTEMA);
+                    break;
+                case Constantes.PREFERENCE_TEMA_OSCURO:
+                    listaTema.setValue(Constantes.PREFERENCE_TEMA_OSCURO);
+                    break;
+                case Constantes.PREFERENCE_TEMA_CLARO:
+                    listaTema.setValue(Constantes.PREFERENCE_TEMA_CLARO);
+                    break;
+            }
+
 
             listaBloqueo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
                     bloqueoEscogido = (String) newValue;
-                    editor = sharedPreferences.edit();
 
                     switch (bloqueoEscogido){
                         case Constantes.PREFERENCE_SIN_BLOQUEO:
                             if (!bloqueoEscogido.equals(bloqueo)) {
-                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
-                                editor.apply();
+                                dialogPinSettingsBinding = DialogPinSettingsBinding.inflate(getLayoutInflater());
+                                if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_BLOQUEO_HUELLA)) {
+                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
+                                } else {
+                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_anterior));
+                                }
+                                dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
+                                pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                                crearDialogSinBloqueo();
                             }
                             break;
                         case Constantes.PREFERENCE_BLOQUEO_HUELLA:
                             if (!bloqueoEscogido.equals(bloqueo)) {
                                 dialogHuellaSettingsBinding = DialogHuellaSettingsBinding.inflate(getLayoutInflater());
-                                if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
-                                    dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_coloque_huella));
-                                    crearDialogHuella();
+                                if (!bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+                                    pinNuevo = false;
+                                    pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                                } else {
+                                    pinNuevo = true;
                                 }
+                                guardarPin = false;
+                                crearDialogHuella();
                             }
                             break;
                         case Constantes.PREFERENCE_BLOQUEO_PIN:
@@ -198,17 +241,95 @@ public class SettingsActivity extends AppCompatActivity implements
                                 if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
                                     pinNuevo = true;
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin));
-                                    crearDialogPin();
                                 } else {
-                                    /*pinNuevo = false;
+                                    pinNuevo = false;
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
                                     dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
-                                    pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");*/
+                                    pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
                                 }
+                                crearDialogPin();
                             }
                             break;
                     }
                     return true;
+                }
+            });
+
+
+            listaTema.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    temaInicial = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+                    temaEscogido = (String) newValue;
+
+                    switch (temaEscogido) {
+                        case Constantes.PREFERENCE_TEMA_SISTEMA:
+                            break;
+                        case Constantes.PREFERENCE_TEMA_CLARO:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_CLARO);
+                                editor.apply();
+                                //Bundle bundle = new Bundle();
+                                //bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
+                                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                                //intent.putExtras(bundle);
+                                getActivity().finish();
+                                getActivity().startActivity(intent);
+                                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }
+                            break;
+                        case Constantes.PREFERENCE_TEMA_OSCURO:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_OSCURO);
+                                editor.apply();
+                                //Bundle bundle = new Bundle();
+                                //bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
+                                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                                //intent.putExtras(bundle);
+                                getActivity().finish();
+                                getActivity().startActivity(intent);
+                                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }
+                            break;
+                    }
+                    return true;
+                }
+            });
+        }
+
+        private void crearDialogSinBloqueo() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+            builder.setView(dialogPinSettingsBinding.getRoot());
+            builder.setCancelable(false);
+            builder.setPositiveButton(getString(R.string.btn_ingresar), null)
+                    .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            listaBloqueo.setValue(bloqueo);
+                        }
+                    });
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogPinSettingsBinding.inputPin.setError(null);
+                    dialogPinSettingsBinding.inputPin.setErrorIconDrawable(null);
+                    String pin = dialogPinSettingsBinding.etRegistrarPin.getText().toString();
+                    if (pin.isEmpty()) {
+                        dialogPinSettingsBinding.inputPin.setError(getString(R.string.error_campo_vacio));
+                        return;
+                    }
+                    if (pin.equalsIgnoreCase(pinRespaldo)) {
+                        editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+                        editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                        editor.apply();
+                        dialog.dismiss();
+                    } else {
+                        dialogPinSettingsBinding.inputPin.setError(getString(R.string.error_pin_code));
+                        return;
+                    }
+
                 }
             });
         }
@@ -236,7 +357,7 @@ public class SettingsActivity extends AppCompatActivity implements
                     case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
                         dialogHuellaSettingsBinding.lottieAnimationView.setAnimation("huella_wrong.json");
                         dialogHuellaSettingsBinding.lottieAnimationView.playAnimation();
-                        dialogHuellaSettingsBinding.tvInfoHuella.setText("No está disponible el bloqueo por huella en este dispositivo actualmente");
+                        dialogHuellaSettingsBinding.tvInfoHuella.setText("Este dispositivo no cuenta con lector de huella");
                         break;
                     case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
                         dialogHuellaSettingsBinding.lottieAnimationView.setAnimation("huella_wrong.json");
@@ -246,35 +367,85 @@ public class SettingsActivity extends AppCompatActivity implements
                     case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
                         dialogHuellaSettingsBinding.lottieAnimationView.setAnimation("huella_wrong.json");
                         dialogHuellaSettingsBinding.lottieAnimationView.playAnimation();
-                        dialogHuellaSettingsBinding.tvInfoHuella.setText("No está disponible el bloqueo por huella en este dispositivo actualmente");
+                        dialogHuellaSettingsBinding.tvInfoHuella.setText("No tiene ninguna huella asociada a su dispositivo");
                         break;
                 }
 
             final AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            final Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_HUELLA);
-                    editor.apply();
-
-                    dialogHuellaSettingsBinding.lottieAnimationView.setAnimation("huella_check.json");
-                    dialogHuellaSettingsBinding.lottieAnimationView.playAnimation();
-                    dialogHuellaSettingsBinding.tvInfoHuella.setText("Guardando...");
-
-                    new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialogHuellaSettingsBinding.tvInfoHuella.setText("¡Listo!");
+                    if (!guardarPin) {
+                        if (pinNuevo) {
+                            dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_respaldo));
+                        } else {
+                            dialogHuellaSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
+                            dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_anterior));
                         }
-                    }, 2500);
+                        dialogHuellaSettingsBinding.linearLayout.setVisibility(View.VISIBLE);
+                        dialogHuellaSettingsBinding.lottieAnimationView.setVisibility(View.GONE);
+                        button.setText(getString(R.string.btn_ingresar));
+                        guardarPin = true;
+                    } else {
+                        dialogHuellaSettingsBinding.inputPin.setError(null);
+                        dialogHuellaSettingsBinding.inputPin.setErrorIconDrawable(null);
+                        dialogHuellaSettingsBinding.inputRepetirPin.setErrorIconDrawable(null);
+                        dialogHuellaSettingsBinding.inputRepetirPin.setError(null);
+                        String pin = dialogHuellaSettingsBinding.etRegistrarPin.getText().toString();
+                        if (pinNuevo) {
+                            String pinRepetir = dialogHuellaSettingsBinding.etPinRepetir.getText().toString();
+                            if (pin.isEmpty()) {
+                                dialogHuellaSettingsBinding.inputPin.setError(getString(R.string.error_campo_vacio));
+                                return;
+                            }
+                            if (pinRepetir.isEmpty()) {
+                                dialogHuellaSettingsBinding.inputRepetirPin.setError(getString(R.string.error_campo_vacio));
+                                return;
+                            }
+                            if (pin.equalsIgnoreCase(pinRepetir)) {
+                                InputMethodManager imm = (InputMethodManager)requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_HUELLA);
+                                editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, pin);
+                                editor.apply();
 
-                    new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialog.dismiss();
+                                dialogHuellaSettingsBinding.linearLayout.setVisibility(View.GONE);
+                                dialogHuellaSettingsBinding.lottieAnimationView.setVisibility(View.VISIBLE);
+                                dialogHuellaSettingsBinding.lottieAnimationView.setAnimation("huella_check.json");
+                                dialogHuellaSettingsBinding.lottieAnimationView.playAnimation();
+                                dialogHuellaSettingsBinding.tvInfoHuella.setText("Guardando...");
+
+                                new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialogHuellaSettingsBinding.tvInfoHuella.setText("¡Listo!");
+                                    }
+                                }, 2500);
+
+                                new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialog.dismiss();
+                                    }
+                                }, 4000);
+                            } else {
+                                dialogHuellaSettingsBinding.inputRepetirPin.setError(getString(R.string.error_pin_match));
+                                return;
+                            }
+                        } else {
+                            if (pin.equalsIgnoreCase(pinRespaldo)) {
+                                dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_respaldo));
+                                dialogHuellaSettingsBinding.inputRepetirPin.setVisibility(View.VISIBLE);
+                                dialogHuellaSettingsBinding.etRegistrarPin.setText("");
+                                pinNuevo = true;
+                            } else {
+                                dialogHuellaSettingsBinding.inputPin.setError(getString(R.string.error_pin_code));
+                                return;
+                            }
                         }
-                    }, 4000);
+                    }
                 }
             });
         }
@@ -283,12 +454,8 @@ public class SettingsActivity extends AppCompatActivity implements
             final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             builder.setView(dialogPinSettingsBinding.getRoot());
             builder.setCancelable(false);
-            builder.setPositiveButton(getString(R.string.btn_ingresar), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            }).setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.btn_ingresar), null)
+                    .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     listaBloqueo.setValue(bloqueo);
@@ -334,21 +501,19 @@ public class SettingsActivity extends AppCompatActivity implements
                                 }
                             }, 2500);
                         } else {
-                            dialogPinSettingsBinding.inputRepetirPin.setError("El PIN debe coincidir");
+                            dialogPinSettingsBinding.inputRepetirPin.setError(getString(R.string.error_pin_match));
                             return;
                         }
                     } else {
-                        /*if (pin.equalsIgnoreCase(pinRespaldo)) {
-                            if (bloqueoEscogido.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
-                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
-                                editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
-                                editor.apply();
-                            }
-                            dialog.dismiss();
+                        if (pin.equalsIgnoreCase(pinRespaldo)) {
+                            pinNuevo = true;
+                            dialogPinSettingsBinding.etRegistrarPin.setText("");
+                            dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin));
+                            dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.VISIBLE);
                         } else {
-                            dialogPinSettingsBinding.inputPin.setError("PIN incorrecto");
+                            dialogPinSettingsBinding.inputPin.setError(getString(R.string.error_pin_code));
                             return;
-                        }*/
+                        }
                     }
                 }
             });

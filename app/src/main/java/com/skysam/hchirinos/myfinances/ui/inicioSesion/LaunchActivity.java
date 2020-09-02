@@ -3,6 +3,7 @@ package com.skysam.hchirinos.myfinances.ui.inicioSesion;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,5 +37,11 @@ public class LaunchActivity extends AppCompatActivity {
                 finish();
             }
         }, 4500);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
     }
 }

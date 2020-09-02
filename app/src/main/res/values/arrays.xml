@@ -69,9 +69,9 @@
     </string-array>
 
     <string-array name="tema_values">
-        <item>sistema</item>
-        <item>oscuro</item>
-        <item>claro</item>
+        <item>temaSistema</item>
+        <item>temaOscuro</item>
+        <item>temaClaro</item>
     </string-array>
 
 </resources>
