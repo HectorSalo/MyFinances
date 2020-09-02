@@ -18,6 +18,7 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
+
         final LottieAnimationView lottieAnimationView = findViewById(R.id.lottieAnimationView);
 
         new Handler(Looper.myLooper()).postDelayed(new Runnable() {
