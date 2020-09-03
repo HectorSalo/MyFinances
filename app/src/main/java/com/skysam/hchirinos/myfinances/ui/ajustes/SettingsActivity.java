@@ -186,6 +186,28 @@ public class SettingsActivity extends AppCompatActivity implements
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.header_preferences, rootKey);
+
+            Preference preferenceCerrarSesion = findPreference("cerrar_sesion_header");
+            Preference preferenceActualizarPass = findPreference("actualizar_pass_header");
+
+
+            preferenceActualizarPass.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    ActualizarPassDialog actualizarPassDialog = new ActualizarPassDialog();
+                    actualizarPassDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+                    return true;
+                }
+            });
+
+            preferenceCerrarSesion.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    CerrarSesionDialog cerrarSesionDialog = new CerrarSesionDialog();
+                    cerrarSesionDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+                    return true;
+                }
+            });
         }
     }
 
@@ -549,33 +571,6 @@ public class SettingsActivity extends AppCompatActivity implements
                     }
                 }
             });
-        }
-    }
-
-    public static class CerrarSesionFragment extends DialogFragment {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            confirmarCerrarSesion();
-        }
-
-        private void confirmarCerrarSesion() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Confirmar");
-            builder.setMessage("¿Desea cerrar la sesión?");
-            builder.setCancelable(false);
-            builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //cerrarSesion();
-                }
-            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            }).show();
         }
     }
 }

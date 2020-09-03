@@ -34,6 +34,7 @@ public class Constantes {
     public static final String PREFERENCE_TEMA_OSCURO = "temaOscuro";
     public static final String PREFERENCE_TEMA_CLARO = "temaClaro";
     public static final String PREFERENCE_TEMA_SISTEMA = "temaSistema";
+    public static final String PREFERENCE_NOTIFICATION_ACTIVE = "notificationActive";
     public static final int CONTEXT_PREFERENCE = 0;
 
     public static final String USER = "user";

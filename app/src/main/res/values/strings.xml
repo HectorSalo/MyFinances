@@ -90,7 +90,7 @@
 
     <!-- Preference Titles -->
     <string name="preferencias_header">Preferencias</string>
-    <string name="datos_personales">Datos Personales</string>
+    <string name="actualizar_pass_header">Actualizar Contraseña</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
     <string name="acerca">Información de la App</string>
     <string name="acerca_title">Desarrollado por&#8230;</string>
@@ -103,11 +103,20 @@
     <string name="notificaciones_summary_on">Notificaciones activas</string>
     <string name="notificaiones_summary_off">Notificaciones desactivadas</string>
 
+    <!-- Actualizar Pass Ajustes -->
+    <string name="text_pass_viejo">Ingrese contraseña actual</string>
+    <string name="text_pass_nuevo">Ingrese contraseña nueva</string>
+    <string name="error_pass_match">La contraseña no coincide</string>
+    <string name="text_validar">Validar</string>
+    <string name="error_pass_code">Contraseña incorrecta</string>
+    <string name="error_actualizar_pass">Error al </string>
+
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
 
 </resources>

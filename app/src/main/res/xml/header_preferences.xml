@@ -9,13 +9,11 @@
 
     <PreferenceCategory app:title="Perfil">
         <Preference
-            app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$DatosPersonalesFragment"
-            app:icon="@drawable/ic_datos_personales_24"
-            app:key="datos_personales_header"
-            app:title="@string/datos_personales" />
+            app:icon="@drawable/ic_update_pass_24"
+            app:key="actualizar_pass_header"
+            app:title="@string/actualizar_pass_header" />
 
         <Preference
-            app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$CerrarSesionFragment"
             app:icon="@drawable/ic_cerrar_sesion_24"
             app:key="cerrar_sesion_header"
             app:title="@string/cerrar_sesion" />
