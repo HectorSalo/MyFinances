@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
@@ -48,6 +51,22 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+
+        switch (tema){
+            case Constantes.PREFERENCE_TEMA_SISTEMA:
+                setTheme(R.style.AppTheme);
+                break;
+            case Constantes.PREFERENCE_TEMA_OSCURO:
+                setTheme(R.style.AppThemeNight);
+                break;
+            case Constantes.PREFERENCE_TEMA_CLARO:
+                setTheme(R.style.AppThemeDay);
+                break;
+        }
         setContentView(R.layout.activity_main);
 
         bottomAppBar = findViewById(R.id.bottomAppBar);

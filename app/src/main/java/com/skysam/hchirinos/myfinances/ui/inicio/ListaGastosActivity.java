@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -84,6 +86,22 @@ public class ListaGastosActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+
+        switch (tema){
+            case Constantes.PREFERENCE_TEMA_SISTEMA:
+                setTheme(R.style.AppTheme);
+                break;
+            case Constantes.PREFERENCE_TEMA_OSCURO:
+                setTheme(R.style.AppThemeNight);
+                break;
+            case Constantes.PREFERENCE_TEMA_CLARO:
+                setTheme(R.style.AppThemeDay);
+                break;
+        }
         setContentView(R.layout.activity_lista_gastos);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -96,9 +114,6 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         fechaSelec = new Date();
         fechaSelec = null;
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         tvSinListas = findViewById(R.id.tv_sin_listas);
         tvInfoLista = findViewById(R.id.tv_info_lista);

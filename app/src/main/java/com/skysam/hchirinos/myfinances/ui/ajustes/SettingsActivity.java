@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -46,12 +47,14 @@ import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.databinding.DialogHuellaSettingsBinding;
 import com.skysam.hchirinos.myfinances.databinding.DialogPinSettingsBinding;
 import com.skysam.hchirinos.myfinances.databinding.FragmentPinBinding;
+import com.skysam.hchirinos.myfinances.ui.inicio.HomeActivity;
 
 public class SettingsActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
 
     private static final String TITLE_TAG = "settingsActivityTitle";
+    private HeaderFragment headerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +76,24 @@ public class SettingsActivity extends AppCompatActivity implements
                 setTheme(R.style.AppThemeDay);
                 break;
         }
-
         setContentView(R.layout.settings_activity);
+
+        headerFragment = new HeaderFragment();
+
+        Bundle bundle = this.getIntent().getExtras();
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, new HeaderFragment())
-                    .commit();
+            if (bundle == null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.settings, headerFragment)
+                        .commit();
+            } else {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.settings, new PreferenciasFragment())
+                        .commit();
+                setTitle(R.string.preferencias_header);
+            }
         } else {
             setTitle(savedInstanceState.getCharSequence(TITLE_TAG));
         }
@@ -99,6 +113,15 @@ public class SettingsActivity extends AppCompatActivity implements
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onSupportNavigateUp();
+            }
+        };
+
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -112,6 +135,18 @@ public class SettingsActivity extends AppCompatActivity implements
     public boolean onSupportNavigateUp() {
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return true;
+        } else {
+            if (!headerFragment.isAdded()) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.settings, headerFragment)
+                        .commit();
+                setTitle(R.string.title_activity_settings);
+            } else {
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                finish();
+            }
+
         }
         return super.onSupportNavigateUp();
     }
@@ -121,7 +156,7 @@ public class SettingsActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                onBackPressed();
+                onSupportNavigateUp();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -264,34 +299,31 @@ public class SettingsActivity extends AppCompatActivity implements
 
                     switch (temaEscogido) {
                         case Constantes.PREFERENCE_TEMA_SISTEMA:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+                                editor.apply();
+                            }
                             break;
                         case Constantes.PREFERENCE_TEMA_CLARO:
                             if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
                                 editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_CLARO);
                                 editor.apply();
-                                //Bundle bundle = new Bundle();
-                                //bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
-                                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                                //intent.putExtras(bundle);
-                                getActivity().finish();
-                                getActivity().startActivity(intent);
-                                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
                             break;
                         case Constantes.PREFERENCE_TEMA_OSCURO:
                             if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
                                 editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_OSCURO);
                                 editor.apply();
-                                //Bundle bundle = new Bundle();
-                                //bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
-                                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                                //intent.putExtras(bundle);
-                                getActivity().finish();
-                                getActivity().startActivity(intent);
-                                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
                             break;
                     }
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
+                    Intent intent = new Intent(getContext(), SettingsActivity.class);
+                    intent.putExtras(bundle);
+                    getActivity().finish();
+                    getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     return true;
                 }
             });

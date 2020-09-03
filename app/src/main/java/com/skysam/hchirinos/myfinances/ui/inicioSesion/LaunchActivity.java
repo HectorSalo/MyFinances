@@ -2,14 +2,19 @@ package com.skysam.hchirinos.myfinances.ui.inicioSesion;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 
 public class LaunchActivity extends AppCompatActivity {
@@ -17,6 +22,24 @@ public class LaunchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+            String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+
+            switch (tema) {
+                case Constantes.PREFERENCE_TEMA_SISTEMA:
+                    setTheme(R.style.AppTheme);
+                    break;
+                case Constantes.PREFERENCE_TEMA_OSCURO:
+                    setTheme(R.style.AppThemeNight);
+                    break;
+                case Constantes.PREFERENCE_TEMA_CLARO:
+                    setTheme(R.style.AppThemeDay);
+                    break;
+            }
+        }
         setContentView(R.layout.activity_launch);
 
 
@@ -37,11 +60,5 @@ public class LaunchActivity extends AppCompatActivity {
                 finish();
             }
         }, 4500);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
     }
 }

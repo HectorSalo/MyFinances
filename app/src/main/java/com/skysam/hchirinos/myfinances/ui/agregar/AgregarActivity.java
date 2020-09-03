@@ -1,6 +1,8 @@
 package com.skysam.hchirinos.myfinances.ui.agregar;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -9,7 +11,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 import java.util.Objects;
 
@@ -19,6 +24,22 @@ public class AgregarActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
+        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+
+        switch (tema){
+            case Constantes.PREFERENCE_TEMA_SISTEMA:
+                setTheme(R.style.AppTheme);
+                break;
+            case Constantes.PREFERENCE_TEMA_OSCURO:
+                setTheme(R.style.AppThemeNight);
+                break;
+            case Constantes.PREFERENCE_TEMA_CLARO:
+                setTheme(R.style.AppThemeDay);
+                break;
+        }
         setContentView(R.layout.activity_agregar);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

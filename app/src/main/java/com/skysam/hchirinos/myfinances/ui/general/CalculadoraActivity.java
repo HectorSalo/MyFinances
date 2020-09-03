@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 public class CalculadoraActivity extends AppCompatActivity {
 
@@ -23,11 +24,13 @@ public class CalculadoraActivity extends AppCompatActivity {
     private TextInputEditText etIngreso, etResultado;
     private float valorCotizacion;
     private boolean bolivares;
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+
         setContentView(R.layout.activity_calculadora);
 
         etIngreso = findViewById(R.id.et_ingreso);
@@ -37,7 +40,6 @@ public class CalculadoraActivity extends AppCompatActivity {
 
         bolivares = true;
 
-        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
         valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
 
         etIngreso.addTextChangedListener(new TextWatcher() {
