@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -33,7 +34,7 @@ import com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
 import com.skysam.hchirinos.myfinances.ui.inicioSesion.InicSesionActivity;
 
-public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
     private BottomSheetDialog bottomSheetDialog;
     private HomeFragment homeFragment;
@@ -128,6 +129,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         itemBuscar.setVisible(false);
         searchView = (SearchView) itemBuscar.getActionView();
         searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
+        searchView.setOnSearchClickListener(this);
         return true;
     }
 
@@ -346,5 +349,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 break;
         }
         return false;
+    }
+
+    @Override
+    public boolean onClose() {
+        floatingActionButton.setVisibility(View.VISIBLE);
+        return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        floatingActionButton.setVisibility(View.GONE);
     }
 }

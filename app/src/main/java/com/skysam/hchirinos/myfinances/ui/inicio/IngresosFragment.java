@@ -222,11 +222,16 @@ public class IngresosFragment extends Fragment {
                         ingreso.setMonto(doc.getDouble(Constantes.BD_MONTO));
                         ingreso.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
 
-                        double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
-                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
-                        ingreso.setDuracionFrecuencia(duracionFrecuenciaInt);
-                        ingreso.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
-                        ingreso.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
+                        String tipoFrecuencia = doc.getString(Constantes.BD_TIPO_FRECUENCIA);
+                        if (tipoFrecuencia != null) {
+                            double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                            int duracionFrecuenciaInt = (int) duracionFrecuencia;
+                            ingreso.setDuracionFrecuencia(duracionFrecuenciaInt);
+                            ingreso.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
+                            ingreso.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
+                        } else {
+                            ingreso.setTipoFrecuencia(null);
+                        }
 
                         listaIngresos.add(ingreso);
 

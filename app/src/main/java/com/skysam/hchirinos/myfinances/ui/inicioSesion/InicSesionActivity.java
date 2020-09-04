@@ -34,7 +34,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
-import com.skysam.hchirinos.myfinances.ui.ajustes.BloqueoActivity;
 import com.skysam.hchirinos.myfinances.ui.inicio.HomeActivity;
 
 public class InicSesionActivity extends AppCompatActivity {
@@ -129,8 +128,7 @@ public class InicSesionActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, BloqueoActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, bloqueo);
-                bundle.putString("user", user.getUid());
-                bundle.putBoolean("inicio", true);
+                bundle.putString(Constantes.USER, user.getUid());
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -151,13 +149,13 @@ public class InicSesionActivity extends AppCompatActivity {
                 emailValido = false;
             }
         } else {
-            etEmailLayout.setError("El campo no puede estar vacío");
+            etEmailLayout.setError(getString(R.string.error_campo_vacio));
             emailValido = false;
         }
 
         if (password.isEmpty()) {
             passwordValido = false;
-            etPassLayout.setError("El campo no puede estar vacío");
+            etPassLayout.setError(getString(R.string.error_campo_vacio));
         } else {
             passwordValido = true;
 
@@ -181,7 +179,6 @@ public class InicSesionActivity extends AppCompatActivity {
                                 buttonGoogle.setEnabled(true);
                                 startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                             } else {
-                                // If sign in fails, display a message to the user.
                                 progressBar.setVisibility(View.GONE);
                                 buttonIniciarSesion.setEnabled(true);
                                 buttonRegistrar.setEnabled(true);
@@ -222,7 +219,7 @@ public class InicSesionActivity extends AppCompatActivity {
                 etEmailLayout.setError("Formato incorrecto para correo");
             }
         } else {
-            etEmailLayout.setError("El campo no puede estar vacío");
+            etEmailLayout.setError(getString(R.string.error_campo_vacio));
         }
 
 

@@ -55,7 +55,9 @@ public class AgregarGastoFragment extends Fragment {
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton imageButtonSelecFecha;
-    private int mesActual, anualActual, mesSelec, anualSelec;
+    private int anualActual;
+    private int mesSelec;
+    private int anualSelec;
     private Calendar calendarSelec, calendarActual;
     private double monto;
 
@@ -79,7 +81,7 @@ public class AgregarGastoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         calendarActual = Calendar.getInstance();
-        mesActual = calendarActual.get(Calendar.MONTH);
+        int mesActual = calendarActual.get(Calendar.MONTH);
         anualActual = calendarActual.get(Calendar.YEAR);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -276,12 +278,12 @@ public class AgregarGastoFragment extends Fragment {
 
 
     private void guardarDatosMes(String concepto) {
-        boolean dolar = false;
+        boolean dolar;
         int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
 
         if (rbBs.isChecked()) {
             dolar = false;
-        } else if (rbDolar.isChecked()) {
+        } else {
             dolar = true;
         }
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.agregar.AgregarIngresoFragment">
+    tools:context=".ui.agregar.AgregarActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_concepto"
@@ -75,8 +75,8 @@
             android:text="@string/moneda_dolar" />
     </RadioGroup>
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <RadioGroup
+        android:id="@+id/radioGroup2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -86,6 +86,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+        <RadioButton
+            android:id="@+id/radioButton_ingreso_fijo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ingreso_fijo" />
+
+        <RadioButton
+            android:id="@+id/radioButton_ingreso_mes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/ingreso_mes" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_frecuencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup2">
 
         <TextView
             android:id="@+id/textView"
@@ -105,7 +131,7 @@
     </LinearLayout>
 
     <RadioGroup
-        android:id="@+id/radioGroup3"
+        android:id="@+id/radioGroup_frecuencia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -113,7 +139,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_frecuencia">
 
         <RadioButton
             android:id="@+id/radioButton_dias"
@@ -135,7 +161,7 @@
     </RadioGroup>
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/linearLayout_fecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -144,7 +170,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup3">
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup_frecuencia">
 
         <TextView
             android:id="@+id/textView2"
@@ -173,7 +199,37 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_fecha" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_escoger_mes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_fecha_inicio"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/escoger_mes"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/spinner_escoger_mes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_first"
@@ -186,7 +242,7 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_fecha_inicio" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_escoger_mes" />
 
     <ProgressBar
         android:id="@+id/progressBar_agregar_ingreso"

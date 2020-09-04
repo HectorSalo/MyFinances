@@ -97,10 +97,12 @@ class ActualizarPassDialog : DialogFragment() {
         button?.hideKeyboard()
 
         user?.updatePassword(passNuevo)?.addOnSuccessListener {
-
+            dialogModificarPassBinding.progressBar.visibility = View.VISIBLE
+            Toast.makeText(requireContext(), getString(R.string.actualizar_pass_ok), Toast.LENGTH_LONG).show()
+            dialog?.dismiss()
         }?.addOnFailureListener {
             dialogModificarPassBinding.progressBar.visibility = View.GONE
-            Toast.makeText(requireContext(), getString(R.string.error_pass_code), Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.error_actualizar_pass), Toast.LENGTH_LONG).show()
         }
     }
 

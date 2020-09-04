@@ -42,6 +42,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.databinding.DialogHuellaSettingsBinding;
@@ -186,9 +187,24 @@ public class SettingsActivity extends AppCompatActivity implements
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.header_preferences, rootKey);
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
             Preference preferenceCerrarSesion = findPreference("cerrar_sesion_header");
             Preference preferenceActualizarPass = findPreference("actualizar_pass_header");
+
+            String providerId = "";
+
+            if (user != null) {
+                for (UserInfo profile : user.getProviderData()) {
+                    providerId = profile.getProviderId();
+                }
+            }
+
+            if (providerId.equals("google.com")) {
+                preferenceActualizarPass.setVisible(false);
+            } else {
+                preferenceActualizarPass.setVisible(true);
+            }
 
 
             preferenceActualizarPass.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -272,7 +288,7 @@ public class SettingsActivity extends AppCompatActivity implements
                                 if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_BLOQUEO_HUELLA)) {
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
                                 } else {
-                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_anterior));
+                                    dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_actual));
                                 }
                                 dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
                                 pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
@@ -436,7 +452,7 @@ public class SettingsActivity extends AppCompatActivity implements
                             dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_respaldo));
                         } else {
                             dialogHuellaSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
-                            dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_anterior));
+                            dialogHuellaSettingsBinding.tvInfoHuella.setText(getString(R.string.text_ingrese_pin_actual));
                         }
                         dialogHuellaSettingsBinding.linearLayout.setVisibility(View.VISIBLE);
                         dialogHuellaSettingsBinding.lottieAnimationView.setVisibility(View.GONE);

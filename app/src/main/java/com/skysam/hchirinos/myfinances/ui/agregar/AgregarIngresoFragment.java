@@ -10,8 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,16 +45,16 @@ public class AgregarIngresoFragment extends Fragment {
 
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
-    private Spinner spFrecuencia;
-    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses;
+    private Spinner spFrecuencia, spinnerEscogerMes;
+    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbIngresoFijo, rbIngresoMes;
     private TextView tvFecha;
     private Date fechaSelec;
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton imageButtonSelecFecha;
-    private int mesSelec, anualSelec;
-    private Calendar calendarSelec;
+    private int mesSelec, anualSelec, anualActual;
+    private Calendar calendarSelec, calendarActual;
 
     public AgregarIngresoFragment() {}
 
@@ -67,6 +69,9 @@ public class AgregarIngresoFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        calendarActual = Calendar.getInstance();
+        int mesActual = calendarActual.get(Calendar.MONTH);
+        anualActual = calendarActual.get(Calendar.YEAR);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -81,8 +86,16 @@ public class AgregarIngresoFragment extends Fragment {
         rbSemanas = view.findViewById(R.id.radioButton_semanas);
         rbMeses = view.findViewById(R.id.radioButton_meses);
         tvFecha = view.findViewById(R.id.textView_fecha_inicio);
+        rbIngresoFijo = view.findViewById(R.id.radioButton_ingreso_fijo);
+        rbIngresoMes = view.findViewById(R.id.radioButton_ingreso_mes);
+        RadioGroup radioIngreso = view.findViewById(R.id.radioGroup2);
+        final LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout_frecuencia);
+        final LinearLayout linearLayoutFecha = view.findViewById(R.id.linearLayout_fecha);
+        final LinearLayout linearLayoutEscogerMes = view.findViewById(R.id.linearLayout_escoger_mes);
+        final RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup_frecuencia);
 
         rbDolar.setChecked(true);
+        rbIngresoFijo.setChecked(true);
         rbDias.setChecked(true);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ingreso);
@@ -92,6 +105,37 @@ public class AgregarIngresoFragment extends Fragment {
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
         ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
+
+        spinnerEscogerMes = view.findViewById(R.id.spinner_escoger_mes);
+
+        List<String> listaEscogerMes = Arrays.asList(getResources().getStringArray(R.array.meses));
+        ArrayAdapter<String> adapterEscogerMes = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaEscogerMes);
+        spinnerEscogerMes.setAdapter(adapterEscogerMes);
+        spinnerEscogerMes.setSelection(mesActual);
+
+        radioIngreso.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radioButton_ingreso_fijo:
+                        linearLayoutEscogerMes.setVisibility(View.GONE);
+                        linearLayoutFecha.setVisibility(View.VISIBLE);
+                        linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+                        radioGroupFrecuencia.setVisibility(View.VISIBLE);
+                        tvFecha.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.radioButton_ingreso_mes:
+                        linearLayoutEscogerMes.setVisibility(View.VISIBLE);
+                        linearLayoutFecha.setVisibility(View.GONE);
+                        linearLayoutFrecuencia.setVisibility(View.GONE);
+                        radioGroupFrecuencia.setVisibility(View.GONE);
+                        tvFecha.setVisibility(View.GONE);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
         fechaSelec = new Date();
         fechaSelec = null;
@@ -121,17 +165,28 @@ public class AgregarIngresoFragment extends Fragment {
             if (!(etMonto.getText().toString().isEmpty())) {
                 double monto = Double.parseDouble(etMonto.getText().toString());
                 if (monto > 0) {
-                    if (fechaSelec != null) {
-                        guardarDatos(concepto, monto, fechaSelec);
+                    if (rbIngresoMes.isChecked()) {
                         etConceptoLayout.setError(null);
                         etMontoLayout.setError(null);
                         progressBar.setVisibility(View.VISIBLE);
                         etConceptoLayout.setEnabled(false);
                         etMontoLayout.setEnabled(false);
                         btnGuardar.setEnabled(false);
-                        imageButtonSelecFecha.setEnabled(false);
+                        fechaSelec = calendarActual.getTime();
+                        guardarDatosMes(concepto, monto, fechaSelec);
                     } else {
-                       Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
+                        if (fechaSelec != null) {
+                            etConceptoLayout.setError(null);
+                            etMontoLayout.setError(null);
+                            progressBar.setVisibility(View.VISIBLE);
+                            etConceptoLayout.setEnabled(false);
+                            etMontoLayout.setEnabled(false);
+                            btnGuardar.setEnabled(false);
+                            imageButtonSelecFecha.setEnabled(false);
+                            guardarDatosFijos(concepto, monto, fechaSelec);
+                        } else {
+                            Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } else {
                     etMontoLayout.setError("El monto debe ser mayor a cero");
@@ -147,7 +202,7 @@ public class AgregarIngresoFragment extends Fragment {
     }
 
 
-    private void guardarDatos(String concepto, double monto, Date fechaSelec) {
+    private void guardarDatosFijos(String concepto, double monto, Date fechaSelec) {
         boolean dolar = false;
         String tipoFrecuencia = null;
         int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
@@ -203,6 +258,50 @@ public class AgregarIngresoFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    private void guardarDatosMes(String concepto, double monto, Date fechaSelec) {
+        boolean dolar;
+        int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
+
+        if (rbBs.isChecked()) {
+            dolar = false;
+        } else {
+            dolar = true;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> docData = new HashMap<>();
+        docData.put(Constantes.BD_CONCEPTO, concepto);
+        docData.put(Constantes.BD_MONTO, monto);
+        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_DOLAR, dolar);
+        docData.put(Constantes.BD_DURACION_FRECUENCIA, null);
+        docData.put(Constantes.BD_TIPO_FRECUENCIA, null);
+
+        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
+                .set(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot written succesfully");
+                        progressBar.setVisibility(View.GONE);
+                        requireActivity().finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar en el mes. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
+                        imageButtonSelecFecha.setEnabled(true);
+                    }
+                });
     }
 
 
