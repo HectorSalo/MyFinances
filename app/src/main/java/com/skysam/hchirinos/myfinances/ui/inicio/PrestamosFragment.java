@@ -2,6 +2,7 @@ package com.skysam.hchirinos.myfinances.ui.inicio;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -69,6 +70,16 @@ public class PrestamosFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().getSupportFragmentManager().
+                        beginTransaction().replace(R.id.container_fragments, new HomeFragment(), "home").commit();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
         mesSelected = calendar.get(Calendar.MONTH);

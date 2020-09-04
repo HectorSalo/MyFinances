@@ -24,7 +24,7 @@
             android:name="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.inicio.ListaGastosActivity"
+            android:name=".ui.general.ListaGastosActivity"
             android:label="@string/title_activity_lista_gastos"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

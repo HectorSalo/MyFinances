@@ -38,7 +38,7 @@
     <!-- Strings used for fragments -->
     <string name="concepto">Concepto:</string>
     <string name="monto">Monto:</string>
-    <string name="moneda_bolivares">Bs.</string>
+    <string name="moneda_bolivar">Bs.</string>
     <string name="moneda_dolar">$</string>
     <string name="frecuencia">Frecuencia:</string>
     <string name="dias">Días</string>

@@ -14,8 +14,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class EditarIngresoFragment extends Fragment {
     private String conceptoViejo, conceptoNuevo, idDoc;
     private double montoNuevo, montoViejo;
     private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected;
+    private boolean mesUnico;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia;
@@ -87,6 +90,9 @@ public class EditarIngresoFragment extends Fragment {
         rbSemanas = view.findViewById(R.id.radioButton_semanas_editar);
         rbMeses = view.findViewById(R.id.radioButton_meses_editar);
         tvFecha = view.findViewById(R.id.textView_fecha_inicio_editar);
+        LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout2);
+        LinearLayout linearLayoutFecha = view.findViewById(R.id.linearLayout3);
+        RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup3);
 
         progressBar = view.findViewById(R.id.progressBar_editar_ingreso);
 
@@ -99,6 +105,7 @@ public class EditarIngresoFragment extends Fragment {
         idDoc = getArguments().getString("idDoc");
         mesSelected = getArguments().getInt("mes");
         yearSelected = getArguments().getInt("year");
+        mesUnico = getArguments().getBoolean("mesUnico");
 
         fechaNueva = new Date();
         fechaNueva = null;
@@ -119,12 +126,21 @@ public class EditarIngresoFragment extends Fragment {
             }
         });
 
-        cargarItem();
-
+        if (mesUnico) {
+            linearLayoutFecha.setVisibility(View.GONE);
+            linearLayoutFrecuencia.setVisibility(View.GONE);
+            radioGroupFrecuencia.setVisibility(View.GONE);
+            cargarItemUnico();
+        } else {
+            linearLayoutFecha.setVisibility(View.VISIBLE);
+            linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+            radioGroupFrecuencia.setVisibility(View.VISIBLE);
+            cargarItemPeriodico();
+        }
     }
 
 
-    private void cargarItem() {
+    private void cargarItemPeriodico() {
         progressBar.setVisibility(View.VISIBLE);
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);
@@ -196,6 +212,58 @@ public class EditarIngresoFragment extends Fragment {
         });
     }
 
+    private void cargarItemUnico() {
+        progressBar.setVisibility(View.VISIBLE);
+        etConceptoLayout.setEnabled(false);
+        etMontoLayout.setEnabled(false);
+        btnEditar.setEnabled(false);
+
+        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
+                        conceptoViejo = document.getString(Constantes.BD_CONCEPTO);
+                        etConcepto.setText(conceptoViejo);
+
+                        montoViejo = document.getDouble(Constantes.BD_MONTO);
+                        String montoS = String.valueOf(montoViejo);
+                        etMonto.setText(montoS);
+
+                        boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                        if (dolar) {
+                            rbDolar.setChecked(true);
+                        } else {
+                            rbBs.setChecked(true);
+                        }
+
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnEditar.setEnabled(true);
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnEditar.setEnabled(true);
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                    Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    etConceptoLayout.setEnabled(true);
+                    etMontoLayout.setEnabled(true);
+                    btnEditar.setEnabled(true);
+                }
+            }
+        });
+    }
+
 
     private void seleccionarFecha() {
         final Calendar calendarSelec = Calendar.getInstance();
@@ -245,12 +313,16 @@ public class EditarIngresoFragment extends Fragment {
         }
 
         if (montoValido && conceptoValido) {
-            actualizarItem();
+            if (mesUnico) {
+                actualizarItemUnico();
+            } else {
+                actualizarItemPeriodico();
+            }
         }
 
     }
 
-    private void actualizarItem() {
+    private void actualizarItemPeriodico() {
         progressBar.setVisibility(View.VISIBLE);
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);
@@ -309,7 +381,7 @@ public class EditarIngresoFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente " + e, Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.GONE);
                             etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);
@@ -318,8 +390,50 @@ public class EditarIngresoFragment extends Fragment {
                         }
                     });
         }
+    }
 
+    private void actualizarItemUnico() {
+        progressBar.setVisibility(View.VISIBLE);
+        etConceptoLayout.setEnabled(false);
+        etMontoLayout.setEnabled(false);
+        btnEditar.setEnabled(false);
 
+        Map<String, Object> item = new HashMap<>();
 
+        if (!conceptoViejo.equals(conceptoNuevo)) {
+            item.put(Constantes.BD_CONCEPTO, conceptoNuevo);
+        }
+        if (montoNuevo != montoViejo) {
+            item.put(Constantes.BD_MONTO, montoNuevo);
+        }
+        if (rbBs.isChecked()) {
+            item.put(Constantes.BD_DOLAR, false);
+        }
+        if (rbDolar.isChecked()) {
+            item.put(Constantes.BD_DOLAR, true);
+        }
+
+        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+                .update(item)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        requireActivity().finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                        Toast.makeText(getContext(), "Error al modificar. Intente nuevamente " + e, Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnEditar.setEnabled(true);
+                    }
+                });
     }
 }

@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.ui.inicio;
+package com.skysam.hchirinos.myfinances.ui.general;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -12,6 +12,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,7 @@ import com.skysam.hchirinos.myfinances.adaptadores.ItemGastoAdapter;
 import com.skysam.hchirinos.myfinances.adaptadores.ListasAdapter;
 import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor;
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor;
+import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,7 +83,7 @@ public class ListaGastosActivity extends AppCompatActivity {
     private ProgressBar progressBarListas, progressBarItems;
     private int cantidadItems, positionLista;
     private double montoViejo, monto;
-    private boolean nuevoItem;
+    private boolean nuevoItem, itemMovido;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +147,8 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         progressBarListas = findViewById(R.id.progressBar_listas);
         progressBarItems = findViewById(R.id.progressBar_items);
+
+        itemMovido = false;
 
         idLista = null;
 
@@ -538,28 +542,30 @@ public class ListaGastosActivity extends AppCompatActivity {
 
         itemGastoAdapter.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public boolean onLongClick(final View v) {
                 cantidadItems = listListas.get(positionLista).getCantidadItems();
-                final View vista = v;
-                idItem = listItems.get(recyclerItems.getChildAdapterPosition(vista)).getIdItem();
+                idItem = listItems.get(recyclerItems.getChildAdapterPosition(v)).getIdItem();
                 AlertDialog.Builder dialog = new AlertDialog.Builder(ListaGastosActivity.this);
                 dialog.setTitle("¿Qué desea hacer?")
-                        .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+                        .setItems(R.array.opciones_item_list_gasto, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getApplicationContext(), "Eliminando...", Toast.LENGTH_SHORT).show();
-                                eliminarItem();
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                switch (i) {
+                                    case 0:
+                                        String concepto = listItems.get(recyclerItems.getChildAdapterPosition(v)).getConcepto();
+                                        double monto = listItems.get(recyclerItems.getChildAdapterPosition(v)).getMontoAproximado();
+                                        moverToGastos(concepto, monto);
+                                        break;
+                                    case 1:
+                                        editarItem();
+                                        break;
+                                    case 2:
+                                        eliminarItem();
+                                        break;
+                                }
                             }
-                        }).setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                }).setNegativeButton("Editar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editarItem();
-                    }
-                }).show();
+                        })
+                        .setNegativeButton(getString(R.string.btn_cancelar), null).show();
                 return true;
             }
         });
@@ -671,6 +677,17 @@ public class ListaGastosActivity extends AppCompatActivity {
             }
         }, year, month, day);
         datePickerDialog.show();
+    }
+
+    private void moverToGastos(String concepto, double monto) {
+        Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
+        intent.putExtra(Constantes.BD_CONCEPTO, concepto);
+        intent.putExtra(Constantes.BD_MONTO, monto);
+        intent.putExtra("idItem", idItem);
+        intent.putExtra("idLista", idLista);
+        intent.putExtra("agregar", 3);
+        startActivity(intent);
+        itemMovido = true;
     }
 
     private void editarItem() {
@@ -824,4 +841,12 @@ public class ListaGastosActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (itemMovido) {
+            actualizarCantidadItems(false);
+            cargarLista();
+        }
+    }
 }

@@ -13,26 +13,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
-import com.skysam.hchirinos.myfinances.ui.inicioSesion.InicSesionActivity;
+import com.skysam.hchirinos.myfinances.ui.general.ListaGastosActivity;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
@@ -265,63 +258,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         }).show();
 
-    }
-
-    private void confirmarCerrarSesion() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirmar");
-        builder.setMessage("¿Desea cerrar la sesión?");
-        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                cerrarSesion();
-            }
-        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
-    }
-
-    private void cerrarSesion() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseAuth.getInstance().signOut();
-
-        String providerId = "";
-
-        if (user != null) {
-            for (UserInfo profile : user.getProviderData()) {
-                providerId = profile.getProviderId();
-            }
-        }
-
-        if (providerId.equals("google.com")) {
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
-
-            GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-            mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    startActivity(new Intent(getApplicationContext(), InicSesionActivity.class));
-                }
-            });
-        } else {
-            startActivity(new Intent(getApplicationContext(), InicSesionActivity.class));
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!searchView.isIconified()) {
-            searchView.setIconified(true);
-        } else {
-            confirmarCerrarSesion();
-        }
     }
 
     @Override

@@ -51,6 +51,11 @@ public class AgregarActivity extends AppCompatActivity {
         AgregarGastoFragment agregarGastoFragment = new AgregarGastoFragment();
         AgregarDeudaFragment agregarDeudaFragment = new AgregarDeudaFragment();
 
+        String concepto = getIntent().getStringExtra(Constantes.BD_CONCEPTO);
+        double monto = getIntent().getDoubleExtra(Constantes.BD_MONTO, 0);
+        String idItem = getIntent().getStringExtra("idItem");
+        String idLista = getIntent().getStringExtra("idLista");
+
         int opcionAgregar = getIntent().getIntExtra("agregar", 0);
         switch (opcionAgregar) {
             case 0:
@@ -66,6 +71,14 @@ public class AgregarActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("Agregar un Préstamo Realizado");
                 break;
             case 3:
+                if (concepto != null) {
+                    Bundle bundleFragment = new Bundle();
+                    bundleFragment.putString(Constantes.BD_CONCEPTO, concepto);
+                    bundleFragment.putDouble(Constantes.BD_MONTO, monto);
+                    bundleFragment.putString("idLista", idLista);
+                    bundleFragment.putString("idItem", idItem);
+                    agregarGastoFragment.setArguments(bundleFragment);
+                }
                 getSupportFragmentManager().beginTransaction().add(R.id.agregar_container_fragment, agregarGastoFragment).commit();
                 getSupportActionBar().setTitle("Agregar un Gasto");
                 break;

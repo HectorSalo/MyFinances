@@ -138,7 +138,12 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                             if (valor > 0) {
                                 double total = montoOriginal - valor;
                                 if (total >= 0) {
-                                    actualizarMonto(position, total);
+                                    Toast.makeText(context, "Actualizando préstamo...", Toast.LENGTH_LONG).show();
+                                    if (total == 0) {
+                                        eliminarPrestamo(position);
+                                    } else {
+                                        actualizarMonto(position, total);
+                                    }
                                 } else {
                                     Toast.makeText(context, "No puede cobrar un monto mayor al préstamo", Toast.LENGTH_SHORT).show();
                                 }
@@ -148,6 +153,36 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                         }
                     }
                 }).show();
+    }
+
+    private void eliminarPrestamo(final int position) {
+        String idDoc = listaPrestamos.get(position).getIdAhorro();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        for (int j = mes; j < 12; j++) {
+            final int finalJ = j;
+            db.collection(Constantes.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            if (finalJ == 11) {
+                                Toast.makeText(context, "Préstamo cobrado por completo", Toast.LENGTH_SHORT).show();
+                                listaPrestamos.remove(position);
+                                updateList(listaPrestamos);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void actualizarMonto(final int position, final double montoNuevo) {

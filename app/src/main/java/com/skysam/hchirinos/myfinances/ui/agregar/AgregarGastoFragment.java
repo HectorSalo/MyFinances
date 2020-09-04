@@ -60,6 +60,8 @@ public class AgregarGastoFragment extends Fragment {
     private int anualSelec;
     private Calendar calendarSelec, calendarActual;
     private double monto;
+    private String idLista, idItem;
+    private boolean itemListGastos;
 
     public AgregarGastoFragment() {
         // Required empty public constructor
@@ -106,7 +108,6 @@ public class AgregarGastoFragment extends Fragment {
         final RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup_frecuencia);
 
         rbDolar.setChecked(true);
-        rbGastoFijo.setChecked(true);
         rbDias.setChecked(true);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_gasto);
@@ -166,6 +167,27 @@ public class AgregarGastoFragment extends Fragment {
                 seleccionarFecha();
             }
         });
+
+        if (getArguments() != null) {
+            String concepto = getArguments().getString(Constantes.BD_CONCEPTO);
+            double monto = getArguments().getDouble(Constantes.BD_MONTO);
+            idLista = getArguments().getString("idLista");
+            idItem = getArguments().getString("idItem");
+
+            linearLayoutEscogerMes.setVisibility(View.VISIBLE);
+            linearLayoutFecha.setVisibility(View.GONE);
+            linearLayoutFrecuencia.setVisibility(View.GONE);
+            radioGroupFrecuencia.setVisibility(View.GONE);
+            tvFecha.setVisibility(View.GONE);
+            rbGastoMes.setChecked(true);
+            etConcepto.setText(concepto);
+            etMonto.setText(String.valueOf(monto));
+
+            itemListGastos = true;
+        } else {
+            itemListGastos = false;
+            rbGastoFijo.setChecked(true);
+        }
     }
 
 
@@ -219,6 +241,7 @@ public class AgregarGastoFragment extends Fragment {
 
 
     private void guardarDatosFijos(String concepto) {
+        progressBar.setVisibility(View.VISIBLE);
         boolean dolar = false;
         String tipoFrecuencia = null;
         int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
@@ -256,8 +279,12 @@ public class AgregarGastoFragment extends Fragment {
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
                             if (finalJ == 11) {
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
+                                if (itemListGastos) {
+                                    borrarItemListGastos();
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    requireActivity().finish();
+                                }
                             }
                         }
                     })
@@ -278,6 +305,7 @@ public class AgregarGastoFragment extends Fragment {
 
 
     private void guardarDatosMes(String concepto) {
+        progressBar.setVisibility(View.VISIBLE);
         boolean dolar;
         int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
 
@@ -305,8 +333,12 @@ public class AgregarGastoFragment extends Fragment {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
+                            if (itemListGastos) {
+                                borrarItemListGastos();
+                            } else {
                                 progressBar.setVisibility(View.GONE);
                                 requireActivity().finish();
+                            }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -343,5 +375,27 @@ public class AgregarGastoFragment extends Fragment {
             }
         }, year, month, day);
         datePickerDialog.show();
+    }
+
+    private void borrarItemListGastos() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                        Toast.makeText(getContext(), "Proceso completado exitosamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        requireActivity().finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Delete", "Error deleting document", e);
+                        Toast.makeText(getContext(), "Error al borrar el item. Intente nuevamente.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

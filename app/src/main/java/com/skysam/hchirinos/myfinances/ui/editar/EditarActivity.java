@@ -53,11 +53,13 @@ public class EditarActivity extends AppCompatActivity {
         String idDoc = myBundle.getString("idDoc");
         int mes = myBundle.getInt("mes");
         int year = myBundle.getInt("year");
+        boolean mesUnico = myBundle.getBoolean("mesUnico");
 
         Bundle bundleFragment = new Bundle();
         bundleFragment.putString("idDoc", idDoc);
         bundleFragment.putInt("mes", mes);
         bundleFragment.putInt("year", year);
+        bundleFragment.putBoolean("mesUnico", mesUnico);
 
 
         switch (fragment) {
@@ -68,8 +70,6 @@ public class EditarActivity extends AppCompatActivity {
                 break;
 
             case 1:
-                boolean mesUnico = myBundle.getBoolean("mesUnico");
-                bundleFragment.putBoolean("mesUnico", mesUnico);
                 editarGastoFragment.setArguments(bundleFragment);
                 getSupportFragmentManager().beginTransaction().add(R.id.editar_container_fragment, editarGastoFragment).commit();
                 getSupportActionBar().setTitle("Editar Gasto");

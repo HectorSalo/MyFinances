@@ -16,7 +16,6 @@ class BloqueoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bloqueo)
 
-        val user = intent.getStringExtra(Constantes.USER)
         val tipoBloqueo = intent.getStringExtra(Constantes.PREFERENCE_TIPO_BLOQUEO)
 
         if (tipoBloqueo == Constantes.PREFERENCE_BLOQUEO_HUELLA) {

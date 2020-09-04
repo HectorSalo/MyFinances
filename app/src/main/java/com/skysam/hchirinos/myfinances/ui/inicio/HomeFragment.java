@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -68,28 +69,32 @@ public class HomeFragment extends Fragment {
     private String valor;
     private LinearLayout linearLayout;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private static final int INTERVALO = 2500;
+    private long tiempoPrimerClick;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
 
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (tiempoPrimerClick + INTERVALO > System.currentTimeMillis()) {
+                    requireActivity().finishAffinity();
+                } else {
+                    Toast.makeText(requireContext(), "Vuelve a presionar para salir", Toast.LENGTH_SHORT).show();
+                }
+                tiempoPrimerClick = System.currentTimeMillis();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         pieBalance = view.findViewById(R.id.pie_balance);
         progressBar = view.findViewById(R.id.progressBar_pie);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -84,6 +85,16 @@ public class IngresosFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().getSupportFragmentManager().
+                        beginTransaction().replace(R.id.container_fragments, new HomeFragment(), "home").commit();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         fragmentCreado = true;
 
@@ -174,12 +185,12 @@ public class IngresosFragment extends Fragment {
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
                         if (newList.isEmpty()) {
-                            editarItem(listaIngresos.get(position).getIdIngreso());
+                            editarItem(listaIngresos.get(position).getIdIngreso(), listaIngresos.get(position).getTipoFrecuencia());
                         } else {
-                            editarItem(newList.get(position).getIdIngreso());
+                            editarItem(newList.get(position).getIdIngreso(), newList.get(position).getTipoFrecuencia());
                         }
                     } else {
-                        editarItem(listaIngresos.get(position).getIdIngreso());
+                        editarItem(listaIngresos.get(position).getIdIngreso(), listaIngresos.get(position).getTipoFrecuencia());
                     }
                     break;
             }
@@ -280,13 +291,20 @@ public class IngresosFragment extends Fragment {
 
     }
 
-    private void editarItem(String id) {
+    private void editarItem(String id, String tipoFrecuencia) {
         Intent myIntent = new Intent(getContext(), EditarActivity.class);
         Bundle myBundle = new Bundle();
         myBundle.putString("idDoc", id);
         myBundle.putInt("fragment", 0);
         myBundle.putInt("mes", mesSelected);
         myBundle.putInt("year", yearSelected);
+
+        if (tipoFrecuencia != null) {
+            myBundle.putBoolean("mesUnico", false);
+        } else {
+            myBundle.putBoolean("mesUnico", true);
+        }
+
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
     }

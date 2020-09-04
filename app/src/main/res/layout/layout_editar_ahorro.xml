@@ -41,7 +41,7 @@
             android:id="@+id/radioButton_bolivares"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/moneda_bolivares" />
+            android:text="@string/moneda_bolivar" />
 
         <RadioButton
             android:id="@+id/radioButton_dolares"

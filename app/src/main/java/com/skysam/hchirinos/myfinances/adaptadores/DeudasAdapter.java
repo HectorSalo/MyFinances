@@ -131,9 +131,9 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
 
         if (b) {
-            textView.setText("$");
+            textView.setText(context.getString(R.string.moneda_dolar));
         } else {
-            textView.setText("Bs. ");
+            textView.setText(context.getString(R.string.moneda_bolivar) + " ");
         }
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto a abonar")
@@ -146,6 +146,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             if (valor > 0) {
                                 double total = montoOriginal - valor;
                                 if (total >= 0) {
+                                    Toast.makeText(context, "Actualizando deuda...", Toast.LENGTH_LONG).show();
                                     if (total == 0) {
                                         eliminarDeuda(position);
                                     } else {
