@@ -26,6 +26,7 @@ import com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
 import com.skysam.hchirinos.myfinances.ui.general.ListaGastosActivity;
+import com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
@@ -143,7 +144,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 startActivity(new Intent(this, CalculadoraActivity.class));
                 break;
             case R.id.menu_lista_gastos:
-                startActivity(new Intent(this, ListaGastosActivity.class));
+                startActivity(new Intent(this, ListaPendientesListActivity.class));
                 break;
             default:
                 break;

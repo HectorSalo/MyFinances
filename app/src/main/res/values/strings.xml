@@ -34,6 +34,7 @@
     <string name="btn_restablecimiento_pass">Olvidé mi contraseña</string>
 
     <string name="error_campo_vacio">El campo no puede estar vacío</string>
+    <string name="error_cargar_data">Error al cargar. Intente nuevamente</string>
 
     <!-- Strings used for fragments -->
     <string name="concepto">Concepto:</string>
@@ -57,7 +58,7 @@
     <string name="ingreso_fijo">Ingreso periódico</string>
     <string name="ingreso_mes">Ingreso único</string>
     <string name="escoger_mes">Escoja mes</string>
-    <string name="sin_lista">No hay ítems guardados en esta lista. Presione el botón ubicado en la esquina inferior derecha para agregar el primero.</string>
+    <string name="sin_lista">No hay ítems guardados en esta lista</string>
 
     <string name="menu_editar">Editar</string>
     <string name="menu_eliminar">Eliminar</string>
@@ -115,12 +116,7 @@
     <string name="error_actualizar_pass">Error al actualizar contraseña</string>
     <string name="actualizar_pass_ok">Constraseña actualizada</string>
 
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_listapendientes_detail">ListaPendientes Detail</string>
 
 
 </resources>

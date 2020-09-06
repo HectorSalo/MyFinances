@@ -12,7 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.skysam.hchirinos.myfinances.ui.inicioSesion.BloqueoActivity"/>
+        <activity
+            android:name=".ui.general.ListaPendientesListActivity"
+            android:label="@string/title_activity_lista_gastos"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.general.ListaPendientesDetailActivity"
+            android:label="@string/title_listapendientes_detail"
+            android:parentActivityName=".ui.general.ListaPendientesListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity" />
+        </activity>
+        <activity android:name=".ui.inicioSesion.BloqueoActivity" />
         <activity android:name=".ui.inicioSesion.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,17 +34,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity"
+            android:name=".ui.ajustes.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.general.ListaGastosActivity"
             android:label="@string/title_activity_lista_gastos"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity"
+            android:name=".ui.general.CalculadoraActivity"
             android:label="@string/title_activity_calculadora"
             android:theme="@style/AppTheme.Convertidor" />
-        <activity android:name="com.skysam.hchirinos.myfinances.ui.general.AcercaActivity" />
+        <activity android:name=".ui.general.AcercaActivity" />
         <activity
             android:name=".ui.editar.EditarActivity"
             android:label="@string/title_activity_editar" />
@@ -41,7 +54,7 @@
             android:name=".ui.agregar.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.inicio.HomeActivity"/>
+        <activity android:name=".ui.inicio.HomeActivity" />
     </application>
 
 </manifest>

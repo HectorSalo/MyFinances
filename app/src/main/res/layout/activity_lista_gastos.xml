@@ -31,30 +31,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
-        <ProgressBar
-            android:id="@+id/progressBar_listas"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/button_nueva_lista"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tv_sin_listas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/button_nueva_lista"
-            android:gravity="center"
-            android:text="@string/sin_listas"
-            android:textSize="20sp"
-            android:visibility="gone" />
-
         <Button
             android:id="@+id/button_nueva_lista"
             android:layout_width="100dp"
@@ -67,14 +43,6 @@
             android:textSize="18sp"
             app:iconPadding="4dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_listas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/button_nueva_lista" />
     </RelativeLayout>
 
     <RelativeLayout

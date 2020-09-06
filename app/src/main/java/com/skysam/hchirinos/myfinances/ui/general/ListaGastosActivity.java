@@ -65,23 +65,22 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class ListaGastosActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerListas, recyclerItems;
+    private RecyclerView recyclerItems;
     private ListasAdapter listasAdapter;
     private ItemGastoAdapter itemGastoAdapter;
     private ArrayList<ItemGastosConstructor> listItems;
     private ArrayList<ListasConstructor> listListas;
     private TableLayout layoutItem;
-    private TextView tvSinListas, tvInfoLista, tvFechaAproximada;
+    private TextView tvInfoLista, tvFechaAproximada;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout layoutConcepto, layoutMonto;
-    private String idLista, idItem, nombreLista, conceptoViejo, concepto;
+    private String idLista, idItem, conceptoViejo, concepto;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Date fechaIngreso, fechaSelec, fechaViejaAproximada;
     private Button buttonGuardarActualizar, buttonCancelar;
     private ImageButton imageButtonSelecFecha;
-    private ProgressBar progressBarListas, progressBarItems;
-    private int cantidadItems, positionLista;
+    private ProgressBar progressBarItems;
     private double montoViejo, monto;
     private boolean nuevoItem, itemMovido;
 
@@ -117,7 +116,6 @@ public class ListaGastosActivity extends AppCompatActivity {
         fechaSelec = new Date();
         fechaSelec = null;
 
-        tvSinListas = findViewById(R.id.tv_sin_listas);
         tvInfoLista = findViewById(R.id.tv_info_lista);
         tvFechaAproximada = findViewById(R.id.textView_fecha_aproximada);
         layoutItem = findViewById(R.id.layout_crear_item);
@@ -125,14 +123,8 @@ public class ListaGastosActivity extends AppCompatActivity {
         listListas = new ArrayList<>();
         listItems = new ArrayList<>();
 
-        LinearLayoutManager layoutManagerlistas = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager layoutManageritems = new LinearLayoutManager(this);
 
-        recyclerListas = findViewById(R.id.rv_listas);
-        listasAdapter = new ListasAdapter(listListas, this);
-        recyclerListas.setLayoutManager(layoutManagerlistas);
-        recyclerListas.setHasFixedSize(true);
-        recyclerListas.setAdapter(listasAdapter);
 
         recyclerItems = findViewById(R.id.rv_items_lista);
         itemGastoAdapter = new ItemGastoAdapter(listItems, this);
@@ -145,7 +137,6 @@ public class ListaGastosActivity extends AppCompatActivity {
         layoutConcepto = findViewById(R.id.outlined_concepto);
         layoutMonto = findViewById(R.id.outlined_monto);
 
-        progressBarListas = findViewById(R.id.progressBar_listas);
         progressBarItems = findViewById(R.id.progressBar_items);
 
         itemMovido = false;
@@ -179,7 +170,7 @@ public class ListaGastosActivity extends AppCompatActivity {
                     tvFechaAproximada.setText(getResources().getString(R.string.fecha_aproximada));
                     fechaSelec = null;
                     nuevoItem = true;
-                    cantidadItems = listListas.get(positionLista).getCantidadItems();
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Debe seleccionar una lista para agregar un ítem.", Toast.LENGTH_SHORT).show();
                 }
@@ -211,109 +202,7 @@ public class ListaGastosActivity extends AppCompatActivity {
             }
         });
 
-        tvInfoLista.setText(getResources().getString(R.string.sin_lista_seleccionada));
-
-        cargarTodasListas(true);
     }
-
-    private void cargarTodasListas(final boolean inicio) {
-        progressBarListas.setVisibility(View.VISIBLE);
-        String userID = user.getUid();
-
-        listListas = new ArrayList<>();
-
-        CollectionReference reference = db.collection(Constantes.BD_LISTA_GASTOS).document(userID).collection(Constantes.BD_TODAS_LISTAS);
-
-        Query query = reference.orderBy(Constantes.BD_FECHA_INGRESO, Query.Direction.DESCENDING);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        ListasConstructor lista = new ListasConstructor();
-
-                        lista.setIdLista(doc.getId());
-                        double cantidadD = doc.getDouble(Constantes.BD_CANTIDAD_ITEMS);
-                        int cantidad = (int) cantidadD;
-                        lista.setCantidadItems(cantidad);
-                        lista.setNombreLista(doc.getString(Constantes.BD_NOMBRE));
-
-                        listListas.add(lista);
-                    }
-                    listasAdapter.updateList(listListas);
-
-                    if (listListas.isEmpty()) {
-                        tvSinListas.setVisibility(View.VISIBLE);
-                        recyclerListas.setVisibility(View.GONE);
-                    } else {
-                        tvSinListas.setVisibility(View.GONE);
-                        recyclerListas.setVisibility(View.VISIBLE);
-
-                        if (!inicio) {
-                            idLista = listListas.get(0).getIdLista();
-                            nombreLista = listListas.get(0).getNombreLista();
-                            cantidadItems = listListas.get(0).getCantidadItems();
-                            positionLista = 0;
-                            cargarLista();
-                        }
-                    }
-                    progressBarListas.setVisibility(View.GONE);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    progressBarListas.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        listasAdapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String lista = listListas.get(recyclerListas.getChildAdapterPosition(v)).getIdLista();
-                nombreLista = listListas.get(recyclerListas.getChildAdapterPosition(v)).getNombreLista();
-                cantidadItems = listListas.get(recyclerListas.getChildAdapterPosition(v)).getCantidadItems();
-                positionLista = recyclerListas.getChildLayoutPosition(v);
-                recyclerItems.setVisibility(View.VISIBLE);
-                layoutItem.setVisibility(View.GONE);
-                layoutMonto.setError(null);
-                layoutConcepto.setError(null);
-                etConcepto.setText("");
-                etMonto.setText("");
-
-                if (!lista.equals(idLista)) {
-                    idLista = lista;
-                    cargarLista();
-                }
-            }
-        });
-
-        listasAdapter.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final View vista = v;
-                AlertDialog.Builder dialog = new AlertDialog.Builder(ListaGastosActivity.this);
-                dialog.setTitle("¿Qué desea hacer con la Lista?")
-                        .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                eliminarLista(recyclerListas.getChildLayoutPosition(vista), vista);
-                            }
-                        }).setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                }).setNegativeButton("Editar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editarLista(listListas.get(recyclerListas.getChildAdapterPosition(vista)).getNombreLista(), listListas.get(recyclerListas.getChildAdapterPosition(vista)).getIdLista(), recyclerListas.getChildLayoutPosition(vista));
-                    }
-                }).show();
-                return true;
-            }
-        });
-
-    }
-
-
 
 
     private void crearLista() {
@@ -361,7 +250,7 @@ public class ListaGastosActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot written succesfully");
-                        cargarTodasListas(false);
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -525,10 +414,10 @@ public class ListaGastosActivity extends AppCompatActivity {
                     }
 
                     if (listItems.isEmpty()) {
-                        String sinItems = getResources().getString(R.string.sin_items) + " " + nombreLista;
-                        tvInfoLista.setText(sinItems);
+
+
                     } else {
-                        tvInfoLista.setText(nombreLista);
+
                     }
 
                     itemGastoAdapter.updateList(listItems);
@@ -543,7 +432,7 @@ public class ListaGastosActivity extends AppCompatActivity {
         itemGastoAdapter.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) {
-                cantidadItems = listListas.get(positionLista).getCantidadItems();
+
                 idItem = listItems.get(recyclerItems.getChildAdapterPosition(v)).getIdItem();
                 AlertDialog.Builder dialog = new AlertDialog.Builder(ListaGastosActivity.this);
                 dialog.setTitle("¿Qué desea hacer?")
@@ -641,12 +530,7 @@ public class ListaGastosActivity extends AppCompatActivity {
         }
 
     private void actualizarCantidadItems (boolean sumarItems) {
-        final int cantidad;
-        if (sumarItems) {
-            cantidad = cantidadItems + 1;
-        } else {
-            cantidad = cantidadItems - 1;
-        }
+        final int cantidad = 0;
 
         db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document(idLista)
                 .update(Constantes.BD_CANTIDAD_ITEMS, cantidad)
@@ -654,7 +538,6 @@ public class ListaGastosActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                        listListas.get(positionLista).setCantidadItems(cantidad);
                         listasAdapter.updateList(listListas);
                     }
                 });
