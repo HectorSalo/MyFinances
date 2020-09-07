@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.general.ListaPendientesListActivity">
+    tools:context=".ui.general.listaGastos.ListaPendientesListActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -37,6 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_add_list_gastos_24"
+        app:tint="?attr/colorOnPrimary"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

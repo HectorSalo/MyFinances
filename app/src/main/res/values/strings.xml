@@ -71,6 +71,7 @@
     <string name="sin_listas">No hay listas creadas.</string>
     <string name="sin_items">No hay ítems guardados en: </string>
     <string name="sin_lista_seleccionada">Seleccione una lista para ver los ítems.</string>
+    <string name="nombre_crear_lista">Nombre:</string>
 
     <string name="monto_aproximado">Monto aproximado:</string>
     <string name="fecha_aproximada">Fecha de gasto aproximada:</string>

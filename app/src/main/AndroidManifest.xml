@@ -13,17 +13,17 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.general.ListaPendientesListActivity"
+            android:name=".ui.general.listaGastos.ListaPendientesListActivity"
             android:label="@string/title_activity_lista_gastos"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.general.ListaPendientesDetailActivity"
+            android:name=".ui.general.listaGastos.ListaPendientesDetailActivity"
             android:label="@string/title_listapendientes_detail"
-            android:parentActivityName=".ui.general.ListaPendientesListActivity"
+            android:parentActivityName=".ui.general.listaGastos.ListaPendientesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity" />
+                android:value="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity" />
         </activity>
         <activity android:name=".ui.inicioSesion.BloqueoActivity" />
         <activity android:name=".ui.inicioSesion.LaunchActivity">

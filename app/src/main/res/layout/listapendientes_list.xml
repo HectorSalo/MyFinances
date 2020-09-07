@@ -7,7 +7,7 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:baselineAligned="false"
-    tools:context=".ui.general.ListaPendientesListActivity"
+    tools:context=".ui.general.listaGastos.ListaPendientesListActivity"
     >
 
 <!--
@@ -24,7 +24,7 @@ This layout is a two-pane layout for the Items master/detail flow.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context="com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity"
+        tools:context="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity"
         tools:listitem="@layout/listapendientes_list_content" />
 
     <TextView

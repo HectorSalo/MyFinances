@@ -25,8 +25,7 @@ import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
-import com.skysam.hchirinos.myfinances.ui.general.ListaGastosActivity;
-import com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity;
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 

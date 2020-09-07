@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.ui.general
+package com.skysam.hchirinos.myfinances.ui.general.listaGastos
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -54,7 +54,7 @@ class ListaPendientesDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         db = FirebaseFirestore.getInstance()
         user = FirebaseAuth.getInstance().currentUser
-        
+
         adapter = ItemListPendienteAdapter(items, requireContext())
 
         setupRecyclerView(binding.rvItemsLista)

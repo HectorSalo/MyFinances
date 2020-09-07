@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
-import com.skysam.hchirinos.myfinances.ui.general.ListaPendientesDetailActivity
-import com.skysam.hchirinos.myfinances.ui.general.ListaPendientesDetailFragment
-import com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailActivity
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailFragment
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity
 
 class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {

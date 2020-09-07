@@ -5,7 +5,7 @@
     android:id="@+id/listapendientes_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.general.ListaPendientesDetailFragment" >
+    tools:context=".ui.general.listaGastos.ListaPendientesDetailFragment" >
 
 
     <androidx.recyclerview.widget.RecyclerView

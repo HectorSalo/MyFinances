@@ -1,6 +1,7 @@
-package com.skysam.hchirinos.myfinances.ui.general
+package com.skysam.hchirinos.myfinances.ui.general.listaGastos
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -63,7 +64,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
 
         }
 
-        cargarListas()
+        if (twoPane) cargarListas()
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -74,6 +75,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
     }
 
     private fun cargarListas() {
+        listas = ArrayList()
         activityListapendientesListBinding.includeListapendientesList.progressBar.visibility = View.VISIBLE
         val reference = db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS)
 
@@ -106,5 +108,19 @@ class ListaPendientesListActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
                     activityListapendientesListBinding.includeListapendientesList.progressBar.visibility = View.GONE
                 }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+            when (item.itemId) {
+                android.R.id.home -> {
+                    finish()
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
+            }
+
+    override fun onResume() {
+        super.onResume()
+        if (!twoPane) cargarListas()
     }
 }

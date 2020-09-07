@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".ui.general.ListaPendientesListActivity">
+        tools:context=".ui.general.listaGastos.ListaPendientesListActivity">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_listapendientes_list"
@@ -28,7 +28,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             app:layoutManager="LinearLayoutManager"
-            tools:context="com.skysam.hchirinos.myfinances.ui.general.ListaPendientesListActivity"
+            tools:context="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity"
             tools:listitem="@layout/listapendientes_list_content" />
 
         <FrameLayout
