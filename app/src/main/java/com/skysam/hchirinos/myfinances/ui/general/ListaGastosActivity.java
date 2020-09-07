@@ -227,7 +227,7 @@ public class ListaGastosActivity extends AppCompatActivity {
                         if (nombre.isEmpty()) {
                             Toast.makeText(getApplicationContext(), "Error al guardar: El nombre no puede estar vacío", Toast.LENGTH_LONG).show();
                         } else {
-                            guardarLista(nombre);
+
                         }
                     }
                 }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -236,30 +236,6 @@ public class ListaGastosActivity extends AppCompatActivity {
 
             }
         }).show();
-    }
-
-    private void guardarLista(String nombre) {
-        Map<String, Object> docData = new HashMap<>();
-        docData.put(Constantes.BD_NOMBRE, nombre);
-        docData.put(Constantes.BD_CANTIDAD_ITEMS, 0);
-        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
-
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document()
-                .set(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot written succesfully");
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getApplicationContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void editarLista(final String nombreActual, final String idLista, final int i) {

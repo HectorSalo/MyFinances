@@ -28,8 +28,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             app:layoutManager="LinearLayoutManager"
-            tools:context="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity"
-            tools:listitem="@layout/listapendientes_list_content" />
+            tools:context="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity" />
 
         <FrameLayout
             android:id="@+id/listapendientes_detail_container"

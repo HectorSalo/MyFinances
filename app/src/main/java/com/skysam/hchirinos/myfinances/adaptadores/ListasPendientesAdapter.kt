@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
@@ -17,6 +18,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
 
     private val onClickListener: View.OnClickListener
+    private val onLongClickListener: View.OnLongClickListener
 
     init {
         onClickListener = View.OnClickListener { v ->
@@ -40,6 +42,12 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
                 v.context.startActivity(intent)
             }
         }
+
+        onLongClickListener = View.OnLongClickListener { v ->
+            val itemLista = v.tag as ListasConstructor
+            crearOpciones()
+            return@OnLongClickListener true
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListasPendientesAdapter.ViewHolder {
@@ -61,6 +69,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
         with(holder.itemView) {
             tag = item
             setOnClickListener(onClickListener)
+            setOnLongClickListener(onLongClickListener)
         }
     }
 
@@ -75,6 +84,18 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
         listas = ArrayList()
         listas.addAll(newList)
         notifyDataSetChanged()
+    }
+
+    private fun crearOpciones() {
+        val dialog = AlertDialog.Builder(parentActivity.applicationContext)
+        dialog.setTitle("¿Qué desea hacer?")
+                .setItems(R.array.opciones_list_gasto) { dialogInterface, i ->
+                    when (i) {
+                        0 -> editarItem()
+                        //1 -> eliminarItem()
+                    }
+                }
+                .setNegativeButton(parentActivity.getString(R.string.btn_cancelar), null).show()
     }
 
 }
