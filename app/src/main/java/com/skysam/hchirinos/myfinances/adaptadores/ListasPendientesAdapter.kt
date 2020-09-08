@@ -2,23 +2,31 @@ package com.skysam.hchirinos.myfinances.adaptadores
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.CrearEditarListaDialog
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailActivity
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailFragment
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity
 
-class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
+class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
+
 
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
+    private var listas: ArrayList<ListasConstructor>? = listas
+
 
     init {
         onClickListener = View.OnClickListener { v ->
@@ -45,7 +53,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
 
         onLongClickListener = View.OnLongClickListener { v ->
             val itemLista = v.tag as ListasConstructor
-            crearOpciones()
+            crearOpciones(itemLista.nombreLista, this.listas!!.indexOf(itemLista))
             return@OnLongClickListener true
         }
     }
@@ -57,7 +65,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     override fun onBindViewHolder(holder: ListasPendientesAdapter.ViewHolder, position: Int) {
-        val item = listas[position]
+        val item = listas!![position]
         holder.nombre.text = item.nombreLista
         val itemsCantidad =  item.cantidadItems
         if (itemsCantidad == 0) {
@@ -73,7 +81,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
         }
     }
 
-    override fun getItemCount(): Int = listas.size
+    override fun getItemCount(): Int = listas!!.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nombre: TextView = view.findViewById(R.id.textView_nombre_lista)
@@ -81,21 +89,45 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     fun updateList(newList: ArrayList<ListasConstructor>) {
-        listas = ArrayList()
-        listas.addAll(newList)
+        listas!!.clear()
+        var listas: ArrayList<ListasConstructor>? = listas
+        listas!!.addAll(newList)
         notifyDataSetChanged()
     }
 
-    private fun crearOpciones() {
-        val dialog = AlertDialog.Builder(parentActivity.applicationContext)
+    private fun crearOpciones(nombre: String, position: Int) {
+        val dialog = AlertDialog.Builder(parentActivity)
         dialog.setTitle("¿Qué desea hacer?")
                 .setItems(R.array.opciones_list_gasto) { dialogInterface, i ->
                     when (i) {
-                        0 -> editarItem()
-                        //1 -> eliminarItem()
+                        0 -> {
+                            val editarListaDialog = CrearEditarListaDialog(twoPane, false, listas!!, position, parentActivity)
+                            editarListaDialog.show(parentActivity.supportFragmentManager, nombre)
+                        }
+                        1 -> eliminarItem(position)
                     }
                 }
                 .setNegativeButton(parentActivity.getString(R.string.btn_cancelar), null).show()
+    }
+
+    private fun eliminarItem(position: Int) {
+        listas!!.removeAt(position)
+        //notifyDataSetChanged()
+        updateList(listas!!)
+
+        /*val snackbar = Snackbar.make(view, lista.nombreLista + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer") {
+            listListas.add(i, lista)
+            listasAdapter.updateList(listListas)
+        }
+        snackbar.show()
+
+        val handler = Handler()
+        handler.postDelayed({
+            if (!listListas.contains(lista)) {
+                Toast.makeText(getApplicationContext(), "Eliminando lista", Toast.LENGTH_SHORT).show()
+                deleteLista(lista.idLista)
+            }
+        }, 3000)*/
     }
 
 }
