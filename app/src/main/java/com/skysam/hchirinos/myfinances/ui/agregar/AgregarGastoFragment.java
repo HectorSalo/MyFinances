@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.Constraints;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -57,7 +58,7 @@ public class AgregarGastoFragment extends Fragment {
     private ImageButton imageButtonSelecFecha;
     private int anualActual;
     private int mesSelec;
-    private int anualSelec;
+    private int anualSelec, cantidadItems;
     private Calendar calendarSelec, calendarActual;
     private double monto;
     private String idLista, idItem;
@@ -173,6 +174,7 @@ public class AgregarGastoFragment extends Fragment {
             double monto = getArguments().getDouble(Constantes.BD_MONTO);
             idLista = getArguments().getString("idLista");
             idItem = getArguments().getString("idItem");
+            cantidadItems = getArguments().getInt("cantidadItems");
 
             linearLayoutEscogerMes.setVisibility(View.VISIBLE);
             linearLayoutFecha.setVisibility(View.GONE);
@@ -385,9 +387,7 @@ public class AgregarGastoFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                        Toast.makeText(getContext(), "Proceso completado exitosamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        requireActivity().finish();
+                        actualizarCantidadItems();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -395,6 +395,21 @@ public class AgregarGastoFragment extends Fragment {
                     public void onFailure(@NonNull Exception e) {
                         Log.w("Delete", "Error deleting document", e);
                         Toast.makeText(getContext(), "Error al borrar el item. Intente nuevamente.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void actualizarCantidadItems () {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user.getUid()).collection(Constantes.BD_TODAS_LISTAS).document(idLista)
+                .update(Constantes.BD_CANTIDAD_ITEMS, (cantidadItems - 1))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
+                        Toast.makeText(getContext(), "Proceso completado exitosamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        requireActivity().finish();
                     }
                 });
     }

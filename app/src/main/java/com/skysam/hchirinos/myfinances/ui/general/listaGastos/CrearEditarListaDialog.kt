@@ -38,7 +38,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         _binding = DialogCrearListaBinding.inflate(layoutInflater)
 
         if (!guardar) {
-            binding.etNombre.setText(lista!![position!!].nombreLista)
+            binding.etNombre.setText(lista[position!!].nombreLista)
         }
 
         val builder = AlertDialog.Builder(requireContext())
@@ -82,6 +82,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                     Log.d(Constraints.TAG, "DocumentSnapshot written succesfully")
 
                     if (twoPane) {
+                        var itemNuevo: ListasConstructor?
                         val fragment = ListaPendientesDetailFragment().apply {
                             arguments = Bundle().apply {
                                 putString(ListaPendientesDetailFragment.ARG_ITEM_ID, docId)
@@ -92,6 +93,12 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                                 ?.beginTransaction()
                                 ?.replace(R.id.listapendientes_detail_container, fragment)
                                 ?.commit()
+                        itemNuevo = ListasConstructor()
+                        itemNuevo.nombreLista = nombre
+                        itemNuevo.idLista = docId
+                        itemNuevo.cantidadItems = 0
+                        lista.add(itemNuevo)
+                        adapter.updateList(lista)
                     } else {
                         val intent = Intent(context, ListaPendientesDetailActivity::class.java).apply {
                             putExtra(ListaPendientesDetailFragment.ARG_ITEM_ID, docId)

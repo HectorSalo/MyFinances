@@ -16,6 +16,7 @@ class ListaPendientesDetailActivity : AppCompatActivity() {
 
     private var user: FirebaseUser? = null
     private lateinit var db: FirebaseFirestore
+    private lateinit var idLista: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,15 +39,11 @@ class ListaPendientesDetailActivity : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(this, callback)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             val fragment = ListaPendientesDetailFragment().apply {
+                idLista = intent.getStringExtra(ListaPendientesDetailFragment.ARG_ITEM_ID)!!
                 arguments = Bundle().apply {
                     putString(ListaPendientesDetailFragment.ARG_ITEM_ID,
                             intent.getStringExtra(ListaPendientesDetailFragment.ARG_ITEM_ID))
@@ -60,6 +57,7 @@ class ListaPendientesDetailActivity : AppCompatActivity() {
                     .commit()
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {

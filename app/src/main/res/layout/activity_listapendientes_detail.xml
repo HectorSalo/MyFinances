@@ -49,6 +49,8 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@+id/listapendientes_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@android:drawable/stat_notify_chat" />
+        app:backgroundTint="?attr/colorOnSurface"
+        android:src="@drawable/ic_add_item_24"
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

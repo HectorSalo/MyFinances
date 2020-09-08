@@ -4,10 +4,9 @@ import java.util.Date;
 
 public class ItemGastosConstructor {
 
-    private String concepto, idItem;
+    private String concepto, idItem, idListItem;
     private double montoAproximado;
     private Date fechaAproximada, fechaIngreso;
-    private boolean checkeado;
 
     public ItemGastosConstructor() {
     }
@@ -53,12 +52,12 @@ public class ItemGastosConstructor {
         this.fechaIngreso = fechaIngreso;
     }
 
-    public boolean isCheckeado() {
-        return checkeado;
+    public String getIdListItem() {
+        return idListItem;
     }
 
-    public void setCheckeado(boolean checkeado) {
-        this.checkeado = checkeado;
+    public void setIdListItem(String idListItem) {
+        this.idListItem = idListItem;
     }
 }
 

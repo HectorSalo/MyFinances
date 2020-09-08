@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.adaptadores
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -11,8 +12,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.Utils.Constantes
 import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.CrearEditarListaDialog
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailActivity
@@ -22,19 +28,22 @@ import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesLis
 class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
 
-
+    private val user = FirebaseAuth.getInstance().currentUser
+    private val db = FirebaseFirestore.getInstance()
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
+    private var itemLista: ListasConstructor? = null
 
 
     init {
         onClickListener = View.OnClickListener { v ->
-            val itemLista = v.tag as ListasConstructor
+            itemLista = v.tag as ListasConstructor
             if (twoPane) {
                 val fragment = ListaPendientesDetailFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista.idLista)
-                        putString(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista.nombreLista)
+                        putString(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista!!.idLista)
+                        putString(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista!!.nombreLista)
+                        putBoolean(ListaPendientesDetailFragment.ARG_TWO_PANE, twoPane)
                     }
                 }
                 parentActivity.supportFragmentManager
@@ -43,8 +52,8 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
                         .commit()
             } else {
                 val intent = Intent(v.context, ListaPendientesDetailActivity::class.java).apply {
-                    putExtra(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista.idLista)
-                    putExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista.nombreLista)
+                    putExtra(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista!!.idLista)
+                    putExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista!!.nombreLista)
                 }
                 v.context.startActivity(intent)
             }
@@ -95,7 +104,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     private fun crearOpciones(nombre: String, position: Int) {
         val dialog = AlertDialog.Builder(parentActivity)
         dialog.setTitle("¿Qué desea hacer?")
-                .setItems(R.array.opciones_list_gasto) { dialogInterface, i ->
+                .setItems(R.array.opciones_list_gasto) { v, i ->
                     when (i) {
                         0 -> {
                             val editarListaDialog = CrearEditarListaDialog(twoPane, false, listas, position, this)
@@ -108,22 +117,63 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     private fun eliminarItem(position: Int) {
+        val lista = listas[position]
         listas.removeAt(position)
         updateList(listas)
 
-        /*val snackbar = Snackbar.make(view, lista.nombreLista + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer") {
-            listListas.add(i, lista)
-            listasAdapter.updateList(listListas)
+        if (twoPane) {
+            if (itemLista != null) {
+                if (itemLista!!.idLista == lista.idLista) {
+                    val fragment = ListaPendientesDetailFragment()
+                    parentActivity.supportFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.listapendientes_detail_container, fragment)
+                            .commit()
+                }
+            }
+        }
+
+        val snackbar = Snackbar.make(parentActivity.findViewById(R.id.frameLayout), "Eliminando ${lista.nombreLista}", Snackbar.LENGTH_LONG).setAction("Deshacer") {
+            listas.add(position, lista)
+            updateList(listas)
         }
         snackbar.show()
 
         val handler = Handler()
         handler.postDelayed({
-            if (!listListas.contains(lista)) {
-                Toast.makeText(getApplicationContext(), "Eliminando lista", Toast.LENGTH_SHORT).show()
+            if (!listas.contains(lista)) {
                 deleteLista(lista.idLista)
             }
-        }, 3000)*/
+        }, 3000)
+    }
+
+    private fun deleteLista(id: String) {
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(id)
+                .delete()
+                .addOnSuccessListener(OnSuccessListener<Void?> {
+                    Log.d("Delete", "DocumentSnapshot successfully deleted!")
+                    deleteCollection(id)
+                })
+                .addOnFailureListener(OnFailureListener { e ->
+                    Log.w("Delete", "Error deleting document", e)
+                    Toast.makeText(parentActivity.applicationContext, "Error al borrar la lista. Intente nuevamente.", Toast.LENGTH_SHORT).show()
+                })
+    }
+
+    private fun deleteCollection(id: String) {
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(id)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        for (document in task.result!!) {
+                            Log.d(ContentValues.TAG, document.id + " => " + document.data)
+                            db.collection(Constantes.BD_LISTA_GASTOS).document(user.uid).collection(id).document(document.id)
+                                    .delete()
+                        }
+                    } else {
+                        Log.d(ContentValues.TAG, "Error getting documents: ", task.exception)
+                    }
+                }
     }
 
 }

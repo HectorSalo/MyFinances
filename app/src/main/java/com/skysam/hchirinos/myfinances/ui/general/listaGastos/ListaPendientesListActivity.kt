@@ -65,7 +65,6 @@ class ListaPendientesListActivity : AppCompatActivity() {
             crearListaDialog.show(supportFragmentManager, title.toString())
         }
 
-        if (twoPane) cargarListas()
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -122,6 +121,6 @@ class ListaPendientesListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!twoPane) cargarListas()
+        cargarListas()
     }
 }

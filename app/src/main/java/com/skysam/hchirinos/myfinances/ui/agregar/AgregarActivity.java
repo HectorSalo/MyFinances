@@ -53,6 +53,7 @@ public class AgregarActivity extends AppCompatActivity {
 
         String concepto = getIntent().getStringExtra(Constantes.BD_CONCEPTO);
         double monto = getIntent().getDoubleExtra(Constantes.BD_MONTO, 0);
+        int cantidadItems = getIntent().getIntExtra("cantidadItems", -1);
         String idItem = getIntent().getStringExtra("idItem");
         String idLista = getIntent().getStringExtra("idLista");
 
@@ -77,6 +78,7 @@ public class AgregarActivity extends AppCompatActivity {
                     bundleFragment.putDouble(Constantes.BD_MONTO, monto);
                     bundleFragment.putString("idLista", idLista);
                     bundleFragment.putString("idItem", idItem);
+                    bundleFragment.putInt("cantidadItems", cantidadItems);
                     agregarGastoFragment.setArguments(bundleFragment);
                 }
                 getSupportFragmentManager().beginTransaction().add(R.id.agregar_container_fragment, agregarGastoFragment).commit();

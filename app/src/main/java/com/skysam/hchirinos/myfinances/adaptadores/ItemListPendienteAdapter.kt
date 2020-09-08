@@ -1,14 +1,17 @@
 package com.skysam.hchirinos.myfinances.adaptadores
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.Utils.Constantes
 import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -16,17 +19,18 @@ import kotlin.collections.ArrayList
 class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructor>, private val context: Context) :
     RecyclerView.Adapter<ItemListPendienteAdapter.ViewHolder>() {
 
-    private val onClickListener: View.OnClickListener
+    private val onLongClickListener: View.OnLongClickListener
 
     init {
-        onClickListener = View.OnClickListener { v ->
+        onLongClickListener = View.OnLongClickListener { v ->
             val itemLista = v.tag as ItemGastosConstructor
-            Toast.makeText(context, itemLista.concepto, Toast.LENGTH_SHORT).show()
+            crearOpciones(itemLista)
+            return@OnLongClickListener true
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemListPendienteAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context)
+        val view = LayoutInflater.from(context)
                 .inflate(R.layout.cardview_items_listas, parent, false)
         return ViewHolder(view)
     }
@@ -47,7 +51,7 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
 
         with(holder.itemView) {
             tag = item
-            setOnClickListener(onClickListener)
+            setOnLongClickListener(onLongClickListener)
         }
     }
 
@@ -61,8 +65,33 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     fun updateList(newList: ArrayList<ItemGastosConstructor>) {
-        items = ArrayList()
-        items.addAll(newList)
+        items = newList
         notifyDataSetChanged()
+    }
+
+    private fun crearOpciones(item: ItemGastosConstructor) {
+        val dialog = AlertDialog.Builder(context)
+        dialog.setTitle("¿Qué desea hacer?")
+                .setItems(R.array.opciones_item_list_gasto) { _, i ->
+                    when (i) {
+                        0 -> {
+                            moverToGastos(item)
+                        }
+                        //1 -> editarItem()
+                        //2 -> eliminarItem()
+                    }
+                }
+                .setNegativeButton(context.getString(R.string.btn_cancelar), null).show()
+    }
+
+    private fun moverToGastos(item: ItemGastosConstructor) {
+        val intent = Intent(context, AgregarActivity::class.java)
+        intent.putExtra(Constantes.BD_CONCEPTO, item.concepto)
+        intent.putExtra(Constantes.BD_MONTO, item.montoAproximado)
+        intent.putExtra("idItem", item.idItem)
+        intent.putExtra("idLista", item.idListItem)
+        intent.putExtra("cantidadItems", items.size)
+        intent.putExtra("agregar", 3)
+        context.startActivity(intent)
     }
 }
