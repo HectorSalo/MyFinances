@@ -61,7 +61,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
         setupRecyclerView(activityListapendientesListBinding.includeListapendientesList.rvListapendientesList)
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            val crearListaDialog = CrearEditarListaDialog(twoPane, true, null, null)
+            val crearListaDialog = CrearEditarListaDialog(twoPane, true, listas, null, adapter)
             crearListaDialog.show(supportFragmentManager, title.toString())
         }
 

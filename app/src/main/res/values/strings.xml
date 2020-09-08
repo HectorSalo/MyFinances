@@ -35,6 +35,8 @@
 
     <string name="error_campo_vacio">El campo no puede estar vacío</string>
     <string name="error_cargar_data">Error al cargar. Intente nuevamente</string>
+    <string name="error_guardar_data">Error al guardar. Intente nuevamente</string>
+    <string name="process_succes">Proceso exitoso</string>
 
     <!-- Strings used for fragments -->
     <string name="concepto">Concepto:</string>
@@ -118,6 +120,7 @@
     <string name="actualizar_pass_ok">Constraseña actualizada</string>
 
     <string name="title_listapendientes_detail">ListaPendientes Detail</string>
+
 
 
 </resources>

@@ -19,13 +19,12 @@ import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDet
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesDetailFragment
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity
 
-class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
+class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
 
 
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
-    private var listas: ArrayList<ListasConstructor>? = listas
 
 
     init {
@@ -53,7 +52,7 @@ class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val 
 
         onLongClickListener = View.OnLongClickListener { v ->
             val itemLista = v.tag as ListasConstructor
-            crearOpciones(itemLista.nombreLista, this.listas!!.indexOf(itemLista))
+            crearOpciones(itemLista.nombreLista, listas.indexOf(itemLista))
             return@OnLongClickListener true
         }
     }
@@ -65,7 +64,7 @@ class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val 
     }
 
     override fun onBindViewHolder(holder: ListasPendientesAdapter.ViewHolder, position: Int) {
-        val item = listas!![position]
+        val item = listas[position]
         holder.nombre.text = item.nombreLista
         val itemsCantidad =  item.cantidadItems
         if (itemsCantidad == 0) {
@@ -81,17 +80,15 @@ class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val 
         }
     }
 
-    override fun getItemCount(): Int = listas!!.size
+    override fun getItemCount(): Int = listas.size
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nombre: TextView = view.findViewById(R.id.textView_nombre_lista)
         val cantidad: TextView = view.findViewById(R.id.textView_cantidad_items)
     }
 
     fun updateList(newList: ArrayList<ListasConstructor>) {
-        listas!!.clear()
-        var listas: ArrayList<ListasConstructor>? = listas
-        listas!!.addAll(newList)
+        listas = newList
         notifyDataSetChanged()
     }
 
@@ -101,7 +98,7 @@ class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val 
                 .setItems(R.array.opciones_list_gasto) { dialogInterface, i ->
                     when (i) {
                         0 -> {
-                            val editarListaDialog = CrearEditarListaDialog(twoPane, false, listas!!, position, parentActivity)
+                            val editarListaDialog = CrearEditarListaDialog(twoPane, false, listas, position, this)
                             editarListaDialog.show(parentActivity.supportFragmentManager, nombre)
                         }
                         1 -> eliminarItem(position)
@@ -111,9 +108,8 @@ class ListasPendientesAdapter(listas: ArrayList<ListasConstructor>, private val 
     }
 
     private fun eliminarItem(position: Int) {
-        listas!!.removeAt(position)
-        //notifyDataSetChanged()
-        updateList(listas!!)
+        listas.removeAt(position)
+        updateList(listas)
 
         /*val snackbar = Snackbar.make(view, lista.nombreLista + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer") {
             listListas.add(i, lista)
