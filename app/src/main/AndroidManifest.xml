@@ -37,10 +37,6 @@
             android:name=".ui.ajustes.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.general.ListaGastosActivity"
-            android:label="@string/title_activity_lista_gastos"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ui.general.CalculadoraActivity"
             android:label="@string/title_activity_calculadora"
             android:theme="@style/AppTheme.Convertidor" />

@@ -104,7 +104,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     private fun crearOpciones(nombre: String, position: Int) {
         val dialog = AlertDialog.Builder(parentActivity)
         dialog.setTitle("¿Qué desea hacer?")
-                .setItems(R.array.opciones_list_gasto) { v, i ->
+                .setItems(R.array.opciones_list_gasto) { _, i ->
                     when (i) {
                         0 -> {
                             val editarListaDialog = CrearEditarListaDialog(twoPane, false, listas, position, this)

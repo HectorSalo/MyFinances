@@ -160,71 +160,75 @@ public class HomeFragment extends Fragment {
 
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                Calendar calendarInicial = Calendar.getInstance();
-                                double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
-                                String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
-                                if (tipoFrecuencia != null) {
-                                    Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
-                                    double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
-                                    int duracionFrecuenciaInt = (int) duracionFrecuencia;
+                                Boolean activo = document.getBoolean(Constantes.BD_MES_ACTIVO);
+                                if (activo == null || activo) {
+                                    Calendar calendarInicial = Calendar.getInstance();
+                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                    String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
+                                    if (tipoFrecuencia != null) {
+                                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
+                                        double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
 
-                                    int multiploIngreso = 0;
+                                        int multiploIngreso = 0;
 
-                                    calendarInicial.setTime(fechaInicial);
-                                    mesCobro = calendarInicial.get(Calendar.MONTH);
-                                    yearCobro = calendarInicial.get(Calendar.YEAR);
+                                        calendarInicial.setTime(fechaInicial);
+                                        mesCobro = calendarInicial.get(Calendar.MONTH);
+                                        yearCobro = calendarInicial.get(Calendar.YEAR);
 
-                                    if (mesCobro == mesSelected) {
-                                        multiploIngreso = 1;
-                                    }
+                                        if (mesCobro == mesSelected) {
+                                            multiploIngreso = 1;
+                                        }
 
-                                    if (tipoFrecuencia.equals("Dias")) {
-                                        for (int j = 1; (mesCobro <= mesSelected && yearCobro == yearSelected); j++) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt));
-                                            mesCobro = calendarInicial.get(Calendar.MONTH);
-                                            yearCobro = calendarInicial.get(Calendar.YEAR);
+                                        if (tipoFrecuencia.equals("Dias")) {
+                                            for (int j = 1; (mesCobro <= mesSelected && yearCobro == yearSelected); j++) {
+                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt));
+                                                mesCobro = calendarInicial.get(Calendar.MONTH);
+                                                yearCobro = calendarInicial.get(Calendar.YEAR);
 
-                                            if (mesCobro == mesSelected) {
-                                                multiploIngreso = multiploIngreso + 1;
+                                                if (mesCobro == mesSelected) {
+                                                    multiploIngreso = multiploIngreso + 1;
+                                                }
+                                            }
+                                        } else if (tipoFrecuencia.equals("Semanas")) {
+                                            for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
+                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * 7));
+                                                mesCobro = calendarInicial.get(Calendar.MONTH);
+                                                yearCobro = calendarInicial.get(Calendar.YEAR);
+
+                                                if (mesCobro == mesSelected) {
+                                                    multiploIngreso = multiploIngreso + 1;
+                                                }
+                                            }
+                                        } else if (tipoFrecuencia.equals("Meses")) {
+                                            for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
+                                                calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt));
+                                                mesCobro = calendarInicial.get(Calendar.MONTH);
+                                                yearCobro = calendarInicial.get(Calendar.YEAR);
+
+                                                if (mesCobro == mesSelected) {
+                                                    multiploIngreso = multiploIngreso + 1;
+                                                }
                                             }
                                         }
-                                    } else if (tipoFrecuencia.equals("Semanas")) {
-                                        for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * 7));
-                                            mesCobro = calendarInicial.get(Calendar.MONTH);
-                                            yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                            if (mesCobro == mesSelected) {
-                                                multiploIngreso = multiploIngreso + 1;
-                                            }
+                                        if (dolar) {
+                                            montototal = montototal + (montoDetal * multiploIngreso);
+                                        } else {
+                                            montototal = montototal + ((montoDetal / valorCotizacion) * multiploIngreso);
                                         }
-                                    } else if (tipoFrecuencia.equals("Meses")) {
-                                        for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                            calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt));
-                                            mesCobro = calendarInicial.get(Calendar.MONTH);
-                                            yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                            if (mesCobro == mesSelected) {
-                                                multiploIngreso = multiploIngreso + 1;
-                                            }
-                                        }
-                                    }
-                                    if (dolar) {
-                                        montototal = montototal + (montoDetal * multiploIngreso);
                                     } else {
-                                        montototal = montototal + ((montoDetal / valorCotizacion) * multiploIngreso);
-                                    }
-                                } else {
-                                    if (dolar) {
-                                        montototal = montototal + montoDetal;
-                                    } else {
-                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                        if (dolar) {
+                                            montototal = montototal + montoDetal;
+                                        } else {
+                                            montototal = montototal + (montoDetal / valorCotizacion);
+                                        }
                                     }
                                 }
-                            }
-                            montoIngresos = (float) montototal;
-                            cargarAhorros();
+                                }
+                                montoIngresos = (float) montototal;
+                                cargarAhorros();
+
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                             progressBar.setVisibility(View.GONE);

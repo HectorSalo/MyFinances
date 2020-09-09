@@ -371,7 +371,7 @@ public class EditarIngresoFragment extends Fragment {
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                             if (finalI == 11) {
-                                Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
                                 requireActivity().finish();
                             }
@@ -381,7 +381,7 @@ public class EditarIngresoFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente " + e, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.GONE);
                             etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);

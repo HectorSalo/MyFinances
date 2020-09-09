@@ -20,9 +20,9 @@ import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearEditarItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, private val idLista: String, private val guardar: Boolean, private val items: ArrayList<ItemGastosConstructor>):
+class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, private val idLista: String, private val guardar: Boolean, private val items: ArrayList<ItemGastosConstructor>,
+                            private val position: Int?):
         DialogFragment() {
 
     private var _binding : DialogCrearEditarItemBinding? = null
@@ -31,8 +31,12 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
     private val db = FirebaseFirestore.getInstance()
     private var dialog : AlertDialog? = null
     private var fechaSelec: Date? = null
-    var calendar: Calendar = Calendar.getInstance()
-    val fechaIngreso: Date = calendar.time
+    private var calendar: Calendar = Calendar.getInstance()
+    private val fechaIngreso: Date = calendar.time
+    private var conceptoViejo: String? = null
+    private var montoViejo: Double? = null
+    private var fechaViejaAproximada: Date? = null
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogCrearEditarItemBinding.inflate(layoutInflater)
@@ -52,6 +56,7 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
             binding.outlinedMonto.error = null
             validarLista()
         }
+        if (!guardar) cargarItem()
         return dialog as AlertDialog
     }
 
@@ -68,11 +73,13 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
             return
         }
         val montoDouble: Double = monto.toDouble()
-        if (guardar) guardarItem(concepto, montoDouble)
+        if (guardar) guardarItem(concepto, montoDouble) else actualizarItem(concepto, montoDouble)
     }
+
 
     private fun guardarItem(concepto: String, monto: Double) {
         Toast.makeText(context, "Guardando...", Toast.LENGTH_SHORT).show()
+
         val docData: MutableMap<String, Any?> = HashMap()
         docData[Constantes.BD_CONCEPTO] = concepto
         docData[Constantes.BD_MONTO] = monto
@@ -110,6 +117,64 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
                 }.addOnFailureListener { dialog?.dismiss() }
     }
 
+    private fun cargarItem() {
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
+                if (document!!.exists()) {
+                    Log.d(Constraints.TAG, "DocumentSnapshot data: " + document.data)
+                    conceptoViejo = document.getString(Constantes.BD_CONCEPTO)
+                    binding.etConcepto.setText(conceptoViejo)
+                    montoViejo = document.getDouble(Constantes.BD_MONTO)
+                    binding.etMonto.setText("$montoViejo")
+                    fechaViejaAproximada = document.getDate(Constantes.BD_FECHA_APROXIMADA)
+                    if (fechaViejaAproximada != null) {
+                        binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaViejaAproximada!!)
+                    }
+                }
+            } else {
+                Log.d(Constraints.TAG, "get failed with ", task.exception)
+                Toast.makeText(context, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
+                dialog?.dismiss()
+            }
+        }
+    }
+
+    private fun actualizarItem(concepto: String, monto: Double) {
+        Toast.makeText(context, "Actualizando...", Toast.LENGTH_SHORT).show()
+
+        val item: MutableMap<String, Any> = HashMap()
+
+        if (conceptoViejo != concepto) {
+            item[Constantes.BD_CONCEPTO] = concepto
+            items[position!!].concepto = concepto
+        }
+        if (monto != montoViejo) {
+            item[Constantes.BD_MONTO] = monto
+            items[position!!].montoAproximado = monto
+        }
+
+        if (fechaSelec != null) {
+            if (fechaSelec != fechaViejaAproximada) {
+                item[Constantes.BD_FECHA_APROXIMADA] = fechaSelec!!
+                items[position!!].fechaAproximada = fechaSelec!!
+            }
+        }
+
+        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem)
+                .update(item)
+                .addOnSuccessListener {
+                    Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")
+                    Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
+                    adapter.updateList(items)
+                    dialog?.dismiss()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(Constraints.TAG, "Error updating document", e)
+                    Toast.makeText(context, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
+                }
+    }
+
     private fun selecFecha() {
         val calendarSelec = Calendar.getInstance()
         val calendar = Calendar.getInstance()
@@ -120,7 +185,7 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
         val datePickerDialog = DatePickerDialog(requireContext(), OnDateSetListener { view, year, month, dayOfMonth ->
             calendarSelec.set(year, month, dayOfMonth)
             fechaSelec = calendarSelec.time
-            binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec!!)
+            binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec!!)
         }, year, month, day)
         datePickerDialog.show()
     }

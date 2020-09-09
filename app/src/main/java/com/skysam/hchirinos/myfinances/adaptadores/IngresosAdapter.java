@@ -49,33 +49,38 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
             holder.tvMonto.setText("Bs. " + listIngresos.get(position).getMonto());
         }
 
-        if (listIngresos.get(i).getTipoFrecuencia() != null) {
-            holder.tvFrecuencia.setText("Se cobra cada " + listIngresos.get(position).getDuracionFrecuencia() + " " + listIngresos.get(position).getTipoFrecuencia());
+        if(listIngresos.get(i).isMesActivo()) {
+            if (listIngresos.get(i).getTipoFrecuencia() != null) {
+                holder.tvFrecuencia.setText("Se cobra cada " + listIngresos.get(position).getDuracionFrecuencia() + " " + listIngresos.get(position).getTipoFrecuencia());
 
 
-            Date dateInicial = listIngresos.get(position).getFechaIncial();
-            int duracionFrecuencia = listIngresos.get(position).getDuracionFrecuencia();
-            String tipoFrecuencia = listIngresos.get(position).getTipoFrecuencia();
-            Calendar calendarInicial = Calendar.getInstance();
-            calendarInicial.setTime(dateInicial);
+                Date dateInicial = listIngresos.get(position).getFechaIncial();
+                int duracionFrecuencia = listIngresos.get(position).getDuracionFrecuencia();
+                String tipoFrecuencia = listIngresos.get(position).getTipoFrecuencia();
+                Calendar calendarInicial = Calendar.getInstance();
+                calendarInicial.setTime(dateInicial);
 
-            if (tipoFrecuencia.equals("Dias")) {
-                for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                    calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia));
+                if (tipoFrecuencia.equals("Dias")) {
+                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia));
+                    }
+                } else if (tipoFrecuencia.equals("Semanas")) {
+                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * 7));
+                    }
+                } else if (tipoFrecuencia.equals("Meses")) {
+                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                        calendarInicial.add(Calendar.MONTH, (duracionFrecuencia));
+                    }
                 }
-            } else if (tipoFrecuencia.equals("Semanas")) {
-                for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                    calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * 7));
-                }
-            } else if (tipoFrecuencia.equals("Meses")) {
-                for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                    calendarInicial.add(Calendar.MONTH, (duracionFrecuencia));
-                }
+
+                holder.tvProximoCobro.setText("Fecha próximo cobro: " + new SimpleDateFormat("EEE d MMM yyyy").format(calendarInicial.getTime()));
+            } else {
+                holder.tvFrecuencia.setText("Ingreso único para este mes");
+                holder.tvProximoCobro.setVisibility(View.GONE);
             }
-
-            holder.tvProximoCobro.setText("Fecha próximo cobro: " + new SimpleDateFormat("EEE d MMM yyyy").format(calendarInicial.getTime()));
         } else {
-            holder.tvFrecuencia.setText("Ingreso único para este mes");
+            holder.tvFrecuencia.setText("Ingreso no activo este mes");
             holder.tvProximoCobro.setVisibility(View.GONE);
         }
 

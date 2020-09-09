@@ -5,7 +5,7 @@ import java.util.Date;
 public class IngresosConstructor {
     private String concepto, tipoFrecuencia, idIngreso, idGasto;
     private double monto;
-    private boolean dolar;
+    private boolean dolar, mesActivo;
     private int duracionFrecuencia;
     private Date fechaIncial;
 
@@ -84,5 +84,13 @@ public class IngresosConstructor {
 
     public void setIdGasto(String idGasto) {
         this.idGasto = idGasto;
+    }
+
+    public boolean isMesActivo() {
+        return mesActivo;
+    }
+
+    public void setMesActivo(boolean mesActivo) {
+        this.mesActivo = mesActivo;
     }
 }

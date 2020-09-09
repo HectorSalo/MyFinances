@@ -116,7 +116,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
     private fun editarLista(nombre: String) {
-        Toast.makeText(context, "Actulizando...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Actualizando...", Toast.LENGTH_SHORT).show()
 
         db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(lista[position!!].idLista)
                 .update(Constantes.BD_NOMBRE, nombre)

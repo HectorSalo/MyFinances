@@ -62,15 +62,16 @@ class ListaPendientesDetailFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         user = FirebaseAuth.getInstance().currentUser
 
-        adapter = ItemListPendienteAdapter(items, requireActivity().applicationContext)
+        adapter = ItemListPendienteAdapter(items, requireActivity(), requireActivity().supportFragmentManager)
 
-        if (!twoPane) {
-            binding.extendedFab.visibility = View.GONE
-            val view = activity?.findViewById<FloatingActionButton>(R.id.fab)
-            view!!.setOnClickListener { crearItem() }
+        if (twoPane) {
+            binding.extendedFab.visibility = View.VISIBLE
         }
 
         setupRecyclerView(binding.rvItemsLista)
+
+        val view = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        view!!.setOnClickListener { crearItem() }
 
         binding.extendedFab.setOnClickListener {
             crearItem()
@@ -123,8 +124,8 @@ class ListaPendientesDetailFragment : Fragment() {
     }
 
     private fun crearItem() {
-        //val crearItemDialog = CrearEditarItemDialog(adapter, idLista!!, true, items)
-        //crearItemDialog.show(requireActivity().supportFragmentManager, idLista.toString())
+        val crearItemDialog = CrearEditarItemDialog(adapter, idLista!!, true, items, null)
+        crearItemDialog.show(requireActivity().supportFragmentManager, idLista.toString())
     }
 
     override fun onResume() {

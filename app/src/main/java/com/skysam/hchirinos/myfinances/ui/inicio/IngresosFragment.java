@@ -233,6 +233,13 @@ public class IngresosFragment extends Fragment {
                         ingreso.setMonto(doc.getDouble(Constantes.BD_MONTO));
                         ingreso.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
 
+                        Boolean activo = doc.getBoolean(Constantes.BD_MES_ACTIVO);
+                        if (activo == null) {
+                            ingreso.setMesActivo(true);
+                        } else {
+                            ingreso.setMesActivo(activo);
+                        }
+
                         String tipoFrecuencia = doc.getString(Constantes.BD_TIPO_FRECUENCIA);
                         if (tipoFrecuencia != null) {
                             double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);

@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -230,6 +231,7 @@ public class AgregarIngresoFragment extends Fragment {
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, tipoFrecuencia);
+        docData.put(Constantes.BD_MES_ACTIVO, true);
 
         for (int j = mesSelec; j < 12; j++) {
             final int finalJ = j;
@@ -279,6 +281,7 @@ public class AgregarIngresoFragment extends Fragment {
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, null);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, null);
+        docData.put(Constantes.BD_MES_ACTIVO, true);
 
         db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
                 .set(docData)
@@ -319,7 +322,7 @@ public class AgregarIngresoFragment extends Fragment {
                 mesSelec = month;
                 anualSelec = year;
                 fechaSelec = calendarSelec.getTime();
-                tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec));
+                tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec));
             }
         }, year, month, day);
         datePickerDialog.show();
