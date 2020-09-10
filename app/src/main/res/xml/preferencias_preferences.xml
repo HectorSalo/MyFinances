@@ -16,6 +16,7 @@
         app:summaryOn="@string/notificaciones_summary_on"
         app:title="@string/noitificaciones_title"
         app:defaultValue="true"
+        app:isPreferenceVisible="false"
         android:icon="@drawable/ic_notifications_active_24"/>
 
     <ListPreference
