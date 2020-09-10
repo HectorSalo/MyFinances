@@ -132,14 +132,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        LinearLayout linearLayoutCotizacion = view.findViewById(R.id.linearLayout_cotizacion_dolar);
-        linearLayoutCotizacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ingresarValorCotizacion(v);
-            }
-        });
-
         moveToNextYear();
 
         cargarFolios();
@@ -511,35 +503,10 @@ public class HomeFragment extends Fragment {
                 if (sharedPreferences != null) {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putFloat("ahorros_disponible", montoAhorros);
-                    editor.commit();
+                    editor.apply();
                 }
             }
         }
-    }
-
-
-    private void ingresarValorCotizacion(View view) {
-        LayoutInflater inflater = LayoutInflater.from(view.getContext());
-        View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
-        final EditText editText = v.findViewById(R.id.editText_cotizacion);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
-        dialog.setTitle("Ingrese la cotización actualizada")
-                .setView(v)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!editText.getText().toString().isEmpty()) {
-                            float valor = Float.parseFloat(editText.getText().toString());
-                            if (valor > 0) {
-
-                                cargarIngresos();
-                                actualizarCotizacion();
-                            } else {
-                                Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                }).show();
     }
 
 
@@ -619,8 +586,10 @@ public class HomeFragment extends Fragment {
     private void moveToNextYear() {
         Calendar calendar = Calendar.getInstance();
         int mes = calendar.get(Calendar.MONTH);
+        int dia = calendar.get(Calendar.DAY_OF_MONTH);
+        int year = calendar.get(Calendar.YEAR);
 
-        if (mes == 11) {
+        if ((mes == 11 && dia > 15) || (mes == 0 && dia < 15)) {
 
         }
     }
