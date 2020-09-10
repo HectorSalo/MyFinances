@@ -179,7 +179,13 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            if (finalJ > mes) {
+                                Toast.makeText(context, "Préstamo cobrado por completo", Toast.LENGTH_SHORT).show();
+                                listaPrestamos.remove(position);
+                                updateList(listaPrestamos);
+                            } else {
+                                Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         }
@@ -199,7 +205,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                             if (finalJ == 11) {
-                                Toast.makeText(context, "Cobro agregado", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                                 listaPrestamos.get(position).setMonto(montoNuevo);
                                 updateList(listaPrestamos);
                             }
@@ -209,7 +215,14 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            if (finalJ > mes) {
+                                Toast.makeText(context, context.getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                                listaPrestamos.get(position).setMonto(montoNuevo);
+                                updateList(listaPrestamos);
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            }
+
                         }
                     });
         }

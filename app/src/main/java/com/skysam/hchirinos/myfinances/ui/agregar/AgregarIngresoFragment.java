@@ -1,6 +1,8 @@
 package com.skysam.hchirinos.myfinances.ui.agregar;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,14 +50,14 @@ public class AgregarIngresoFragment extends Fragment {
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia, spinnerEscogerMes;
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbIngresoFijo, rbIngresoMes;
-    private TextView tvFecha;
-    private Date fechaSelec;
+    private TextView tvFechaInicio, tvFechaFinal;
+    private Date fechaSelecInicial, fechaSelecFinal;
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
-    private ImageButton imageButtonSelecFecha;
-    private int mesSelec, anualSelec, anualActual;
-    private Calendar calendarSelec, calendarActual;
+    private ImageButton ibFEchaInicial, ibFechaFinal;
+    private int mesSelecInicial, mesSelecFinal, anualActual;
+    private Calendar calendarSelecInicial, calendarSelecFinal, calendarActual;
 
     public AgregarIngresoFragment() {}
 
@@ -86,12 +88,13 @@ public class AgregarIngresoFragment extends Fragment {
         rbDias = view.findViewById(R.id.radioButton_dias);
         rbSemanas = view.findViewById(R.id.radioButton_semanas);
         rbMeses = view.findViewById(R.id.radioButton_meses);
-        tvFecha = view.findViewById(R.id.textView_fecha_inicio);
+        tvFechaInicio = view.findViewById(R.id.tv_fecha_inicial);
+        tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
         rbIngresoFijo = view.findViewById(R.id.radioButton_ingreso_fijo);
         rbIngresoMes = view.findViewById(R.id.radioButton_ingreso_mes);
         RadioGroup radioIngreso = view.findViewById(R.id.radioGroup2);
         final LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout_frecuencia);
-        final LinearLayout linearLayoutFecha = view.findViewById(R.id.linearLayout_fecha);
+        final LinearLayout linearLayoutFecha = view.findViewById(R.id.linear_periodo);
         final LinearLayout linearLayoutEscogerMes = view.findViewById(R.id.linearLayout_escoger_mes);
         final RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup_frecuencia);
 
@@ -123,14 +126,12 @@ public class AgregarIngresoFragment extends Fragment {
                         linearLayoutFecha.setVisibility(View.VISIBLE);
                         linearLayoutFrecuencia.setVisibility(View.VISIBLE);
                         radioGroupFrecuencia.setVisibility(View.VISIBLE);
-                        tvFecha.setVisibility(View.VISIBLE);
                         break;
                     case R.id.radioButton_ingreso_mes:
                         linearLayoutEscogerMes.setVisibility(View.VISIBLE);
                         linearLayoutFecha.setVisibility(View.GONE);
                         linearLayoutFrecuencia.setVisibility(View.GONE);
                         radioGroupFrecuencia.setVisibility(View.GONE);
-                        tvFecha.setVisibility(View.GONE);
                         break;
                     default:
                         break;
@@ -138,8 +139,10 @@ public class AgregarIngresoFragment extends Fragment {
             }
         });
 
-        fechaSelec = new Date();
-        fechaSelec = null;
+        fechaSelecInicial = new Date();
+        fechaSelecInicial = null;
+        fechaSelecFinal = new Date();
+        fechaSelecFinal = null;
 
         btnGuardar = view.findViewById(R.id.button_first);
         btnGuardar.setOnClickListener(new View.OnClickListener() {
@@ -149,11 +152,19 @@ public class AgregarIngresoFragment extends Fragment {
             }
         });
 
-        imageButtonSelecFecha = view.findViewById(R.id.imageButton);
-        imageButtonSelecFecha.setOnClickListener(new View.OnClickListener() {
+        ibFEchaInicial = view.findViewById(R.id.imageButton_inicial);
+        ibFEchaInicial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                seleccionarFecha();
+                seleccionarFecha(true);
+            }
+        });
+
+        ibFechaFinal = view.findViewById(R.id.imageButton_final);
+        ibFechaFinal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                crearDialogFechaFinal();
             }
         });
     }
@@ -173,20 +184,25 @@ public class AgregarIngresoFragment extends Fragment {
                         etConceptoLayout.setEnabled(false);
                         etMontoLayout.setEnabled(false);
                         btnGuardar.setEnabled(false);
-                        fechaSelec = calendarActual.getTime();
-                        guardarDatosMes(concepto, monto, fechaSelec);
+                        fechaSelecInicial = calendarActual.getTime();
+                        guardarDatosMes(concepto, monto, fechaSelecInicial);
                     } else {
-                        if (fechaSelec != null) {
-                            etConceptoLayout.setError(null);
-                            etMontoLayout.setError(null);
-                            progressBar.setVisibility(View.VISIBLE);
-                            etConceptoLayout.setEnabled(false);
-                            etMontoLayout.setEnabled(false);
-                            btnGuardar.setEnabled(false);
-                            imageButtonSelecFecha.setEnabled(false);
-                            guardarDatosFijos(concepto, monto, fechaSelec);
+                        if (fechaSelecInicial != null && fechaSelecFinal != null) {
+                            if (!fechaSelecInicial.after(fechaSelecFinal)) {
+                                etConceptoLayout.setError(null);
+                                etMontoLayout.setError(null);
+                                progressBar.setVisibility(View.VISIBLE);
+                                etConceptoLayout.setEnabled(false);
+                                etMontoLayout.setEnabled(false);
+                                btnGuardar.setEnabled(false);
+                                ibFEchaInicial.setEnabled(false);
+                                ibFechaFinal.setEnabled(false);
+                                guardarDatosFijos(concepto, monto, fechaSelecInicial, fechaSelecFinal);
+                            } else {
+                                Toast.makeText(getContext(), "La fecha inicial debe ser posterior a la final", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Debe seleccionar fecha de incio y final", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
@@ -203,7 +219,7 @@ public class AgregarIngresoFragment extends Fragment {
     }
 
 
-    private void guardarDatosFijos(String concepto, double monto, Date fechaSelec) {
+    private void guardarDatosFijos(String concepto, double monto, Date fechaInicial, Date fechaFinal) {
         boolean dolar = false;
         String tipoFrecuencia = null;
         int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
@@ -227,21 +243,22 @@ public class AgregarIngresoFragment extends Fragment {
         Map<String, Object> docData = new HashMap<>();
         docData.put(Constantes.BD_CONCEPTO, concepto);
         docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_FECHA_INCIAL, fechaInicial);
+        docData.put(Constantes.BD_FECHA_FINAL, fechaFinal);
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, tipoFrecuencia);
         docData.put(Constantes.BD_MES_ACTIVO, true);
 
-        for (int j = mesSelec; j < 12; j++) {
+        for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualSelec + "-" + finalJ).document(String.valueOf(fechaSelec.getTime()))
+            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (finalJ == 11) {
+                            if (finalJ == mesSelecFinal) {
                                 progressBar.setVisibility(View.GONE);
                                 requireActivity().finish();
                             }
@@ -256,7 +273,8 @@ public class AgregarIngresoFragment extends Fragment {
                             etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);
                             btnGuardar.setEnabled(true);
-                            imageButtonSelecFecha.setEnabled(true);
+                            ibFEchaInicial.setEnabled(true);
+                            ibFechaFinal.setEnabled(true);
                         }
                     });
         }
@@ -278,6 +296,7 @@ public class AgregarIngresoFragment extends Fragment {
         docData.put(Constantes.BD_CONCEPTO, concepto);
         docData.put(Constantes.BD_MONTO, monto);
         docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_FECHA_FINAL, null);
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, null);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, null);
@@ -297,19 +316,25 @@ public class AgregarIngresoFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), "Error al guardar en el mes. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         etConceptoLayout.setEnabled(true);
                         etMontoLayout.setEnabled(true);
                         btnGuardar.setEnabled(true);
-                        imageButtonSelecFecha.setEnabled(true);
+                        ibFEchaInicial.setEnabled(true);
+                        ibFechaFinal.setEnabled(true);
                     }
                 });
     }
 
 
-    private void seleccionarFecha() {
-        calendarSelec = Calendar.getInstance();
+    private void seleccionarFecha(final boolean inicial) {
+        Calendar calendarMax = Calendar.getInstance();
+        calendarMax.set(anualActual, 11, 31);
+        Calendar calendarMin = Calendar.getInstance();
+        calendarMin.set(anualActual, 0, 1);
+        calendarSelecInicial = Calendar.getInstance();
+        calendarSelecFinal = Calendar.getInstance();
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH);
@@ -318,13 +343,42 @@ public class AgregarIngresoFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendarSelec.set(year, month, dayOfMonth);
-                mesSelec = month;
-                anualSelec = year;
-                fechaSelec = calendarSelec.getTime();
-                tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec));
+                if (inicial) {
+                    calendarSelecInicial.set(anualActual, month, dayOfMonth);
+                    mesSelecInicial = month;
+                    fechaSelecInicial = calendarSelecInicial.getTime();
+                    tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+                } else {
+                    calendarSelecFinal.set(anualActual, month, dayOfMonth);
+                    mesSelecFinal = month;
+                    fechaSelecFinal = calendarSelecFinal.getTime();
+                    tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                }
             }
         }, year, month, day);
+        datePickerDialog.getDatePicker().setMaxDate(calendarMax.getTimeInMillis());
+        datePickerDialog.getDatePicker().setMinDate(calendarMin.getTimeInMillis());
         datePickerDialog.show();
+    }
+
+    private void crearDialogFechaFinal() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle("Seleccione")
+                .setItems(R.array.opciones_fin_periodo, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                calendarSelecFinal.set(anualActual, 11, 31);
+                                mesSelecFinal = 11;
+                                fechaSelecFinal = calendarSelecFinal.getTime();
+                                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                                break;
+                            case 1:
+                                seleccionarFecha(false);
+                                break;
+                        }
+                    }
+                }).show();
     }
 }

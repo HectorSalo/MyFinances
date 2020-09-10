@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
+import com.skysam.hchirinos.myfinances.constructores.IngresosGastosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ import java.util.Locale;
 
 public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHolder> {
 
-    private ArrayList<IngresosConstructor> listIngresos;
+    private ArrayList<IngresosGastosConstructor> listIngresos;
     private Context context;
     private Calendar calendarActual = Calendar.getInstance(Locale.getDefault());
     private Date fechaActual = calendarActual.getTime();
 
-    public IngresosAdapter(ArrayList<IngresosConstructor> listIngresos, Context context) {
+    public IngresosAdapter(ArrayList<IngresosGastosConstructor> listIngresos, Context context) {
         this.listIngresos = listIngresos;
         this.context = context;
     }
@@ -105,7 +105,7 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
     }
 
 
-    public void updateList (ArrayList<IngresosConstructor> newList) {
+    public void updateList (ArrayList<IngresosGastosConstructor> newList) {
         listIngresos = new ArrayList<>();
         listIngresos.addAll(newList);
         notifyDataSetChanged();

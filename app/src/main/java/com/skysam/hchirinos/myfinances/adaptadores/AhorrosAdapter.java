@@ -7,12 +7,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

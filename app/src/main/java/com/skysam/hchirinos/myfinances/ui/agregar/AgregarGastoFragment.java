@@ -1,6 +1,8 @@
 package com.skysam.hchirinos.myfinances.ui.agregar;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -50,16 +53,14 @@ public class AgregarGastoFragment extends Fragment {
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia, spinnerEscogerMes;
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbGastoFijo, rbGastoMes;
-    private TextView tvFecha;
-    private Date fechaSelec;
+    private TextView tvFechaInicio, tvFechaFinal;
+    private Date fechaSelecInicial, fechaSelecFinal;
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
-    private ImageButton imageButtonSelecFecha;
-    private int anualActual;
-    private int mesSelec;
-    private int anualSelec, cantidadItems;
-    private Calendar calendarSelec, calendarActual;
+    private ImageButton ibFechaInicial, ibFechaFinal;
+    private int anualActual, mesSelecInicial, mesSelecFinal, cantidadItems;
+    private Calendar calendarSelecInicial, calendarSelecFinal, calendarActual;
     private double monto;
     private String idLista, idItem;
     private boolean itemListGastos;
@@ -102,9 +103,10 @@ public class AgregarGastoFragment extends Fragment {
         rbGastoFijo = view.findViewById(R.id.radioButton_gasto_fijo);
         rbGastoMes = view.findViewById(R.id.radioButton_gasto_mes);
         RadioGroup radioGasto = view.findViewById(R.id.radioGroup2);
-        tvFecha = view.findViewById(R.id.textView_fecha_inicio);
+        tvFechaInicio = view.findViewById(R.id.tv_fecha_inicial);
+        tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
         final LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout_frecuencia);
-        final LinearLayout linearLayoutFecha = view.findViewById(R.id.linearLayout_fecha);
+        final LinearLayout linearLayoutFecha = view.findViewById(R.id.linear_periodo);
         final LinearLayout linearLayoutEscogerMes = view.findViewById(R.id.linearLayout_escoger_mes);
         final RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup_frecuencia);
 
@@ -126,8 +128,10 @@ public class AgregarGastoFragment extends Fragment {
         spinnerEscogerMes.setAdapter(adapterEscogerMes);
         spinnerEscogerMes.setSelection(mesActual);
 
-        fechaSelec = new Date();
-        fechaSelec = null;
+        fechaSelecInicial = new Date();
+        fechaSelecInicial = null;
+        fechaSelecFinal = new Date();
+        fechaSelecFinal = null;
 
         radioGasto.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -138,14 +142,12 @@ public class AgregarGastoFragment extends Fragment {
                         linearLayoutFecha.setVisibility(View.VISIBLE);
                         linearLayoutFrecuencia.setVisibility(View.VISIBLE);
                         radioGroupFrecuencia.setVisibility(View.VISIBLE);
-                        tvFecha.setVisibility(View.VISIBLE);
                         break;
                     case R.id.radioButton_gasto_mes:
                         linearLayoutEscogerMes.setVisibility(View.VISIBLE);
                         linearLayoutFecha.setVisibility(View.GONE);
                         linearLayoutFrecuencia.setVisibility(View.GONE);
                         radioGroupFrecuencia.setVisibility(View.GONE);
-                        tvFecha.setVisibility(View.GONE);
                         break;
                     default:
                         break;
@@ -161,11 +163,19 @@ public class AgregarGastoFragment extends Fragment {
             }
         });
 
-        imageButtonSelecFecha = view.findViewById(R.id.imageButton);
-        imageButtonSelecFecha.setOnClickListener(new View.OnClickListener() {
+        ibFechaInicial = view.findViewById(R.id.imageButton_inicial);
+        ibFechaInicial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                seleccionarFecha();
+                seleccionarFecha(true);
+            }
+        });
+
+        ibFechaFinal = view.findViewById(R.id.imageButton_final);
+        ibFechaFinal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                crearDialogFechaFinal();
             }
         });
 
@@ -180,7 +190,6 @@ public class AgregarGastoFragment extends Fragment {
             linearLayoutFecha.setVisibility(View.GONE);
             linearLayoutFrecuencia.setVisibility(View.GONE);
             radioGroupFrecuencia.setVisibility(View.GONE);
-            tvFecha.setVisibility(View.GONE);
             rbGastoMes.setChecked(true);
             etConcepto.setText(concepto);
             etMonto.setText(String.valueOf(monto));
@@ -199,7 +208,7 @@ public class AgregarGastoFragment extends Fragment {
         String concepto = etConcepto.getText().toString();
         String montoS = etMonto.getText().toString();
         boolean conceptoValido;
-        boolean montovalido = false;
+        boolean montovalido;
         boolean fechaValida;
 
         if (!concepto.isEmpty()) {
@@ -222,13 +231,13 @@ public class AgregarGastoFragment extends Fragment {
         }
         if (rbGastoMes.isChecked()) {
             fechaValida = true;
-            fechaSelec = calendarActual.getTime();
+            fechaSelecInicial = calendarActual.getTime();
         } else {
-            if (fechaSelec != null) {
+            if (fechaSelecInicial != null && fechaSelecFinal!= null) {
                 fechaValida = true;
             } else {
                 fechaValida = false;
-                Toast.makeText(getContext(), "Debe seleccionar fecha de incio", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Debe seleccionar fecha de incio y final", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -267,20 +276,22 @@ public class AgregarGastoFragment extends Fragment {
         Map<String, Object> docData = new HashMap<>();
         docData.put(Constantes.BD_CONCEPTO, concepto);
         docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelecInicial);
+        docData.put(Constantes.BD_FECHA_FINAL, fechaSelecFinal);
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, tipoFrecuencia);
+        docData.put(Constantes.BD_MES_ACTIVO, true);
 
-        for (int j = mesSelec; j < 12; j++) {
+        for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(anualSelec + "-" + finalJ).document(String.valueOf(fechaSelec.getTime()))
+            db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (finalJ == 11) {
+                            if (finalJ == mesSelecFinal) {
                                 if (itemListGastos) {
                                     borrarItemListGastos();
                                 } else {
@@ -299,7 +310,8 @@ public class AgregarGastoFragment extends Fragment {
                             etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);
                             btnGuardar.setEnabled(true);
-                            imageButtonSelecFecha.setEnabled(true);
+                            ibFechaInicial.setEnabled(true);
+                            ibFechaFinal.setEnabled(true);
                         }
                     });
         }
@@ -323,13 +335,15 @@ public class AgregarGastoFragment extends Fragment {
         Map<String, Object> docData = new HashMap<>();
         docData.put(Constantes.BD_CONCEPTO, concepto);
         docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelecInicial);
+        docData.put(Constantes.BD_FECHA_FINAL, null);
         docData.put(Constantes.BD_DOLAR, dolar);
         docData.put(Constantes.BD_DURACION_FRECUENCIA, null);
         docData.put(Constantes.BD_TIPO_FRECUENCIA, null);
+        docData.put(Constantes.BD_MES_ACTIVO, true);
 
 
-            db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
+            db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -352,15 +366,21 @@ public class AgregarGastoFragment extends Fragment {
                             etConceptoLayout.setEnabled(true);
                             etMontoLayout.setEnabled(true);
                             btnGuardar.setEnabled(true);
-                            imageButtonSelecFecha.setEnabled(true);
+                            ibFechaInicial.setEnabled(true);
+                            ibFechaFinal.setEnabled(true);
                         }
                     });
 
     }
 
 
-    private void seleccionarFecha() {
-        calendarSelec = Calendar.getInstance();
+    private void seleccionarFecha(final boolean inicial) {
+        Calendar calendarMax = Calendar.getInstance();
+        calendarMax.set(anualActual, 11, 31);
+        Calendar calendarMin = Calendar.getInstance();
+        calendarMin.set(anualActual, 0, 1);
+        calendarSelecInicial = Calendar.getInstance();
+        calendarSelecFinal = Calendar.getInstance();
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH);
@@ -369,14 +389,43 @@ public class AgregarGastoFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendarSelec.set(year, month, dayOfMonth);
-                mesSelec = month;
-                anualSelec = year;
-                fechaSelec = calendarSelec.getTime();
-                tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaSelec));
+                if (inicial) {
+                    calendarSelecInicial.set(anualActual, month, dayOfMonth);
+                    mesSelecInicial = month;
+                    fechaSelecInicial = calendarSelecInicial.getTime();
+                    tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+                } else {
+                    calendarSelecFinal.set(anualActual, month, dayOfMonth);
+                    mesSelecFinal = month;
+                    fechaSelecFinal = calendarSelecFinal.getTime();
+                    tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                }
             }
         }, year, month, day);
+        datePickerDialog.getDatePicker().setMaxDate(calendarMax.getTimeInMillis());
+        datePickerDialog.getDatePicker().setMinDate(calendarMin.getTimeInMillis());
         datePickerDialog.show();
+    }
+
+    private void crearDialogFechaFinal() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle("Seleccione")
+                .setItems(R.array.opciones_fin_periodo, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                calendarSelecFinal.set(anualActual, 11, 31);
+                                mesSelecFinal = 11;
+                                fechaSelecFinal = calendarSelecFinal.getTime();
+                                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                                break;
+                            case 1:
+                                seleccionarFecha(false);
+                                break;
+                        }
+                    }
+                }).show();
     }
 
     private void borrarItemListGastos() {
@@ -407,7 +456,7 @@ public class AgregarGastoFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(getContext(), "Proceso completado exitosamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         requireActivity().finish();
                     }

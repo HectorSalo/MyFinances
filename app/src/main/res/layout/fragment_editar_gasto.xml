@@ -134,9 +134,10 @@
             android:text="@string/meses" />
     </RadioGroup>
 
+
     <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="wrap_content"
+        android:id="@+id/linear_periodo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -147,33 +148,23 @@
         app:layout_constraintTop_toBottomOf="@+id/radioGroup3">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tv_fecha_inicial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/fecha_inicio"
+            android:layout_weight="1"
+            android:text="@string/texto_vacio"
             android:textSize="18sp" />
 
-        <ImageButton
-            android:id="@+id/imageButton_editar"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_fecha_final"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_date_48dp" />
+            android:text="@string/texto_vacio"
+            android:textSize="18sp" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView_fecha_inicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/texto_vacio"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
 
     <Button
@@ -181,13 +172,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:text="@string/btn_actualizar"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_fecha_inicio" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_periodo" />
 
     <ProgressBar
         android:id="@+id/progressBar"

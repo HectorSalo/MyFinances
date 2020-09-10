@@ -50,6 +50,11 @@
         <item>30</item>
     </string-array>
 
+    <string-array name="opciones_fin_periodo">
+        <item>Todo el año restante</item>
+        <item>Fecha personalizada</item>
+    </string-array>
+
     <string-array name="opciones_list_gasto">
     <item>Editar nombre</item>
     <item>Eliminar lista</item>

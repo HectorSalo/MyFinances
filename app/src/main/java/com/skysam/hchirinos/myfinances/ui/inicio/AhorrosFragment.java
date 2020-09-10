@@ -292,7 +292,7 @@ public class AhorrosFragment extends Fragment {
                                     dolarEnviar = false;
                                 }
                                 guardarItem(dolarEnviar, valor, idDoc);
-                                Toast.makeText(getContext(), "Actualizando", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "Actualizando...", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
                                 cargarAhorros();
@@ -303,7 +303,7 @@ public class AhorrosFragment extends Fragment {
                         }
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         cargarAhorros();
@@ -324,7 +324,7 @@ public class AhorrosFragment extends Fragment {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                             if (finalI == 11) {
                                 cargarAhorros();
-                                Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
                             }
                         }
@@ -333,7 +333,11 @@ public class AhorrosFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            if (finalI > mesSelected) {
+                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            }
                             progressBar.setVisibility(View.GONE);
                             cargarAhorros();
                         }

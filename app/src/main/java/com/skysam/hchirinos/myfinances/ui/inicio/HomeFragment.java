@@ -140,6 +140,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        moveToNextYear();
+
         cargarFolios();
 
         return view;
@@ -334,76 +336,79 @@ public class HomeFragment extends Fragment {
                             int mesPago = 0;
                             int yearPago = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                Boolean activo = document.getBoolean(Constantes.BD_MES_ACTIVO);
+                                if (activo == null || activo) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
 
-                                String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
-                                if (tipoFrecuencia != null) {
-                                    Calendar calendarInicial = Calendar.getInstance();
-                                    Calendar calendarPago = Calendar.getInstance();
-                                    Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
-                                    double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
-                                    int duracionFrecuenciaInt = (int) duracionFrecuencia;
+                                    String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
+                                    if (tipoFrecuencia != null) {
+                                        Calendar calendarInicial = Calendar.getInstance();
+                                        Calendar calendarPago = Calendar.getInstance();
+                                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
+                                        double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
 
-                                    int multiploCobranza = 0;
+                                        int multiploCobranza = 0;
 
-                                    calendarInicial.setTime(fechaInicial);
-                                    mesPago = calendarInicial.get(Calendar.MONTH);
-                                    yearPago = calendarInicial.get(Calendar.YEAR);
+                                        calendarInicial.setTime(fechaInicial);
+                                        mesPago = calendarInicial.get(Calendar.MONTH);
+                                        yearPago = calendarInicial.get(Calendar.YEAR);
 
-                                    if (mesPago == mesSelected) {
-                                        multiploCobranza = 1;
-                                    }
+                                        if (mesPago == mesSelected) {
+                                            multiploCobranza = 1;
+                                        }
 
 
-                                    if (tipoFrecuencia.equals("Dias")) {
-                                        for (int j = 1; (mesPago <= mesSelected && yearPago == yearSelected); j++) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
-                                            calendarPago.setTime(calendarInicial.getTime());
-                                            mesPago = calendarPago.get(Calendar.MONTH);
-                                            yearPago = calendarPago.get(Calendar.YEAR);
-                                            calendarInicial.setTime(fechaInicial);
+                                        if (tipoFrecuencia.equals("Dias")) {
+                                            for (int j = 1; (mesPago <= mesSelected && yearPago == yearSelected); j++) {
+                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
+                                                calendarPago.setTime(calendarInicial.getTime());
+                                                mesPago = calendarPago.get(Calendar.MONTH);
+                                                yearPago = calendarPago.get(Calendar.YEAR);
+                                                calendarInicial.setTime(fechaInicial);
 
-                                            if (mesPago == mesSelected) {
-                                                multiploCobranza = multiploCobranza + 1;
+                                                if (mesPago == mesSelected) {
+                                                    multiploCobranza = multiploCobranza + 1;
+                                                }
+                                            }
+                                        } else if (tipoFrecuencia.equals("Semanas")) {
+                                            for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
+                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
+                                                calendarPago.setTime(calendarInicial.getTime());
+                                                mesPago = calendarPago.get(Calendar.MONTH);
+                                                yearPago = calendarPago.get(Calendar.YEAR);
+                                                calendarInicial.setTime(fechaInicial);
+
+                                                if (mesPago == mesSelected) {
+                                                    multiploCobranza = multiploCobranza + 1;
+                                                }
+                                            }
+                                        } else if (tipoFrecuencia.equals("Meses")) {
+                                            for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
+                                                calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
+                                                calendarPago.setTime(calendarInicial.getTime());
+                                                mesPago = calendarPago.get(Calendar.MONTH);
+                                                yearPago = calendarPago.get(Calendar.YEAR);
+                                                calendarInicial.setTime(fechaInicial);
+
+                                                if (mesPago == mesSelected) {
+                                                    multiploCobranza = multiploCobranza + 1;
+                                                }
                                             }
                                         }
-                                    } else if (tipoFrecuencia.equals("Semanas")) {
-                                        for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
-                                            calendarPago.setTime(calendarInicial.getTime());
-                                            mesPago = calendarPago.get(Calendar.MONTH);
-                                            yearPago = calendarPago.get(Calendar.YEAR);
-                                            calendarInicial.setTime(fechaInicial);
-
-                                            if (mesPago == mesSelected) {
-                                                multiploCobranza = multiploCobranza + 1;
-                                            }
+                                        if (dolar) {
+                                            montototal = montototal + (montoDetal * multiploCobranza);
+                                        } else {
+                                            montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
                                         }
-                                    } else if (tipoFrecuencia.equals("Meses")) {
-                                        for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
-                                            calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
-                                            calendarPago.setTime(calendarInicial.getTime());
-                                            mesPago = calendarPago.get(Calendar.MONTH);
-                                            yearPago = calendarPago.get(Calendar.YEAR);
-                                            calendarInicial.setTime(fechaInicial);
-
-                                            if (mesPago == mesSelected) {
-                                                multiploCobranza = multiploCobranza + 1;
-                                            }
-                                        }
-                                    }
-                                    if (dolar) {
-                                        montototal = montototal + (montoDetal * multiploCobranza);
                                     } else {
-                                        montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
-                                    }
-                                } else {
-                                    if (dolar) {
-                                        montototal = montototal + montoDetal;
-                                    } else {
-                                        montototal = montototal + (montoDetal / valorCotizacion);
+                                        if (dolar) {
+                                            montototal = montototal + montoDetal;
+                                        } else {
+                                            montototal = montototal + (montoDetal / valorCotizacion);
+                                        }
                                     }
                                 }
                             }
@@ -601,12 +606,22 @@ public class HomeFragment extends Fragment {
                     sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putFloat("valor_cotizacion", valorCotizacion);
-                    editor.commit();
+                    editor.apply();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+    }
+
+
+    private void moveToNextYear() {
+        Calendar calendar = Calendar.getInstance();
+        int mes = calendar.get(Calendar.MONTH);
+
+        if (mes == 11) {
+
         }
     }
 

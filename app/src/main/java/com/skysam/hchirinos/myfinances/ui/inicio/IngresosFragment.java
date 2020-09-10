@@ -42,12 +42,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.IngresosAdapter;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
+import com.skysam.hchirinos.myfinances.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.ui.editar.EditarActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,7 +59,7 @@ public class IngresosFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private IngresosAdapter ingresosAdapter;
-    private ArrayList<IngresosConstructor> listaIngresos, newList;
+    private ArrayList<IngresosGastosConstructor> listaIngresos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -154,7 +155,7 @@ public class IngresosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
-            IngresosConstructor itemSwipe;
+            IngresosGastosConstructor itemSwipe;
             itemSwipe = listaIngresos.get(position);
 
             switch (direction) {
@@ -210,7 +211,7 @@ public class IngresosFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        IngresosConstructor ingreso = new IngresosConstructor();
+                        IngresosGastosConstructor ingreso = new IngresosGastosConstructor();
                         ingreso.setIdIngreso(doc.getId());
                         ingreso.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
                         ingreso.setMonto(doc.getDouble(Constantes.BD_MONTO));
@@ -232,6 +233,13 @@ public class IngresosFragment extends Fragment {
                             ingreso.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
                         } else {
                             ingreso.setTipoFrecuencia(null);
+                        }
+
+                        Date fechaFinal = doc.getDate(Constantes.BD_FECHA_FINAL);
+                        if (fechaFinal != null) {
+                            ingreso.setFechaFinal(fechaFinal);
+                        } else {
+                            ingreso.setFechaFinal(null);
                         }
 
                         listaIngresos.add(ingreso);
@@ -298,7 +306,7 @@ public class IngresosFragment extends Fragment {
     }
 
     private void eliminarDefinitivo(final int position) {
-        final IngresosConstructor itemSwipe = listaIngresos.get(position);
+        final IngresosGastosConstructor itemSwipe = listaIngresos.get(position);
 
         listaIngresos.remove(position);
         ingresosAdapter.updateList(listaIngresos);
@@ -317,25 +325,45 @@ public class IngresosFragment extends Fragment {
             @Override
             public void run() {
                 if (!listaIngresos.contains(itemSwipe)) {
-                    deleteItemSwipe(itemSwipe.getIdIngreso());
+                    deleteItemSwipe(itemSwipe.getIdIngreso(), itemSwipe.getFechaFinal());
                 }
             }
         }, 4500);
     }
 
 
-    private void deleteItemSwipe(String id) {
-        for (int i = mesSelected; i < 12; i++) {
-            final int finalI = i;
-            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+    private void deleteItemSwipe(String id, Date fechaFinal) {
+        if (fechaFinal != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fechaFinal);
+            final int mesFinal = calendar.get(Calendar.MONTH);
+            for (int i = mesSelected; i < mesFinal; i++) {
+                final int finalI = i;
+                db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                                if (finalI == mesFinal) {
+                                    Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("Delete", "Error deleting document", e);
+                            }
+                        });
+            }
+        } else {
+            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                            if (finalI == 11) {
-                                Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
-                            }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -374,7 +402,7 @@ public class IngresosFragment extends Fragment {
             String userInput = text.toLowerCase();
             newList = new ArrayList<>();
 
-            for (IngresosConstructor name : listaIngresos) {
+            for (IngresosGastosConstructor name : listaIngresos) {
 
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);

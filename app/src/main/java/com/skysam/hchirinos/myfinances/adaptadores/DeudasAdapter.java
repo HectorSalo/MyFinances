@@ -187,7 +187,13 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(context, "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            if (finalJ > mes) {
+                                Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
+                                listaDeudas.get(position).setMonto(montoNuevo);
+                                updateList(listaDeudas);
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         }
@@ -217,7 +223,13 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(context, "Error al agregar cobranza. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                            if (finalJ > mes) {
+                                Toast.makeText(context, "Deuda pagada por completo", Toast.LENGTH_SHORT).show();
+                                listaDeudas.remove(position);
+                                updateList(listaDeudas);
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         }

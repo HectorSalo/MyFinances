@@ -48,8 +48,8 @@
     <string name="dias">Días</string>
     <string name="semanas">Semanas</string>
     <string name="meses">Meses</string>
-    <string name="fecha_inicio">Escoja la fecha inicial</string>
-    <string name="fecha_final">Escoja la fecha final</string>
+    <string name="fecha_inicio">Desde:</string>
+    <string name="fecha_final">Hasta:</string>
     <string name="fecha">Fecha:</string>
     <string name="origen">Origen de los fondos:</string>
     <string name="destinatario">Destinatario:</string>

@@ -161,8 +161,8 @@
     </RadioGroup>
 
     <LinearLayout
-        android:id="@+id/linearLayout_fecha"
-        android:layout_width="wrap_content"
+        android:id="@+id/linear_periodo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -173,33 +173,38 @@
         app:layout_constraintTop_toBottomOf="@+id/radioGroup_frecuencia">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tv_fecha_inicial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="@string/fecha_inicio"
             android:textSize="18sp" />
 
         <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="0dp"
+            android:id="@+id/imageButton_inicial"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_date_48dp" />
+
+        <TextView
+            android:id="@+id/tv_fecha_final"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
+            android:text="@string/fecha_final"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/imageButton_final"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_date_48dp" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView_fecha_inicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/texto_vacio"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout_fecha" />
 
 
     <LinearLayout
@@ -207,13 +212,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_fecha_inicio"
-        android:visibility="gone">
+        app:layout_constraintTop_toBottomOf="@+id/linear_periodo">
 
         <TextView
             android:id="@+id/textView3"
@@ -228,8 +232,8 @@
             android:id="@+id/spinner_escoger_mes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="5dp"/>
+            android:layout_marginStart="5dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <Button

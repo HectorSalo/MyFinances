@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -52,18 +53,16 @@ public class EditarIngresoFragment extends Fragment {
 
     private String conceptoViejo, conceptoNuevo, idDoc;
     private double montoNuevo, montoViejo;
-    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected;
+    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected, mesFinal;
     private boolean mesUnico;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia;
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses;
-    private TextView tvFecha;
-    private Date fechaNueva, fechaVieja;
+    private TextView tvFechaInicial, tvFechaFinal;
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnEditar;
-    private ImageButton btnSelecFecha;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
@@ -89,9 +88,10 @@ public class EditarIngresoFragment extends Fragment {
         rbDias = view.findViewById(R.id.radioButton_dias_editar);
         rbSemanas = view.findViewById(R.id.radioButton_semanas_editar);
         rbMeses = view.findViewById(R.id.radioButton_meses_editar);
-        tvFecha = view.findViewById(R.id.textView_fecha_inicio_editar);
+        tvFechaInicial = view.findViewById(R.id.tv_fecha_inicial);
+        tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
         LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout2);
-        LinearLayout linearLayoutFecha = view.findViewById(R.id.linearLayout3);
+        LinearLayout linearLayoutFecha = view.findViewById(R.id.linear_periodo);
         RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup3);
 
         progressBar = view.findViewById(R.id.progressBar_editar_ingreso);
@@ -107,22 +107,11 @@ public class EditarIngresoFragment extends Fragment {
         yearSelected = getArguments().getInt("year");
         mesUnico = getArguments().getBoolean("mesUnico");
 
-        fechaNueva = new Date();
-        fechaNueva = null;
-
         btnEditar = view.findViewById(R.id.button_editar);
         btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validarDatos();
-            }
-        });
-
-        btnSelecFecha = view.findViewById(R.id.imageButton_editar);
-        btnSelecFecha.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                seleccionarFecha();
             }
         });
 
@@ -145,7 +134,6 @@ public class EditarIngresoFragment extends Fragment {
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
-        btnSelecFecha.setEnabled(false);
 
         db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -182,31 +170,34 @@ public class EditarIngresoFragment extends Fragment {
                             rbMeses.setChecked(true);
                         }
 
-                        fechaVieja = document.getDate(Constantes.BD_FECHA_INCIAL);
-                        tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaVieja));
+                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
+                        tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
+
+                        Date fechaFinal = document.getDate(Constantes.BD_FECHA_FINAL);
+                        if (fechaFinal != null) {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(fechaFinal);
+                            mesFinal = calendar.get(Calendar.MONTH);
+                            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaFinal));
+                        } else {
+                            mesFinal = 11;
+                        }
 
                         progressBar.setVisibility(View.GONE);
                         etConceptoLayout.setEnabled(true);
                         etMontoLayout.setEnabled(true);
                         btnEditar.setEnabled(true);
-                        btnSelecFecha.setEnabled(true);
                     } else {
                         Log.d(TAG, "No such document");
-                        Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
-                        btnSelecFecha.setEnabled(true);
+                        requireActivity().finish();
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
-                    etConceptoLayout.setEnabled(true);
-                    etMontoLayout.setEnabled(true);
-                    btnEditar.setEnabled(true);
-                    btnSelecFecha.setEnabled(true);
+                    requireActivity().finish();
                 }
             }
         });
@@ -246,42 +237,18 @@ public class EditarIngresoFragment extends Fragment {
                         btnEditar.setEnabled(true);
                     } else {
                         Log.d(TAG, "No such document");
-                        Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
+                        requireActivity().finish();
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
-                    etConceptoLayout.setEnabled(true);
-                    etMontoLayout.setEnabled(true);
-                    btnEditar.setEnabled(true);
+                    requireActivity().finish();
                 }
             }
         });
-    }
-
-
-    private void seleccionarFecha() {
-        final Calendar calendarSelec = Calendar.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fechaVieja);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendarSelec.set(year, month, dayOfMonth);
-                fechaNueva = calendarSelec.getTime();
-                tvFecha.setText(new SimpleDateFormat("EEE d MMM yyyy").format(fechaNueva));
-            }
-        }, year, month, day);
-        datePickerDialog.show();
     }
 
 
@@ -327,7 +294,6 @@ public class EditarIngresoFragment extends Fragment {
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
-        btnSelecFecha.setEnabled(false);
 
         duracionFrecuenciaNuevo = spFrecuencia.getSelectedItemPosition() + 1;
         Map<String, Object> item = new HashMap<>();
@@ -356,13 +322,8 @@ public class EditarIngresoFragment extends Fragment {
         if (rbMeses.isChecked()) {
             item.put(Constantes.BD_TIPO_FRECUENCIA, "Meses");
         }
-        if(fechaNueva != null) {
-            if (!fechaNueva.equals(fechaVieja)) {
-                item.put(Constantes.BD_FECHA_INCIAL, fechaNueva);
-            }
-        }
 
-        for (int i = mesSelected; i < 12; i++) {
+        for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
             db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
@@ -370,7 +331,7 @@ public class EditarIngresoFragment extends Fragment {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            if (finalI == 11) {
+                            if (finalI == mesFinal) {
                                 Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
                                 requireActivity().finish();
@@ -381,12 +342,17 @@ public class EditarIngresoFragment extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etConceptoLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnEditar.setEnabled(true);
-                            btnSelecFecha.setEnabled(true);
+                            if (finalI > mesSelected) {
+                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                                requireActivity().finish();
+                            } else {
+                                Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                                etConceptoLayout.setEnabled(true);
+                                etMontoLayout.setEnabled(true);
+                                btnEditar.setEnabled(true);
+                            }
                         }
                     });
         }
@@ -419,7 +385,7 @@ public class EditarIngresoFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(getContext(), "Ítem modificado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         requireActivity().finish();
                     }
@@ -428,7 +394,7 @@ public class EditarIngresoFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error updating document", e);
-                        Toast.makeText(getContext(), "Error al modificar. Intente nuevamente " + e, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         etConceptoLayout.setEnabled(true);
                         etMontoLayout.setEnabled(true);

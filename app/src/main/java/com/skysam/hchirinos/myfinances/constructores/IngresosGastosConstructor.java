@@ -2,14 +2,14 @@ package com.skysam.hchirinos.myfinances.constructores;
 
 import java.util.Date;
 
-public class IngresosConstructor {
+public class IngresosGastosConstructor {
     private String concepto, tipoFrecuencia, idIngreso, idGasto;
     private double monto;
     private boolean dolar, mesActivo;
     private int duracionFrecuencia;
-    private Date fechaIncial;
+    private Date fechaIncial, fechaFinal;
 
-    public IngresosConstructor(String concepto, String tipoFrecuencia, String idIngreso, double monto, boolean dolar, int duracionFrecuencia, Date fechaIncial) {
+    public IngresosGastosConstructor(String concepto, String tipoFrecuencia, String idIngreso, double monto, boolean dolar, int duracionFrecuencia, Date fechaIncial) {
         this.concepto = concepto;
         this.tipoFrecuencia = tipoFrecuencia;
         this.idIngreso = idIngreso;
@@ -19,7 +19,7 @@ public class IngresosConstructor {
         this.fechaIncial = fechaIncial;
     }
 
-    public IngresosConstructor() {
+    public IngresosGastosConstructor() {
     }
 
     public String getIdIngreso() {
@@ -92,5 +92,13 @@ public class IngresosConstructor {
 
     public void setMesActivo(boolean mesActivo) {
         this.mesActivo = mesActivo;
+    }
+
+    public Date getFechaFinal() {
+        return fechaFinal;
+    }
+
+    public void setFechaFinal(Date fechaFinal) {
+        this.fechaFinal = fechaFinal;
     }
 }

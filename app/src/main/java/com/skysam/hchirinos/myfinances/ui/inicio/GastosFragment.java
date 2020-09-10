@@ -1,5 +1,7 @@
 package com.skysam.hchirinos.myfinances.ui.inicio;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -39,12 +41,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
 import com.skysam.hchirinos.myfinances.adaptadores.GastosAdapter;
-import com.skysam.hchirinos.myfinances.constructores.IngresosConstructor;
+import com.skysam.hchirinos.myfinances.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.ui.editar.EditarActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,7 +58,7 @@ public class GastosFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private GastosAdapter gastosAdapter;
-    private ArrayList<IngresosConstructor> listaGastos, newList;
+    private ArrayList<IngresosGastosConstructor> listaGastos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -142,34 +145,15 @@ public class GastosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
-            IngresosConstructor itemSwipe = listaGastos.get(position);
+            IngresosGastosConstructor itemSwipe = listaGastos.get(position);
 
             switch (direction) {
                 case ItemTouchHelper.RIGHT:
-
-                    listaGastos.remove(position);
-                    gastosAdapter.updateList(listaGastos);
-
-                    final IngresosConstructor finalItemSwipe = itemSwipe;
-
-                    final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            listaGastos.add(position, finalItemSwipe);
-                            gastosAdapter.updateList(listaGastos);
-                        }
-                    });
-                    snackbar.show();
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!listaGastos.contains(finalItemSwipe)) {
-                                deleteItemSwipe(position);
-                            }
-                        }
-                    }, 4500);
+                    if (itemSwipe.getTipoFrecuencia() != null) {
+                        crearDialog(position);
+                    } else {
+                        eliminarDefinitivo(position);
+                    }
                     break;
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
@@ -226,13 +210,20 @@ public class GastosFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        IngresosConstructor gasto = new IngresosConstructor();
+                        IngresosGastosConstructor gasto = new IngresosGastosConstructor();
                         gasto.setIdGasto(doc.getId());
                         gasto.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
                         gasto.setMonto(doc.getDouble(Constantes.BD_MONTO));
                         gasto.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
                         gasto.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
                         String tipoFrecuencia = doc.getString(Constantes.BD_TIPO_FRECUENCIA);
+
+                        Boolean activo = doc.getBoolean(Constantes.BD_MES_ACTIVO);
+                        if (activo == null) {
+                            gasto.setMesActivo(true);
+                        } else {
+                            gasto.setMesActivo(activo);
+                        }
 
                         if (tipoFrecuencia != null) {
                             double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
@@ -242,6 +233,13 @@ public class GastosFragment extends Fragment {
                             gasto.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
                         } else {
                             gasto.setTipoFrecuencia(null);
+                        }
+
+                        Date fechaFinal = doc.getDate(Constantes.BD_FECHA_FINAL);
+                        if (fechaFinal != null) {
+                            gasto.setFechaFinal(fechaFinal);
+                        } else {
+                            gasto.setFechaFinal(null);
                         }
 
                         listaGastos.add(gasto);
@@ -264,11 +262,80 @@ public class GastosFragment extends Fragment {
     }
 
 
-    private void deleteItemSwipe(int position) {
-        String id = listaGastos.get(position).getIdGasto();
-        String tipoFrecuencia = listaGastos.get(position).getTipoFrecuencia();
-        if (tipoFrecuencia != null) {
-            for (int i = mesSelected; i < 12; i++) {
+    private void crearDialog(final int position) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle("¿Qué desea hacer?")
+                .setItems(R.array.opciones_borrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                suspenderMes(position);
+                                break;
+                            case 1:
+                                eliminarDefinitivo(position);
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cargarGastos();
+                    }
+                }).show();
+    }
+
+
+    private void suspenderMes(int position) {
+        db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(listaGastos.get(position).getIdIngreso())
+                .update(Constantes.BD_MES_ACTIVO, false)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        cargarGastos();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void eliminarDefinitivo(final int position) {
+        final IngresosGastosConstructor itemSwipe = listaGastos.get(position);
+        listaGastos.remove(position);
+        gastosAdapter.updateList(listaGastos);
+
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listaGastos.add(position, itemSwipe);
+                gastosAdapter.updateList(listaGastos);
+            }
+        });
+        snackbar.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!listaGastos.contains(itemSwipe)) {
+                    deleteItemSwipe(itemSwipe.getIdGasto(), itemSwipe.getFechaFinal());
+                }
+            }
+        }, 4500);
+    }
+
+
+    private void deleteItemSwipe(String id, Date fechaFinal) {
+        if (fechaFinal != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fechaFinal);
+            final int mesFinal = calendar.get(Calendar.MONTH);
+            for (int i = mesSelected; i < mesFinal; i++) {
                 final int finalI = i;
                 db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()
@@ -276,7 +343,7 @@ public class GastosFragment extends Fragment {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                                if (finalI == 11) {
+                                if (finalI == mesFinal) {
                                     Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                                 }
                             }
@@ -332,7 +399,7 @@ public class GastosFragment extends Fragment {
             String userInput = text.toLowerCase();
             newList = new ArrayList<>();
 
-            for (IngresosConstructor name : listaGastos) {
+            for (IngresosGastosConstructor name : listaGastos) {
 
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);

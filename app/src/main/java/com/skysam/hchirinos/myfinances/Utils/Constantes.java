@@ -14,6 +14,7 @@ public class Constantes {
     public static final String BD_DURACION_FRECUENCIA = "duracionFrecuencia";
     public static final String BD_TIPO_FRECUENCIA = "tipoFrecuencia";
     public static final String BD_FECHA_INCIAL = "fechaIncial";
+    public static final String BD_FECHA_FINAL = "fechaFinal";
     public static final String BD_MES_ACTIVO = "mesActivo";
 
     public static final String BD_ORIGEN = "origen";
