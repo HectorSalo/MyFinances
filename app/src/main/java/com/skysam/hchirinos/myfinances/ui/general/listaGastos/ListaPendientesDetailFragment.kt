@@ -62,7 +62,7 @@ class ListaPendientesDetailFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         user = FirebaseAuth.getInstance().currentUser
 
-        adapter = ItemListPendienteAdapter(items, requireActivity(), requireActivity().supportFragmentManager)
+        adapter = ItemListPendienteAdapter(items, requireActivity(), requireActivity().supportFragmentManager, twoPane)
 
         if (twoPane) {
             binding.extendedFab.visibility = View.VISIBLE
@@ -124,7 +124,7 @@ class ListaPendientesDetailFragment : Fragment() {
     }
 
     private fun crearItem() {
-        val crearItemDialog = CrearEditarItemDialog(adapter, idLista!!, true, items, null)
+        val crearItemDialog = CrearEditarItemDialog(adapter, idLista!!, true, items, null, twoPane)
         crearItemDialog.show(requireActivity().supportFragmentManager, idLista.toString())
     }
 

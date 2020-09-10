@@ -4,9 +4,9 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, private val idLista: String, private val guardar: Boolean, private val items: ArrayList<ItemGastosConstructor>,
-                            private val position: Int?):
+                            private val position: Int?, private val twoPane: Boolean):
         DialogFragment() {
 
     private var _binding : DialogCrearEditarItemBinding? = null
@@ -113,7 +113,14 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")
                     Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
-                    dialog?.dismiss()
+                    if (twoPane) {
+                        requireActivity().finish()
+                        requireActivity().startActivity(Intent(context, ListaPendientesListActivity::class.java))
+                        requireActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                    } else {
+                        dialog?.dismiss()
+                    }
+
                 }.addOnFailureListener { dialog?.dismiss() }
     }
 

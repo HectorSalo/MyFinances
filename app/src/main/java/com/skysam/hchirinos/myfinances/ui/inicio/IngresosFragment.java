@@ -1,5 +1,7 @@
 package com.skysam.hchirinos.myfinances.ui.inicio;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -152,35 +154,16 @@ public class IngresosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
-            IngresosConstructor itemSwipe, itemSwipeBuscar;
+            IngresosConstructor itemSwipe;
             itemSwipe = listaIngresos.get(position);
 
             switch (direction) {
                 case ItemTouchHelper.RIGHT:
-
-                    listaIngresos.remove(position);
-                    ingresosAdapter.updateList(listaIngresos);
-
-                    final IngresosConstructor finalItemSwipe = itemSwipe;
-
-                    final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            listaIngresos.add(position, finalItemSwipe);
-                            ingresosAdapter.updateList(listaIngresos);
-                        }
-                    });
-                    snackbar.show();
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!listaIngresos.contains(finalItemSwipe)) {
-                                deleteItemSwipe(finalItemSwipe.getIdIngreso());
-                            }
-                        }
-                    }, 4500);
+                    if (itemSwipe.getTipoFrecuencia() != null) {
+                        crearDialog(position);
+                    } else {
+                        eliminarDefinitivo(position);
+                    }
                     break;
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
@@ -264,13 +247,80 @@ public class IngresosFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                 } else {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                 }
 
                 fragmentCreado = false;
             }
         });
 
+    }
+
+    private void crearDialog(final int position) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setTitle("¿Qué desea hacer?")
+                .setItems(R.array.opciones_borrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                suspenderMes(position);
+                                break;
+                            case 1:
+                                eliminarDefinitivo(position);
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cargarIngresos();
+                    }
+                }).show();
+    }
+
+    private void suspenderMes(int position) {
+        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(listaIngresos.get(position).getIdIngreso())
+                .update(Constantes.BD_MES_ACTIVO, false)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        cargarIngresos();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void eliminarDefinitivo(final int position) {
+        final IngresosConstructor itemSwipe = listaIngresos.get(position);
+
+        listaIngresos.remove(position);
+        ingresosAdapter.updateList(listaIngresos);
+
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listaIngresos.add(position, itemSwipe);
+                ingresosAdapter.updateList(listaIngresos);
+            }
+        });
+        snackbar.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!listaIngresos.contains(itemSwipe)) {
+                    deleteItemSwipe(itemSwipe.getIdIngreso());
+                }
+            }
+        }, 4500);
     }
 
 

@@ -60,6 +60,11 @@
         <item>Editar ítem</item>
         <item>Eliminar ítem</item>
     </string-array>
+
+    <string-array name="opciones_borrar">
+        <item>Suspender por este mes</item>
+        <item>Eliminar definitivo</item>
+    </string-array>
     <!-- Bloqueo Preference -->
     <string-array name="bloqueo_entries">
         <item>Sin Bloqueo</item>

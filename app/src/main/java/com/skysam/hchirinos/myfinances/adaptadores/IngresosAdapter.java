@@ -80,7 +80,7 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
                 holder.tvProximoCobro.setVisibility(View.GONE);
             }
         } else {
-            holder.tvFrecuencia.setText("Ingreso no activo este mes");
+            holder.tvFrecuencia.setText("Ingreso suspendido este mes");
             holder.tvProximoCobro.setVisibility(View.GONE);
         }
 

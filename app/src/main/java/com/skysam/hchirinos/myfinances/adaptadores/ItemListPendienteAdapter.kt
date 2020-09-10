@@ -23,10 +23,11 @@ import com.skysam.hchirinos.myfinances.Utils.Constantes
 import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
 import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity
 import com.skysam.hchirinos.myfinances.ui.general.listaGastos.CrearEditarItemDialog
+import com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructor>, private val activity: Activity, private val supportFragmentManager: FragmentManager) :
+class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructor>, private val activity: Activity, private val supportFragmentManager: FragmentManager, private val twoPane: Boolean) :
     RecyclerView.Adapter<ItemListPendienteAdapter.ViewHolder>() {
 
     private val user = FirebaseAuth.getInstance().currentUser
@@ -106,7 +107,7 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     private fun editarItem(item: ItemGastosConstructor) {
-        val editarItemDialog = CrearEditarItemDialog(this, items[0].idListItem, false, items, items.indexOf(item))
+        val editarItemDialog = CrearEditarItemDialog(this, items[0].idListItem, false, items, items.indexOf(item), twoPane)
         editarItemDialog.show(supportFragmentManager, items[0].idListItem)
     }
 
@@ -114,18 +115,6 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
         val position = items.indexOf(item)
         items.removeAt(position)
         updateList(items)
-
-        /*if (twoPane) {
-            if (itemLista != null) {
-                if (itemLista!!.idLista == lista.idLista) {
-                    val fragment = ListaPendientesDetailFragment()
-                    parentActivity.supportFragmentManager
-                            .beginTransaction()
-                            .replace(R.id.listapendientes_detail_container, fragment)
-                            .commit()
-                }
-            }
-        }*/
 
         val snackbar = Snackbar.make(activity.findViewById(R.id.listapendientes_detail), "Eliminando ${item.concepto}", Snackbar.LENGTH_LONG).setAction("Deshacer") {
             items.add(position, item)
@@ -159,6 +148,11 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
                 .update(Constantes.BD_CANTIDAD_ITEMS, items.size)
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")
+                    if (twoPane) {
+                        activity.finish()
+                        activity.startActivity(Intent(activity, ListaPendientesListActivity::class.java))
+                        activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                    }
                 }
     }
 }
