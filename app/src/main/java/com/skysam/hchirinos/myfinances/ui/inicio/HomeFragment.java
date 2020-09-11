@@ -511,6 +511,7 @@ public class HomeFragment extends Fragment {
 
 
     private void actualizarCotizacion() {
+        sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
         Cotizacion cotizacion = new Cotizacion();
         cotizacion.execute();
 
@@ -531,7 +532,6 @@ public class HomeFragment extends Fragment {
             if (valor != null) {
                 tvCotizacionDolar.setText(valor);
             } else {
-                sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
                 valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1.0f);
 
                 tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
@@ -544,7 +544,6 @@ public class HomeFragment extends Fragment {
             super.onCancelled();
 
             if (sharedPreferences != null) {
-                sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
                 valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
 
                 tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
@@ -564,13 +563,16 @@ public class HomeFragment extends Fragment {
 
                 valor = data.select("h6.text-center").text();
 
-                if (valor != null && sharedPreferences != null) {
+                if (sharedPreferences == null) {
+                    sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
+                }
+
+                if (valor != null) {
                     String valor1 = valor.replace("Bs.S", "");
                     String valor2 = valor1.replace(".", "");
                     String valorNeto = valor2.replace(",", ".");
                     valorCotizacion = Float.parseFloat(valorNeto);
 
-                    sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putFloat("valor_cotizacion", valorCotizacion);
                     editor.apply();
