@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.inicio.DeudasFragment">
+    tools:context=".homeModule.ui.DeudasFragment">
 
     <Spinner
         android:id="@+id/spinner"

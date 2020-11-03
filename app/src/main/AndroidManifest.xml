@@ -13,20 +13,20 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.general.listaGastos.ListaPendientesListActivity"
+            android:name=".listaGastosModule.ui.ListaPendientesListActivity"
             android:label="@string/title_activity_lista_gastos"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.general.listaGastos.ListaPendientesDetailActivity"
+            android:name=".listaGastosModule.ui.ListaPendientesDetailActivity"
             android:label="@string/title_listapendientes_detail"
-            android:parentActivityName=".ui.general.listaGastos.ListaPendientesListActivity"
+            android:parentActivityName=".listaGastosModule.ui.ListaPendientesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.skysam.hchirinos.myfinances.ui.general.listaGastos.ListaPendientesListActivity" />
+                android:value="com.skysam.hchirinos.myfinances.listaGastosModule.ui.ListaPendientesListActivity" />
         </activity>
-        <activity android:name=".ui.inicioSesion.BloqueoActivity" />
-        <activity android:name=".ui.inicioSesion.LaunchActivity">
+        <activity android:name=".inicioSesionModule.ui.BloqueoActivity" />
+        <activity android:name=".inicioSesionModule.ui.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ajustes.SettingsActivity"
+            android:name=".ajustesModule.ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.general.CalculadoraActivity"
@@ -44,13 +44,13 @@
         <activity
             android:name=".ui.editar.EditarActivity"
             android:label="@string/title_activity_editar" />
-        <activity android:name=".ui.inicioSesion.RegistrarActivity" />
-        <activity android:name=".ui.inicioSesion.InicSesionActivity" />
+        <activity android:name=".inicioSesionModule.ui.RegistrarActivity" />
+        <activity android:name=".inicioSesionModule.ui.InicSesionActivity" />
         <activity
             android:name=".ui.agregar.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.inicio.HomeActivity" />
+        <activity android:name=".homeModule.ui.HomeActivity" />
     </application>
 
 </manifest>

@@ -15,6 +15,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AgregarAhorroFragment;
+import com.skysam.hchirinos.myfinances.deudasModule.ui.AgregarDeudaFragment;
+import com.skysam.hchirinos.myfinances.gastosModule.ui.AgregarGastoFragment;
+import com.skysam.hchirinos.myfinances.ingresosModule.ui.AgregarIngresoFragment;
+import com.skysam.hchirinos.myfinances.prestamosModule.ui.AgregarPrestamoFragment;
 
 import java.util.Objects;
 
