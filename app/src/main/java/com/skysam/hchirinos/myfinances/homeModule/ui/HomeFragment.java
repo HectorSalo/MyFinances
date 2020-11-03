@@ -1,14 +1,12 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -38,7 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -142,7 +139,7 @@ public class HomeFragment extends Fragment {
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
 
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -154,15 +151,15 @@ public class HomeFragment extends Fragment {
 
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                Boolean activo = document.getBoolean(Constantes.BD_MES_ACTIVO);
+                                Boolean activo = document.getBoolean(Constants.BD_MES_ACTIVO);
                                 if (activo == null || activo) {
                                     Calendar calendarInicial = Calendar.getInstance();
-                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
-                                    String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
+                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
+                                    String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
                                     if (tipoFrecuencia != null) {
-                                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
-                                        double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
+                                        double duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
                                         int duracionFrecuenciaInt = (int) duracionFrecuencia;
 
                                         int multiploIngreso = 0;
@@ -240,7 +237,7 @@ public class HomeFragment extends Fragment {
 
 
     private void cargarAhorros() {
-        db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -249,13 +246,13 @@ public class HomeFragment extends Fragment {
                             double montototal = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                Date date = document.getDate(Constantes.BD_FECHA_INGRESO);
+                                Date date = document.getDate(Constants.BD_FECHA_INGRESO);
                                 calendar.setTime(date);
                                 mesItemAhorro = calendar.get(Calendar.MONTH);
 
                                 if (mesSelected >= mesItemAhorro) {
-                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
 
                                         if (dolar) {
                                             montototal = montototal + montoDetal;
@@ -281,7 +278,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarPrestamos() {
-        db.collection(Constantes.BD_PRESTAMOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -291,8 +288,8 @@ public class HomeFragment extends Fragment {
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
-                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
 
                                     if (dolar) {
                                         montototal = montototal + montoDetal;
@@ -318,7 +315,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarGastos() {
-        db.collection(Constantes.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -328,18 +325,18 @@ public class HomeFragment extends Fragment {
                             int mesPago = 0;
                             int yearPago = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Boolean activo = document.getBoolean(Constantes.BD_MES_ACTIVO);
+                                Boolean activo = document.getBoolean(Constants.BD_MES_ACTIVO);
                                 if (activo == null || activo) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
+                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
 
-                                    String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
+                                    String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
                                     if (tipoFrecuencia != null) {
                                         Calendar calendarInicial = Calendar.getInstance();
                                         Calendar calendarPago = Calendar.getInstance();
-                                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
-                                        double duracionFrecuencia = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
+                                        double duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
                                         int duracionFrecuenciaInt = (int) duracionFrecuencia;
 
                                         int multiploCobranza = 0;
@@ -421,7 +418,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void cargarDeudas() {
-        db.collection(Constantes.BD_DEUDAS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -430,8 +427,8 @@ public class HomeFragment extends Fragment {
                             double montototal = 0;
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(Constantes.BD_MONTO);
-                                boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                                double montoDetal = document.getDouble(Constants.BD_MONTO);
+                                boolean dolar = document.getBoolean(Constants.BD_DOLAR);
 
                                 if (dolar) {
                                     montototal = montototal + montoDetal;

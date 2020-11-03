@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

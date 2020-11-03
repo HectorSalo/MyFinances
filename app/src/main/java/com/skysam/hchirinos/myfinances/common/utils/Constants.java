@@ -1,6 +1,6 @@
-package com.skysam.hchirinos.myfinances.Utils;
+package com.skysam.hchirinos.myfinances.common.utils;
 
-public class Constantes {
+public class Constants {
     public static final String BD_PROPIETARIOS = "propietarios";
     public static final String BD_INGRESOS= "ingresos";
     public static final String BD_AHORROS = "ahorros";

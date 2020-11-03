@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.ui.general;
+package com.skysam.hchirinos.myfinances.ui.activityGeneral;
 
 
 import android.os.Bundle;

@@ -1,6 +1,5 @@
 package com.skysam.hchirinos.myfinances.ingresosModule.ui;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -33,7 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -135,7 +132,7 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -143,25 +140,25 @@ public class EditarIngresoFragment extends Fragment {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constantes.BD_CONCEPTO);
+                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
                         etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constantes.BD_MONTO);
+                        montoViejo = document.getDouble(Constants.BD_MONTO);
                         String montoS = String.valueOf(montoViejo);
                         etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
                         if (dolar) {
                             rbDolar.setChecked(true);
                         } else {
                             rbBs.setChecked(true);
                         }
 
-                        double duracionFrecuenciaD = document.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                        double duracionFrecuenciaD = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
                         duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
                         spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
 
-                        String tipoFrecuencia = document.getString(Constantes.BD_TIPO_FRECUENCIA);
+                        String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
                         if (tipoFrecuencia.equals("Dias")) {
                             rbDias.setChecked(true);
                         } else if (tipoFrecuencia.equals("Semanas")) {
@@ -170,10 +167,10 @@ public class EditarIngresoFragment extends Fragment {
                             rbMeses.setChecked(true);
                         }
 
-                        Date fechaInicial = document.getDate(Constantes.BD_FECHA_INCIAL);
+                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
                         tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
 
-                        Date fechaFinal = document.getDate(Constantes.BD_FECHA_FINAL);
+                        Date fechaFinal = document.getDate(Constants.BD_FECHA_FINAL);
                         if (fechaFinal != null) {
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(fechaFinal);
@@ -209,7 +206,7 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -217,14 +214,14 @@ public class EditarIngresoFragment extends Fragment {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constantes.BD_CONCEPTO);
+                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
                         etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constantes.BD_MONTO);
+                        montoViejo = document.getDouble(Constants.BD_MONTO);
                         String montoS = String.valueOf(montoViejo);
                         etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constantes.BD_DOLAR);
+                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
                         if (dolar) {
                             rbDolar.setChecked(true);
                         } else {
@@ -299,33 +296,33 @@ public class EditarIngresoFragment extends Fragment {
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(conceptoNuevo)) {
-            item.put(Constantes.BD_CONCEPTO, conceptoNuevo);
+            item.put(Constants.BD_CONCEPTO, conceptoNuevo);
         }
         if (montoNuevo != montoViejo) {
-            item.put(Constantes.BD_MONTO, montoNuevo);
+            item.put(Constants.BD_MONTO, montoNuevo);
         }
         if (rbBs.isChecked()) {
-            item.put(Constantes.BD_DOLAR, false);
+            item.put(Constants.BD_DOLAR, false);
         }
         if (rbDolar.isChecked()) {
-            item.put(Constantes.BD_DOLAR, true);
+            item.put(Constants.BD_DOLAR, true);
         }
         if (duracionFrecuenciaNuevo != duracionFrecuenciaViejo) {
-            item.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuenciaNuevo);
+            item.put(Constants.BD_DURACION_FRECUENCIA, duracionFrecuenciaNuevo);
         }
         if (rbDias.isChecked()) {
-            item.put(Constantes.BD_TIPO_FRECUENCIA, "Dias");
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Dias");
         }
         if (rbSemanas.isChecked()) {
-            item.put(Constantes.BD_TIPO_FRECUENCIA, "Semanas");
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Semanas");
         }
         if (rbMeses.isChecked()) {
-            item.put(Constantes.BD_TIPO_FRECUENCIA, "Meses");
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
         }
 
         for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
-            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -367,19 +364,19 @@ public class EditarIngresoFragment extends Fragment {
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(conceptoNuevo)) {
-            item.put(Constantes.BD_CONCEPTO, conceptoNuevo);
+            item.put(Constants.BD_CONCEPTO, conceptoNuevo);
         }
         if (montoNuevo != montoViejo) {
-            item.put(Constantes.BD_MONTO, montoNuevo);
+            item.put(Constants.BD_MONTO, montoNuevo);
         }
         if (rbBs.isChecked()) {
-            item.put(Constantes.BD_DOLAR, false);
+            item.put(Constants.BD_DOLAR, false);
         }
         if (rbDolar.isChecked()) {
-            item.put(Constantes.BD_DOLAR, true);
+            item.put(Constants.BD_DOLAR, true);
         }
 
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
                 .update(item)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

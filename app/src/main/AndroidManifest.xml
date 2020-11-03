@@ -37,17 +37,17 @@
             android:name=".ajustesModule.ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.general.CalculadoraActivity"
+            android:name=".ui.activityGeneral.CalculadoraActivity"
             android:label="@string/title_activity_calculadora"
             android:theme="@style/AppTheme.Convertidor" />
-        <activity android:name=".ui.general.AcercaActivity" />
+        <activity android:name=".ui.activityGeneral.AcercaActivity" />
         <activity
-            android:name=".ui.editar.EditarActivity"
+            android:name=".ui.activityGeneral.EditarActivity"
             android:label="@string/title_activity_editar" />
         <activity android:name=".inicioSesionModule.ui.RegistrarActivity" />
         <activity android:name=".inicioSesionModule.ui.InicSesionActivity" />
         <activity
-            android:name=".ui.agregar.AgregarActivity"
+            android:name=".ui.activityGeneral.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".homeModule.ui.HomeActivity" />

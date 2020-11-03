@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.ui.general;
+package com.skysam.hchirinos.myfinances.ui.activityGeneral;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,7 +16,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
 
 public class CalculadoraActivity extends AppCompatActivity {
 

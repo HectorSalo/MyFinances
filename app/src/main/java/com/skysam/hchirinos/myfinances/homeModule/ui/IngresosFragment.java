@@ -40,10 +40,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.ingresosModule.ui.IngresosAdapter;
-import com.skysam.hchirinos.myfinances.constructores.IngresosGastosConstructor;
-import com.skysam.hchirinos.myfinances.ui.editar.EditarActivity;
+import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
+import com.skysam.hchirinos.myfinances.ui.activityGeneral.EditarActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,9 +203,9 @@ public class IngresosFragment extends Fragment {
 
         listaIngresos = new ArrayList<>();
 
-        CollectionReference reference = db.collection(Constantes.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        Query query = reference.orderBy(Constantes.BD_MONTO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -213,29 +213,29 @@ public class IngresosFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                         IngresosGastosConstructor ingreso = new IngresosGastosConstructor();
                         ingreso.setIdIngreso(doc.getId());
-                        ingreso.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
-                        ingreso.setMonto(doc.getDouble(Constantes.BD_MONTO));
-                        ingreso.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
+                        ingreso.setConcepto(doc.getString(Constants.BD_CONCEPTO));
+                        ingreso.setMonto(doc.getDouble(Constants.BD_MONTO));
+                        ingreso.setDolar(doc.getBoolean(Constants.BD_DOLAR));
 
-                        Boolean activo = doc.getBoolean(Constantes.BD_MES_ACTIVO);
+                        Boolean activo = doc.getBoolean(Constants.BD_MES_ACTIVO);
                         if (activo == null) {
                             ingreso.setMesActivo(true);
                         } else {
                             ingreso.setMesActivo(activo);
                         }
 
-                        String tipoFrecuencia = doc.getString(Constantes.BD_TIPO_FRECUENCIA);
+                        String tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA);
                         if (tipoFrecuencia != null) {
-                            double duracionFrecuencia = doc.getDouble(Constantes.BD_DURACION_FRECUENCIA);
+                            double duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
                             int duracionFrecuenciaInt = (int) duracionFrecuencia;
                             ingreso.setDuracionFrecuencia(duracionFrecuenciaInt);
-                            ingreso.setFechaIncial(doc.getDate(Constantes.BD_FECHA_INCIAL));
-                            ingreso.setTipoFrecuencia(doc.getString(Constantes.BD_TIPO_FRECUENCIA));
+                            ingreso.setFechaIncial(doc.getDate(Constants.BD_FECHA_INCIAL));
+                            ingreso.setTipoFrecuencia(doc.getString(Constants.BD_TIPO_FRECUENCIA));
                         } else {
                             ingreso.setTipoFrecuencia(null);
                         }
 
-                        Date fechaFinal = doc.getDate(Constantes.BD_FECHA_FINAL);
+                        Date fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL);
                         if (fechaFinal != null) {
                             ingreso.setFechaFinal(fechaFinal);
                         } else {
@@ -289,8 +289,8 @@ public class IngresosFragment extends Fragment {
     }
 
     private void suspenderMes(int position) {
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(listaIngresos.get(position).getIdIngreso())
-                .update(Constantes.BD_MES_ACTIVO, false)
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(listaIngresos.get(position).getIdIngreso())
+                .update(Constants.BD_MES_ACTIVO, false)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -339,7 +339,7 @@ public class IngresosFragment extends Fragment {
             final int mesFinal = calendar.get(Calendar.MONTH);
             for (int i = mesSelected; i < mesFinal; i++) {
                 final int finalI = i;
-                db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -358,7 +358,7 @@ public class IngresosFragment extends Fragment {
                         });
             }
         } else {
-            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
+            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

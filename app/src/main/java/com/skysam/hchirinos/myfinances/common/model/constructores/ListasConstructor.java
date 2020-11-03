@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.constructores;
+package com.skysam.hchirinos.myfinances.common.model.constructores;
 
 public class ListasConstructor {
 

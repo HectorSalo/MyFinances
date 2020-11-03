@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -134,16 +134,16 @@ public class AgregarPrestamoFragment extends Fragment {
         }
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(Constantes.BD_CONCEPTO, destinatario);
-        docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
-        docData.put(Constantes.BD_DOLAR, dolar);
+        docData.put(Constants.BD_CONCEPTO, destinatario);
+        docData.put(Constants.BD_MONTO, monto);
+        docData.put(Constants.BD_FECHA_INGRESO, fechaIngreso);
+        docData.put(Constants.BD_DOLAR, dolar);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

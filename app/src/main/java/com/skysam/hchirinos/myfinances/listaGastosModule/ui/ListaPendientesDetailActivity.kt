@@ -8,7 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 
 class ListaPendientesDetailActivity : AppCompatActivity() {
 
@@ -22,10 +22,10 @@ class ListaPendientesDetailActivity : AppCompatActivity() {
         user = FirebaseAuth.getInstance().currentUser
         val sharedPreferences = getSharedPreferences(user!!.uid, MODE_PRIVATE)
 
-        when (sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA)) {
-            Constantes.PREFERENCE_TEMA_SISTEMA -> setTheme(R.style.AppTheme)
-            Constantes.PREFERENCE_TEMA_OSCURO -> setTheme(R.style.AppThemeNight)
-            Constantes.PREFERENCE_TEMA_CLARO -> setTheme(R.style.AppThemeDay)
+        when (sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)) {
+            Constants.PREFERENCE_TEMA_SISTEMA -> setTheme(R.style.AppTheme)
+            Constants.PREFERENCE_TEMA_OSCURO -> setTheme(R.style.AppThemeNight)
+            Constants.PREFERENCE_TEMA_CLARO -> setTheme(R.style.AppThemeDay)
         }
         setContentView(R.layout.activity_listapendientes_detail)
         setSupportActionBar(findViewById(R.id.detail_toolbar))

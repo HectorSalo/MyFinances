@@ -33,7 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 
 public class InicSesionActivity extends AppCompatActivity {
@@ -121,14 +121,14 @@ public class InicSesionActivity extends AppCompatActivity {
 
         if (user != null) {
             SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-            String bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
-            if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+            String bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO);
+            if (bloqueo.equalsIgnoreCase(Constants.PREFERENCE_SIN_BLOQUEO)) {
                 startActivity(new Intent(getApplicationContext(), HomeActivity.class));
             } else {
                 Intent intent = new Intent(this, BloqueoActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, bloqueo);
-                bundle.putString(Constantes.USER, user.getUid());
+                bundle.putString(Constants.PREFERENCE_TIPO_BLOQUEO, bloqueo);
+                bundle.putString(Constants.USER, user.getUid());
                 intent.putExtras(bundle);
                 startActivity(intent);
             }

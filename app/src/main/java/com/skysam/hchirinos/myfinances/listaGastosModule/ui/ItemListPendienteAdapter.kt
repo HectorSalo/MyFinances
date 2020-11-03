@@ -19,9 +19,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
-import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -95,8 +95,8 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
 
     private fun moverToGastos(item: ItemGastosConstructor) {
         val intent = Intent(activity, AgregarActivity::class.java)
-        intent.putExtra(Constantes.BD_CONCEPTO, item.concepto)
-        intent.putExtra(Constantes.BD_MONTO, item.montoAproximado)
+        intent.putExtra(Constants.BD_CONCEPTO, item.concepto)
+        intent.putExtra(Constants.BD_MONTO, item.montoAproximado)
         intent.putExtra("idItem", item.idItem)
         intent.putExtra("idLista", item.idListItem)
         intent.putExtra("cantidadItems", items.size)
@@ -129,7 +129,7 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     private fun deleteItem(item: ItemGastosConstructor) {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(item.idListItem).document(item.idItem)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(item.idListItem).document(item.idItem)
                 .delete()
                 .addOnSuccessListener(OnSuccessListener<Void?> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!")
@@ -142,8 +142,8 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     private fun actualizarCantidadItems(item: ItemGastosConstructor) {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(item.idListItem)
-                .update(Constantes.BD_CANTIDAD_ITEMS, items.size)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(item.idListItem)
+                .update(Constants.BD_CANTIDAD_ITEMS, items.size)
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")
                     if (twoPane) {

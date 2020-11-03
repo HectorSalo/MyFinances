@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import com.google.firebase.auth.FirebaseAuth
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.FragmentPinBinding
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity
 import kotlinx.android.synthetic.main.fragment_pin.*
@@ -34,7 +34,7 @@ class PinFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser
 
         val sharedPreferences = context?.getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
-        val pinAlmacenado = sharedPreferences?.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000")
+        val pinAlmacenado = sharedPreferences?.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
 
         binding.button.setOnClickListener {
             button.hideKeyboard()

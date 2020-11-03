@@ -18,8 +18,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
 
 class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
@@ -144,7 +144,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     private fun deleteLista(id: String) {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(id)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(id)
                 .delete()
                 .addOnSuccessListener(OnSuccessListener<Void?> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!")
@@ -157,13 +157,13 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     private fun deleteCollection(id: String) {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(id)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(id)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         for (document in task.result!!) {
                             Log.d(ContentValues.TAG, document.id + " => " + document.data)
-                            db.collection(Constantes.BD_LISTA_GASTOS).document(user.uid).collection(id).document(document.id)
+                            db.collection(Constants.BD_LISTA_GASTOS).document(user.uid).collection(id).document(document.id)
                                     .delete()
                         }
                     } else {

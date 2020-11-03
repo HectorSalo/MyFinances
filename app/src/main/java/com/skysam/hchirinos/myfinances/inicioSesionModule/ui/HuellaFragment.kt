@@ -15,7 +15,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.FragmentHuellaBinding
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity
 import java.util.concurrent.Executor
@@ -101,7 +101,7 @@ class HuellaFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser
 
         val sharedPreferences = context?.getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
-        val pinAlmacenado = sharedPreferences?.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000")
+        val pinAlmacenado = sharedPreferences?.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
 
         fragmentHuellaBinding.button.hideKeyboard()
         fragmentHuellaBinding.inputPin.error = null

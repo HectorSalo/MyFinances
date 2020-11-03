@@ -14,8 +14,8 @@ import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearEditarItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -80,12 +80,12 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
         Toast.makeText(context, "Guardando...", Toast.LENGTH_SHORT).show()
 
         val docData: MutableMap<String, Any?> = HashMap()
-        docData[Constantes.BD_CONCEPTO] = concepto
-        docData[Constantes.BD_MONTO] = monto
-        docData[Constantes.BD_FECHA_APROXIMADA] = fechaSelec
-        docData[Constantes.BD_FECHA_INGRESO] = fechaIngreso
+        docData[Constants.BD_CONCEPTO] = concepto
+        docData[Constants.BD_MONTO] = monto
+        docData[Constants.BD_FECHA_APROXIMADA] = fechaSelec
+        docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
 
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista)
                 .add(docData)
                 .addOnSuccessListener { document ->
                     Log.d(Constraints.TAG, "DocumentSnapshot written succesfully")
@@ -107,8 +107,8 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
     }
 
     private fun actualizarCantidadItems() {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(idLista)
-                .update(Constantes.BD_CANTIDAD_ITEMS, items.size)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(idLista)
+                .update(Constants.BD_CANTIDAD_ITEMS, items.size)
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")
                     Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
@@ -124,16 +124,16 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
     }
 
     private fun cargarItem() {
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem).get().addOnCompleteListener { task ->
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem).get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val document = task.result
                 if (document!!.exists()) {
                     Log.d(Constraints.TAG, "DocumentSnapshot data: " + document.data)
-                    conceptoViejo = document.getString(Constantes.BD_CONCEPTO)
+                    conceptoViejo = document.getString(Constants.BD_CONCEPTO)
                     binding.etConcepto.setText(conceptoViejo)
-                    montoViejo = document.getDouble(Constantes.BD_MONTO)
+                    montoViejo = document.getDouble(Constants.BD_MONTO)
                     binding.etMonto.setText("$montoViejo")
-                    fechaViejaAproximada = document.getDate(Constantes.BD_FECHA_APROXIMADA)
+                    fechaViejaAproximada = document.getDate(Constants.BD_FECHA_APROXIMADA)
                     if (fechaViejaAproximada != null) {
                         binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaViejaAproximada!!)
                     }
@@ -152,22 +152,22 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
         val item: MutableMap<String, Any> = HashMap()
 
         if (conceptoViejo != concepto) {
-            item[Constantes.BD_CONCEPTO] = concepto
+            item[Constants.BD_CONCEPTO] = concepto
             items[position!!].concepto = concepto
         }
         if (monto != montoViejo) {
-            item[Constantes.BD_MONTO] = monto
+            item[Constants.BD_MONTO] = monto
             items[position!!].montoAproximado = monto
         }
 
         if (fechaSelec != null) {
             if (fechaSelec != fechaViejaAproximada) {
-                item[Constantes.BD_FECHA_APROXIMADA] = fechaSelec!!
+                item[Constants.BD_FECHA_APROXIMADA] = fechaSelec!!
                 items[position!!].fechaAproximada = fechaSelec!!
             }
         }
 
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista).document(items[position!!].idItem)
                 .update(item)
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")

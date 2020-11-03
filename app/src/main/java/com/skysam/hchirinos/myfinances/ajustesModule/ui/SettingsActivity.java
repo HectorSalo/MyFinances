@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.databinding.DialogHuellaSettingsBinding;
 import com.skysam.hchirinos.myfinances.databinding.DialogPinSettingsBinding;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -47,16 +47,16 @@ public class SettingsActivity extends AppCompatActivity implements
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
 
-        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
 
         switch (tema){
-            case Constantes.PREFERENCE_TEMA_SISTEMA:
+            case Constants.PREFERENCE_TEMA_SISTEMA:
                 setTheme(R.style.AppTheme);
                 break;
-            case Constantes.PREFERENCE_TEMA_OSCURO:
+            case Constants.PREFERENCE_TEMA_OSCURO:
                 setTheme(R.style.AppThemeNight);
                 break;
-            case Constantes.PREFERENCE_TEMA_CLARO:
+            case Constants.PREFERENCE_TEMA_CLARO:
                 setTheme(R.style.AppThemeDay);
                 break;
         }
@@ -227,33 +227,33 @@ public class SettingsActivity extends AppCompatActivity implements
             final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
             editor = sharedPreferences.edit();
 
-            bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
-            temaInicial = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+            bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO);
+            temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
 
-            listaBloqueo = findPreference(Constantes.PREFERENCE_TIPO_BLOQUEO);
-            listaTema = findPreference(Constantes.PREFERENCE_TEMA);
+            listaBloqueo = findPreference(Constants.PREFERENCE_TIPO_BLOQUEO);
+            listaTema = findPreference(Constants.PREFERENCE_TEMA);
 
             switch (bloqueo){
-                case Constantes.PREFERENCE_SIN_BLOQUEO:
-                    listaBloqueo.setValue(Constantes.PREFERENCE_SIN_BLOQUEO);
+                case Constants.PREFERENCE_SIN_BLOQUEO:
+                    listaBloqueo.setValue(Constants.PREFERENCE_SIN_BLOQUEO);
                     break;
-                case Constantes.PREFERENCE_BLOQUEO_HUELLA:
-                    listaBloqueo.setValue(Constantes.PREFERENCE_BLOQUEO_HUELLA);
+                case Constants.PREFERENCE_BLOQUEO_HUELLA:
+                    listaBloqueo.setValue(Constants.PREFERENCE_BLOQUEO_HUELLA);
                     break;
-                case Constantes.PREFERENCE_BLOQUEO_PIN:
-                    listaBloqueo.setValue(Constantes.PREFERENCE_BLOQUEO_PIN);
+                case Constants.PREFERENCE_BLOQUEO_PIN:
+                    listaBloqueo.setValue(Constants.PREFERENCE_BLOQUEO_PIN);
                     break;
             }
 
             switch (temaInicial) {
-                case Constantes.PREFERENCE_TEMA_SISTEMA:
-                    listaTema.setValue(Constantes.PREFERENCE_TEMA_SISTEMA);
+                case Constants.PREFERENCE_TEMA_SISTEMA:
+                    listaTema.setValue(Constants.PREFERENCE_TEMA_SISTEMA);
                     break;
-                case Constantes.PREFERENCE_TEMA_OSCURO:
-                    listaTema.setValue(Constantes.PREFERENCE_TEMA_OSCURO);
+                case Constants.PREFERENCE_TEMA_OSCURO:
+                    listaTema.setValue(Constants.PREFERENCE_TEMA_OSCURO);
                     break;
-                case Constantes.PREFERENCE_TEMA_CLARO:
-                    listaTema.setValue(Constantes.PREFERENCE_TEMA_CLARO);
+                case Constants.PREFERENCE_TEMA_CLARO:
+                    listaTema.setValue(Constants.PREFERENCE_TEMA_CLARO);
                     break;
             }
 
@@ -261,29 +261,29 @@ public class SettingsActivity extends AppCompatActivity implements
             listaBloqueo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    bloqueo = sharedPreferences.getString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
+                    bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO);
                     bloqueoEscogido = (String) newValue;
 
                     switch (bloqueoEscogido){
-                        case Constantes.PREFERENCE_SIN_BLOQUEO:
+                        case Constants.PREFERENCE_SIN_BLOQUEO:
                             if (!bloqueoEscogido.equals(bloqueo)) {
                                 dialogPinSettingsBinding = DialogPinSettingsBinding.inflate(getLayoutInflater());
-                                if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_BLOQUEO_HUELLA)) {
+                                if (bloqueo.equalsIgnoreCase(Constants.PREFERENCE_BLOQUEO_HUELLA)) {
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
                                 } else {
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_actual));
                                 }
                                 dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
-                                pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                                pinRespaldo = sharedPreferences.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000");
                                 crearDialogSinBloqueo();
                             }
                             break;
-                        case Constantes.PREFERENCE_BLOQUEO_HUELLA:
+                        case Constants.PREFERENCE_BLOQUEO_HUELLA:
                             if (!bloqueoEscogido.equals(bloqueo)) {
                                 dialogHuellaSettingsBinding = DialogHuellaSettingsBinding.inflate(getLayoutInflater());
-                                if (!bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+                                if (!bloqueo.equalsIgnoreCase(Constants.PREFERENCE_SIN_BLOQUEO)) {
                                     pinNuevo = false;
-                                    pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                                    pinRespaldo = sharedPreferences.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000");
                                 } else {
                                     pinNuevo = true;
                                 }
@@ -291,17 +291,17 @@ public class SettingsActivity extends AppCompatActivity implements
                                 crearDialogHuella();
                             }
                             break;
-                        case Constantes.PREFERENCE_BLOQUEO_PIN:
+                        case Constants.PREFERENCE_BLOQUEO_PIN:
                             if (!bloqueoEscogido.equals(bloqueo)) {
                                 dialogPinSettingsBinding = DialogPinSettingsBinding.inflate(getLayoutInflater());
-                                if (bloqueo.equalsIgnoreCase(Constantes.PREFERENCE_SIN_BLOQUEO)) {
+                                if (bloqueo.equalsIgnoreCase(Constants.PREFERENCE_SIN_BLOQUEO)) {
                                     pinNuevo = true;
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin));
                                 } else {
                                     pinNuevo = false;
                                     dialogPinSettingsBinding.titlePin.setText(getString(R.string.text_ingrese_pin_respaldo));
                                     dialogPinSettingsBinding.inputRepetirPin.setVisibility(View.GONE);
-                                    pinRespaldo = sharedPreferences.getString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                                    pinRespaldo = sharedPreferences.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000");
                                 }
                                 crearDialogPin();
                             }
@@ -315,31 +315,31 @@ public class SettingsActivity extends AppCompatActivity implements
             listaTema.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    temaInicial = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+                    temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
                     temaEscogido = (String) newValue;
 
                     switch (temaEscogido) {
-                        case Constantes.PREFERENCE_TEMA_SISTEMA:
+                        case Constants.PREFERENCE_TEMA_SISTEMA:
                             if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
                                 editor.apply();
                             }
                             break;
-                        case Constantes.PREFERENCE_TEMA_CLARO:
+                        case Constants.PREFERENCE_TEMA_CLARO:
                             if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_CLARO);
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_CLARO);
                                 editor.apply();
                             }
                             break;
-                        case Constantes.PREFERENCE_TEMA_OSCURO:
+                        case Constants.PREFERENCE_TEMA_OSCURO:
                             if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                                editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_OSCURO);
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_OSCURO);
                                 editor.apply();
                             }
                             break;
                     }
                     Bundle bundle = new Bundle();
-                    bundle.putBoolean(Constantes.PREFERENCE_TEMA, true);
+                    bundle.putBoolean(Constants.PREFERENCE_TEMA, true);
                     Intent intent = new Intent(getContext(), SettingsActivity.class);
                     intent.putExtras(bundle);
                     getActivity().finish();
@@ -374,8 +374,8 @@ public class SettingsActivity extends AppCompatActivity implements
                         return;
                     }
                     if (pin.equalsIgnoreCase(pinRespaldo)) {
-                        editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO);
-                        editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000");
+                        editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO);
+                        editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, "0000");
                         editor.apply();
                         dialog.dismiss();
                     } else {
@@ -460,8 +460,8 @@ public class SettingsActivity extends AppCompatActivity implements
                             if (pin.equalsIgnoreCase(pinRepetir)) {
                                 InputMethodManager imm = (InputMethodManager)requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_HUELLA);
-                                editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, pin);
+                                editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_BLOQUEO_HUELLA);
+                                editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, pin);
                                 editor.apply();
 
                                 dialogHuellaSettingsBinding.linearLayout.setVisibility(View.GONE);
@@ -538,8 +538,8 @@ public class SettingsActivity extends AppCompatActivity implements
                             InputMethodManager imm = (InputMethodManager)requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                            editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_BLOQUEO_PIN);
-                            editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, pin);
+                            editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_BLOQUEO_PIN);
+                            editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, pin);
                             editor.apply();
 
                             dialogPinSettingsBinding.linearLayout.setVisibility(View.GONE);

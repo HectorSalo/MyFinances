@@ -31,7 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -241,18 +241,18 @@ public class AgregarIngresoFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(Constantes.BD_CONCEPTO, concepto);
-        docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INCIAL, fechaInicial);
-        docData.put(Constantes.BD_FECHA_FINAL, fechaFinal);
-        docData.put(Constantes.BD_DOLAR, dolar);
-        docData.put(Constantes.BD_DURACION_FRECUENCIA, duracionFrecuencia);
-        docData.put(Constantes.BD_TIPO_FRECUENCIA, tipoFrecuencia);
-        docData.put(Constantes.BD_MES_ACTIVO, true);
+        docData.put(Constants.BD_CONCEPTO, concepto);
+        docData.put(Constants.BD_MONTO, monto);
+        docData.put(Constants.BD_FECHA_INCIAL, fechaInicial);
+        docData.put(Constants.BD_FECHA_FINAL, fechaFinal);
+        docData.put(Constants.BD_DOLAR, dolar);
+        docData.put(Constants.BD_DURACION_FRECUENCIA, duracionFrecuencia);
+        docData.put(Constants.BD_TIPO_FRECUENCIA, tipoFrecuencia);
+        docData.put(Constants.BD_MES_ACTIVO, true);
 
         for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
+            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -293,16 +293,16 @@ public class AgregarIngresoFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(Constantes.BD_CONCEPTO, concepto);
-        docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INCIAL, fechaSelec);
-        docData.put(Constantes.BD_FECHA_FINAL, null);
-        docData.put(Constantes.BD_DOLAR, dolar);
-        docData.put(Constantes.BD_DURACION_FRECUENCIA, null);
-        docData.put(Constantes.BD_TIPO_FRECUENCIA, null);
-        docData.put(Constantes.BD_MES_ACTIVO, true);
+        docData.put(Constants.BD_CONCEPTO, concepto);
+        docData.put(Constants.BD_MONTO, monto);
+        docData.put(Constants.BD_FECHA_INCIAL, fechaSelec);
+        docData.put(Constants.BD_FECHA_FINAL, null);
+        docData.put(Constants.BD_DOLAR, dolar);
+        docData.put(Constants.BD_DURACION_FRECUENCIA, null);
+        docData.put(Constants.BD_TIPO_FRECUENCIA, null);
+        docData.put(Constants.BD_MES_ACTIVO, true);
 
-        db.collection(Constantes.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
                 .set(docData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

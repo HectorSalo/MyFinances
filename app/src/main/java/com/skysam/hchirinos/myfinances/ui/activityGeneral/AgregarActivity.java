@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.ui.agregar;
+package com.skysam.hchirinos.myfinances.ui.activityGeneral;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AgregarAhorroFragment;
 import com.skysam.hchirinos.myfinances.deudasModule.ui.AgregarDeudaFragment;
 import com.skysam.hchirinos.myfinances.gastosModule.ui.AgregarGastoFragment;
@@ -32,16 +32,16 @@ public class AgregarActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
 
-        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
 
         switch (tema){
-            case Constantes.PREFERENCE_TEMA_SISTEMA:
+            case Constants.PREFERENCE_TEMA_SISTEMA:
                 setTheme(R.style.AppTheme);
                 break;
-            case Constantes.PREFERENCE_TEMA_OSCURO:
+            case Constants.PREFERENCE_TEMA_OSCURO:
                 setTheme(R.style.AppThemeNight);
                 break;
-            case Constantes.PREFERENCE_TEMA_CLARO:
+            case Constants.PREFERENCE_TEMA_CLARO:
                 setTheme(R.style.AppThemeDay);
                 break;
         }
@@ -56,8 +56,8 @@ public class AgregarActivity extends AppCompatActivity {
         AgregarGastoFragment agregarGastoFragment = new AgregarGastoFragment();
         AgregarDeudaFragment agregarDeudaFragment = new AgregarDeudaFragment();
 
-        String concepto = getIntent().getStringExtra(Constantes.BD_CONCEPTO);
-        double monto = getIntent().getDoubleExtra(Constantes.BD_MONTO, 0);
+        String concepto = getIntent().getStringExtra(Constants.BD_CONCEPTO);
+        double monto = getIntent().getDoubleExtra(Constants.BD_MONTO, 0);
         int cantidadItems = getIntent().getIntExtra("cantidadItems", -1);
         String idItem = getIntent().getStringExtra("idItem");
         String idLista = getIntent().getStringExtra("idLista");
@@ -79,8 +79,8 @@ public class AgregarActivity extends AppCompatActivity {
             case 3:
                 if (concepto != null) {
                     Bundle bundleFragment = new Bundle();
-                    bundleFragment.putString(Constantes.BD_CONCEPTO, concepto);
-                    bundleFragment.putDouble(Constantes.BD_MONTO, monto);
+                    bundleFragment.putString(Constants.BD_CONCEPTO, concepto);
+                    bundleFragment.putDouble(Constants.BD_MONTO, monto);
                     bundleFragment.putString("idLista", idLista);
                     bundleFragment.putString("idItem", idItem);
                     bundleFragment.putInt("cantidadItems", cantidadItems);

@@ -21,10 +21,10 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
-import com.skysam.hchirinos.myfinances.ui.general.CalculadoraActivity;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.ui.activityGeneral.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ajustesModule.ui.SettingsActivity;
-import com.skysam.hchirinos.myfinances.ui.agregar.AgregarActivity;
+import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity;
 import com.skysam.hchirinos.myfinances.listaGastosModule.ui.ListaPendientesListActivity;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
@@ -48,16 +48,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
 
-        String tema = sharedPreferences.getString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA);
+        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
 
         switch (tema){
-            case Constantes.PREFERENCE_TEMA_SISTEMA:
+            case Constants.PREFERENCE_TEMA_SISTEMA:
                 setTheme(R.style.AppTheme);
                 break;
-            case Constantes.PREFERENCE_TEMA_OSCURO:
+            case Constants.PREFERENCE_TEMA_OSCURO:
                 setTheme(R.style.AppThemeNight);
                 break;
-            case Constantes.PREFERENCE_TEMA_CLARO:
+            case Constants.PREFERENCE_TEMA_CLARO:
                 setTheme(R.style.AppThemeDay);
                 break;
         }

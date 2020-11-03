@@ -22,8 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
-import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,7 +162,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -198,8 +198,8 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
-                    .update(Constantes.BD_MONTO, montoNuevo)
+            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+                    .update(Constants.BD_MONTO, montoNuevo)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

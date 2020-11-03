@@ -11,7 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.inicioSesionModule.ui.InicSesionActivity
 
 class CerrarSesionDialog : DialogFragment() {
@@ -61,10 +61,10 @@ class CerrarSesionDialog : DialogFragment() {
         val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        editor.putString(Constantes.PREFERENCE_TIPO_BLOQUEO, Constantes.PREFERENCE_SIN_BLOQUEO)
-        editor.putString(Constantes.PREFERENCE_PIN_ALMACENADO, "0000")
-        editor.putBoolean(Constantes.PREFERENCE_NOTIFICATION_ACTIVE, true)
-        editor.putString(Constantes.PREFERENCE_TEMA, Constantes.PREFERENCE_TEMA_SISTEMA)
+        editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)
+        editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
+        editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
+        editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
         editor.apply()
     }
 }

@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -133,17 +133,17 @@ public class AgregarAhorroFragment extends Fragment {
         }
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put(Constantes.BD_CONCEPTO, concepto);
-        docData.put(Constantes.BD_MONTO, monto);
-        docData.put(Constantes.BD_FECHA_INGRESO, fechaIngreso);
-        docData.put(Constantes.BD_DOLAR, dolar);
-        docData.put(Constantes.BD_ORIGEN, origen);
+        docData.put(Constants.BD_CONCEPTO, concepto);
+        docData.put(Constants.BD_MONTO, monto);
+        docData.put(Constants.BD_FECHA_INGRESO, fechaIngreso);
+        docData.put(Constants.BD_DOLAR, dolar);
+        docData.put(Constants.BD_ORIGEN, origen);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+            db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

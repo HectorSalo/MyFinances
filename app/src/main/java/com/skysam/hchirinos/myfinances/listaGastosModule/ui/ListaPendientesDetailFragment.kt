@@ -16,8 +16,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
 import com.skysam.hchirinos.myfinances.databinding.ListapendientesDetailBinding
 
 
@@ -85,19 +85,19 @@ class ListaPendientesDetailFragment : Fragment() {
     private fun cargarLista() {
         items = ArrayList()
         binding.progressBar.visibility = View.VISIBLE
-        val reference = db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista!!)
+        val reference = db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista!!)
 
-        reference.orderBy(Constantes.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
+        reference.orderBy(Constants.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
                 .get().addOnSuccessListener { result ->
                     for (document in result) {
                         val item = ItemGastosConstructor()
 
                         item.idItem = document.id
                         item.idListItem = idLista
-                        item.concepto = document.getString(Constantes.BD_CONCEPTO)
-                        item.montoAproximado = document.getDouble(Constantes.BD_MONTO)!!
-                        item.fechaIngreso = document.getDate(Constantes.BD_FECHA_INGRESO)
-                        item.fechaAproximada = document.getDate(Constantes.BD_FECHA_APROXIMADA)
+                        item.concepto = document.getString(Constants.BD_CONCEPTO)
+                        item.montoAproximado = document.getDouble(Constants.BD_MONTO)!!
+                        item.fechaIngreso = document.getDate(Constants.BD_FECHA_INGRESO)
+                        item.fechaAproximada = document.getDate(Constants.BD_FECHA_APROXIMADA)
 
                         items.add(item)
                     }

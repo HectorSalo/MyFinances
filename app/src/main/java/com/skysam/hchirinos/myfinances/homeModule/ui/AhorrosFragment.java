@@ -40,9 +40,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.Utils.Constantes;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AhorrosAdapter;
-import com.skysam.hchirinos.myfinances.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,7 +226,7 @@ public class AhorrosFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ahorrosAdapter);
 
-        CollectionReference reference = db.collection(Constantes.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -236,11 +236,11 @@ public class AhorrosFragment extends Fragment {
                         AhorrosConstructor ahorro = new AhorrosConstructor();
 
                         ahorro.setIdAhorro(doc.getId());
-                        ahorro.setConcepto(doc.getString(Constantes.BD_CONCEPTO));
-                        ahorro.setOrigen(doc.getString(Constantes.BD_ORIGEN));
-                        ahorro.setDolar(doc.getBoolean(Constantes.BD_DOLAR));
-                        ahorro.setMonto(doc.getDouble(Constantes.BD_MONTO));
-                        ahorro.setFechaIngreso(doc.getDate(Constantes.BD_FECHA_INGRESO));
+                        ahorro.setConcepto(doc.getString(Constants.BD_CONCEPTO));
+                        ahorro.setOrigen(doc.getString(Constants.BD_ORIGEN));
+                        ahorro.setDolar(doc.getBoolean(Constants.BD_DOLAR));
+                        ahorro.setMonto(doc.getDouble(Constants.BD_MONTO));
+                        ahorro.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
                         listaAhorros.add(ahorro);
 
@@ -316,8 +316,8 @@ public class AhorrosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
-                    .update(Constantes.BD_DOLAR, dolar, Constantes.BD_MONTO, monto)
+            db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+                    .update(Constants.BD_DOLAR, dolar, Constants.BD_MONTO, monto)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -348,7 +348,7 @@ public class AhorrosFragment extends Fragment {
     private void deleteItemSwipe(String id) {
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(Constantes.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+            db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

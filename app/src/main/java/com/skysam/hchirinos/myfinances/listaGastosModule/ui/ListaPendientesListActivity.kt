@@ -17,8 +17,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
 import com.skysam.hchirinos.myfinances.databinding.ActivityListapendientesListBinding
 
 
@@ -76,18 +76,18 @@ class ListaPendientesListActivity : AppCompatActivity() {
     private fun cargarListas() {
         listas = ArrayList()
         activityListapendientesListBinding.includeListapendientesList.progressBar.visibility = View.VISIBLE
-        val reference = db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS)
+        val reference = db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS)
 
-        reference.orderBy(Constantes.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
+        reference.orderBy(Constants.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
                 .get().addOnSuccessListener { result ->
                     for (document in result) {
                         val lista = ListasConstructor()
 
                         lista.idLista = document.id
-                        val cantidadD: Double? = document.getDouble(Constantes.BD_CANTIDAD_ITEMS)
+                        val cantidadD: Double? = document.getDouble(Constants.BD_CANTIDAD_ITEMS)
                         val cantidad = cantidadD?.toInt()
                         lista.cantidadItems = cantidad!!
-                        lista.nombreLista = document.getString(Constantes.BD_NOMBRE)
+                        lista.nombreLista = document.getString(Constants.BD_NOMBRE)
 
                         listas.add(lista)
                     }

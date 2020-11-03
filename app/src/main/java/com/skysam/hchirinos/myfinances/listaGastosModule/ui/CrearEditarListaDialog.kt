@@ -13,8 +13,8 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.Utils.Constantes
-import com.skysam.hchirinos.myfinances.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
 import java.util.*
 import kotlin.collections.ArrayList
@@ -66,11 +66,11 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         val fechaIngreso = calendar.time
 
         val docData: MutableMap<String, Any> = HashMap()
-        docData[Constantes.BD_NOMBRE] = nombre
-        docData[Constantes.BD_CANTIDAD_ITEMS] = 0
-        docData[Constantes.BD_FECHA_INGRESO] = fechaIngreso
+        docData[Constants.BD_NOMBRE] = nombre
+        docData[Constants.BD_CANTIDAD_ITEMS] = 0
+        docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
 
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS)
                 .add(docData)
                 .addOnSuccessListener {document ->
                     val docId = document.id
@@ -113,8 +113,8 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private fun editarLista(nombre: String) {
         Toast.makeText(context, "Actualizando...", Toast.LENGTH_SHORT).show()
 
-        db.collection(Constantes.BD_LISTA_GASTOS).document(user!!.uid).collection(Constantes.BD_TODAS_LISTAS).document(lista[position!!].idLista)
-                .update(Constantes.BD_NOMBRE, nombre)
+        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(lista[position!!].idLista)
+                .update(Constants.BD_NOMBRE, nombre)
                 .addOnSuccessListener {
                     Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
                     dialog?.dismiss()
