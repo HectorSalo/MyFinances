@@ -6,7 +6,7 @@
     app:startDestination="@id/pinFragment">
     <fragment
         android:id="@+id/pinFragment"
-        android:name="com.skysam.hchirinos.myfinances.ui.inicioSesion.PinFragment"
+        android:name="com.skysam.hchirinos.myfinances.inicioSesionModule.ui.PinFragment"
         android:label="PinFragment" >
         <action
             android:id="@+id/action_pinFragment_to_huellaFragment"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/huellaFragment"
-        android:name="com.skysam.hchirinos.myfinances.ui.inicioSesion.HuellaFragment"
+        android:name="com.skysam.hchirinos.myfinances.inicioSesionModule.ui.HuellaFragment"
         android:label="HuellaFragment" >
         <action
             android:id="@+id/action_huellaFragment_to_pinFragment"

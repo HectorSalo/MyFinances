@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.editar.EditarGastoFragment">
+    tools:context=".gastosModule.ui.EditarGastoFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_concepto"
