@@ -35,13 +35,16 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
+import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.LoginPresenter;
+import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.LoginPresenterClass;
 
-public class InicSesionActivity extends AppCompatActivity {
+import org.jetbrains.annotations.NotNull;
 
+public class InicSesionActivity extends AppCompatActivity implements InitSessionView {
+
+    private LoginPresenter loginPresenter;
     private TextInputEditText etEmail, etPass;
     private TextInputLayout etEmailLayout, etPassLayout;
-    private FirebaseUser user;
-    private FirebaseAuth mAuth;
     private ProgressBar progressBar;
     private Button buttonIniciarSesion, buttonRegistrar, buttonRestablecimientoPass;
     private ImageButton buttonGoogle;
@@ -63,8 +66,7 @@ public class InicSesionActivity extends AppCompatActivity {
 
         getOnBackPressedDispatcher().addCallback(this, callback);
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        loginPresenter = new LoginPresenterClass(this, this);
 
         etEmail = findViewById(R.id.et_email);
         etPass = findViewById(R.id.et_password);
@@ -118,21 +120,7 @@ public class InicSesionActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (user != null) {
-            SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-            String bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO);
-            if (bloqueo.equalsIgnoreCase(Constants.PREFERENCE_SIN_BLOQUEO)) {
-                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-            } else {
-                Intent intent = new Intent(this, BloqueoActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString(Constants.PREFERENCE_TIPO_BLOQUEO, bloqueo);
-                bundle.putString(Constants.USER, user.getUid());
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-        }
+        loginPresenter.getCurrentUser();
     }
 
     private void validarInciarSesion() {
@@ -162,41 +150,11 @@ public class InicSesionActivity extends AppCompatActivity {
         }
 
         if (passwordValido && emailValido) {
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
             progressBar.setVisibility(View.VISIBLE);
             buttonIniciarSesion.setEnabled(false);
             buttonRegistrar.setEnabled(false);
             buttonGoogle.setEnabled(false);
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d("msg", "signInWithEmail:success");
-                                progressBar.setVisibility(View.GONE);
-                                buttonIniciarSesion.setEnabled(true);
-                                buttonRegistrar.setEnabled(true);
-                                buttonGoogle.setEnabled(true);
-                                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                            } else {
-                                progressBar.setVisibility(View.GONE);
-                                buttonIniciarSesion.setEnabled(true);
-                                buttonRegistrar.setEnabled(true);
-                                buttonGoogle.setEnabled(true);
-                                buttonRestablecimientoPass.setVisibility(View.VISIBLE);
-                                Log.w("msg", "signInWithEmail:failure", task.getException());
-                                Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
-                                        Toast.LENGTH_LONG).show();
-
-                            }
-
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e("msg", "Error " + e);
-                }
-            });
+            loginPresenter.authWithEmail(email, password);
         }
     }
 
@@ -205,16 +163,7 @@ public class InicSesionActivity extends AppCompatActivity {
 
         if (!email.isEmpty()) {
             if (email.contains("@")) {
-                mAuth.sendPasswordResetEmail(email)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "Email sent.");
-                                    mostrarAlertDialog();
-                                }
-                            }
-                        });
+                loginPresenter.sendEmailRecovery(email);
             } else {
                 etEmailLayout.setError("Formato incorrecto para correo");
             }
@@ -230,12 +179,7 @@ public class InicSesionActivity extends AppCompatActivity {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("¡Listo!");
         dialog.setMessage("Fue enviado un correo a la dirección ingresada. Por favor, revise su Bandeja de Entrada y siga las instrucciones para restablecer su contraseña.");
-        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
+        dialog.setPositiveButton("Ok", null).show();
     }
 
 
@@ -262,29 +206,60 @@ public class InicSesionActivity extends AppCompatActivity {
 
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
         progressBar.setVisibility(View.VISIBLE);
+        loginPresenter.authWithGoogle(acct);
+    }
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            progressBar.setVisibility(View.GONE);
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
-                                    Toast.LENGTH_LONG).show();
-                        }
+    @Override
+    public void userActive(boolean active, FirebaseUser user) {
+        if (active) {
+            loginPresenter.getTipoBloqueo(user.getUid());
+        }
+    }
 
-                    }
-                });
+    @Override
+    public void emailRecoverySuccesfully() {
+        mostrarAlertDialog();
+    }
+
+    @Override
+    public void authWithGoogleStatus(boolean ok) {
+        if (ok) {
+            progressBar.setVisibility(View.GONE);
+            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        } else {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void tipoBloqueo(@NotNull String bloqueo) {
+        if (bloqueo.equalsIgnoreCase(Constants.PREFERENCE_SIN_BLOQUEO)) {
+            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        } else {
+            Intent intent = new Intent(this, BloqueoActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.PREFERENCE_TIPO_BLOQUEO, bloqueo);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void authWithEmailStatus(boolean ok) {
+        if (ok) {
+            progressBar.setVisibility(View.GONE);
+            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        } else {
+            progressBar.setVisibility(View.GONE);
+            buttonIniciarSesion.setEnabled(true);
+            buttonRegistrar.setEnabled(true);
+            buttonGoogle.setEnabled(true);
+            buttonRestablecimientoPass.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

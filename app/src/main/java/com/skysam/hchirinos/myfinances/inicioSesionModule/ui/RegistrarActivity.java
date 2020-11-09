@@ -61,12 +61,7 @@ public class RegistrarActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
             }
-        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
+        }).setNegativeButton("Cancelar", null).show();
     }
 
 
@@ -119,7 +114,7 @@ public class RegistrarActivity extends AppCompatActivity {
                                 // If sign in fails, display a message to the user.
                                 progressBar.setVisibility(View.GONE);
                                 Log.w("msg", "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(RegistrarActivity.this, "Error al Registrar\nPor favor, intente nuevamente",
+                                Toast.makeText(getApplicationContext(), "Error al Registrar\nPor favor, intente nuevamente",
                                         Toast.LENGTH_LONG).show();
                                 etEmailLayout.setError(null);
                                 etPassLayout.setError(null);

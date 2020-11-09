@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        app:fragment="com.skysam.hchirinos.myfinances.ui.ajustes.SettingsActivity$PreferenciasFragment"
+        app:fragment="com.skysam.hchirinos.myfinances.ajustesModule.ui.SettingsActivity$PreferenciasFragment"
         app:icon="@drawable/ic_preferencias_white_24"
         app:key="preferencias_header"
         app:title="@string/preferencias_header" />
@@ -25,7 +25,7 @@
             app:title="@string/acerca_title">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:targetClass="com.skysam.hchirinos.myfinances.ui.general.AcercaActivity"
+                android:targetClass="com.skysam.hchirinos.myfinances.ui.activityGeneral.AcercaActivity"
                 android:targetPackage="com.skysam.hchirinos.myfinances" />
         </PreferenceScreen>
     </PreferenceCategory>

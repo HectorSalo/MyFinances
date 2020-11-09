@@ -15,6 +15,6 @@ object FirebaseAuthentication {
     }
 
     fun getCurrentUser() : FirebaseUser? {
-        return mFirebaseAuth!!.currentUser
+        return getInstance().currentUser
     }
 }
