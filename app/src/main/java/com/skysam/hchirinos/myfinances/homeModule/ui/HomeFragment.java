@@ -36,7 +36,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
+import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass;
 
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -52,8 +55,9 @@ import java.util.Objects;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements HomeView {
 
+    private HomePresenter homePresenter;
     private PieChart pieBalance;
     private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
     private ProgressBar progressBar;
@@ -63,7 +67,6 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Calendar calendar = Calendar.getInstance();
     private int mesSelected, mesItemAhorro, yearSelected;
-    private String valor;
     private LinearLayout linearLayout;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private static final int INTERVALO = 2500;
@@ -78,6 +81,8 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        homePresenter = new HomePresenterClass(this, requireContext());
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -128,8 +133,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-        moveToNextYear();
 
         cargarFolios();
 
@@ -508,89 +511,20 @@ public class HomeFragment extends Fragment {
 
 
     private void actualizarCotizacion() {
-        sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-        Cotizacion cotizacion = new Cotizacion();
-        cotizacion.execute();
-
+        homePresenter.obtenerCotizacionWeb();
     }
 
-
-    private class Cotizacion extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            if (valor != null) {
-                tvCotizacionDolar.setText(valor);
-            } else {
-                valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1.0f);
-
-                tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
-            }
-            cargarIngresos();
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-
-            if (sharedPreferences != null) {
-                valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
-
-                tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
-
-                cargarIngresos();
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String url = "https://monitordolarvenezuela.com/";
-            valor = null;
-            try {
-                Document doc = Jsoup.connect(url).get();
-
-                Elements data = doc.select("div.back-white-tabla");
-
-                valor = data.select("h6.text-center").text();
-
-                if (sharedPreferences == null) {
-                    sharedPreferences = getActivity().getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-                }
-
-                if (valor != null) {
-                    String valor1 = valor.replace("Bs.S", "");
-                    String valor2 = valor1.replace(".", "");
-                    String valorNeto = valor2.replace(",", ".");
-                    valorCotizacion = Float.parseFloat(valorNeto);
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putFloat("valor_cotizacion", valorCotizacion);
-                    editor.apply();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
+    @Override
+    public void valorCotizacionWebOk(@NotNull String valor, float valorFloat) {
+        tvCotizacionDolar.setText(valor);
+        homePresenter.guardarCotizacionShared(valorFloat);
+        cargarIngresos();
     }
 
-
-    private void moveToNextYear() {
-        Calendar calendar = Calendar.getInstance();
-        int mes = calendar.get(Calendar.MONTH);
-        int dia = calendar.get(Calendar.DAY_OF_MONTH);
-        int year = calendar.get(Calendar.YEAR);
-
-        if ((mes == 11 && dia > 15) || (mes == 0 && dia < 15)) {
-
-        }
+    @Override
+    public void valorCotizacionWebError(float valorFloat) {
+        tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
+        cargarIngresos();
     }
 
 

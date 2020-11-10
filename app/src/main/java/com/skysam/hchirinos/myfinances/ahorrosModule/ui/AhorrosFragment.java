@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.homeModule.ui;
+package com.skysam.hchirinos.myfinances.ahorrosModule.ui;
 
 import android.content.DialogInterface;
 import android.graphics.Canvas;
@@ -43,6 +43,7 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AhorrosAdapter;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;

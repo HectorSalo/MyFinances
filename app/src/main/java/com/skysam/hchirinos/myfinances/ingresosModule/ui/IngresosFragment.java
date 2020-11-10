@@ -1,4 +1,4 @@
-package com.skysam.hchirinos.myfinances.homeModule.ui;
+package com.skysam.hchirinos.myfinances.ingresosModule.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -41,7 +41,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
-import com.skysam.hchirinos.myfinances.ingresosModule.ui.IngresosAdapter;
+import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.EditarActivity;
 

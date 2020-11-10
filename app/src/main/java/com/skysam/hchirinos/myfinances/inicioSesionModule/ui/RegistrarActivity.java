@@ -21,17 +21,22 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
+import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.RegistrarPresenter;
+import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.RegistrarPresenterClass;
 
-public class RegistrarActivity extends AppCompatActivity {
+public class RegistrarActivity extends AppCompatActivity implements RegistrarView {
 
     private TextInputEditText etEmail, etPass, etPassRepetir;
     private TextInputLayout etEmailLayout, etPassLayout, etPassRepetirLayout;
     private ProgressBar progressBar;
+    private RegistrarPresenter registrarPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrar);
+
+        registrarPresenter = new RegistrarPresenterClass(this);
 
         etEmail = findViewById(R.id.et_email_registrar);
         etPass = findViewById(R.id.et_password_registrar);
@@ -100,30 +105,23 @@ public class RegistrarActivity extends AppCompatActivity {
         }
 
         if (passwordValido && emailValido) {
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
             progressBar.setVisibility(View.VISIBLE);
-            mAuth.createUserWithEmailAndPassword(email, pass)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d("msg", "createUserWithEmail:success");
-                                progressBar.setVisibility(View.GONE);
-                                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                progressBar.setVisibility(View.GONE);
-                                Log.w("msg", "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(getApplicationContext(), "Error al Registrar\nPor favor, intente nuevamente",
-                                        Toast.LENGTH_LONG).show();
-                                etEmailLayout.setError(null);
-                                etPassLayout.setError(null);
-                                etPassRepetirLayout.setError(null);
+            registrarPresenter.registerUser(email, pass);
+        }
+    }
 
-                            }
-
-                        }
-                    });
+    @Override
+    public void registerSuccess(boolean success) {
+        if (success) {
+            progressBar.setVisibility(View.GONE);
+            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        } else {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Error al Registrar\nPor favor, intente nuevamente",
+                    Toast.LENGTH_LONG).show();
+            etEmailLayout.setError(null);
+            etPassLayout.setError(null);
+            etPassRepetirLayout.setError(null);
         }
     }
 }

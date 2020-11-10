@@ -1,14 +1,6 @@
-package com.skysam.hchirinos.myfinances.homeModule.ui;
+package com.skysam.hchirinos.myfinances.deudasModule.ui;
 
 import android.os.Bundle;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +10,13 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,8 +28,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
-import com.skysam.hchirinos.myfinances.prestamosModule.ui.PrestamosAdapter;
+import com.skysam.hchirinos.myfinances.deudasModule.ui.DeudasAdapter;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,11 +38,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-public class PrestamosFragment extends Fragment {
+
+public class DeudasFragment extends Fragment {
+
+    public DeudasFragment() {
+        // Required empty public constructor
+    }
 
     private RecyclerView recyclerView;
-    private PrestamosAdapter prestamosAdapter;
-    private ArrayList<AhorrosConstructor> listaPrestamos;
+    private DeudasAdapter deudasAdapter;
+    private ArrayList<AhorrosConstructor> listaDeudas;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
@@ -51,10 +56,6 @@ public class PrestamosFragment extends Fragment {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
 
-
-    public PrestamosFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class PrestamosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_prestamos, container, false);
+        return inflater.inflate(R.layout.fragment_deudas, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -84,11 +85,11 @@ public class PrestamosFragment extends Fragment {
         yearSelected = calendar.get(Calendar.YEAR);
         mesSelected = calendar.get(Calendar.MONTH);
 
-        progressBar = view.findViewById(R.id.progressBar_prestamos);
+        progressBar = view.findViewById(R.id.progressBar);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
 
-        Spinner spinner = view.findViewById(R.id.spinner_prestamo);
+        Spinner spinner = view.findViewById(R.id.spinner);
 
         fragmentCreado = true;
 
@@ -102,7 +103,7 @@ public class PrestamosFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
                 if (!fragmentCreado) {
-                    cargarPrestamos();
+                    cargarDeudas();
                 }
             }
 
@@ -111,39 +112,40 @@ public class PrestamosFragment extends Fragment {
             }
         });
 
-        recyclerView = view.findViewById(R.id.rv_prestamos);
+        recyclerView = view.findViewById(R.id.rv_deudas);
     }
 
 
-    private void cargarPrestamos() {
+    private void cargarDeudas() {
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
-        listaPrestamos = new ArrayList<>();
-        prestamosAdapter = new PrestamosAdapter(listaPrestamos, getContext(), yearSelected, mesSelected);
+        listaDeudas = new ArrayList<>();
+        deudasAdapter = new DeudasAdapter(listaDeudas, getContext(), yearSelected, mesSelected);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(prestamosAdapter);
+        recyclerView.setAdapter(deudasAdapter);
 
-        CollectionReference reference = db.collection(Constants.BD_PRESTAMOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_DEUDAS).document(userID).collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        AhorrosConstructor prestamo = new AhorrosConstructor();
+                        AhorrosConstructor deuda = new AhorrosConstructor();
 
-                        prestamo.setIdAhorro(doc.getId());
-                        prestamo.setConcepto(doc.getString(Constants.BD_CONCEPTO));
-                        prestamo.setDolar(doc.getBoolean(Constants.BD_DOLAR));
-                        prestamo.setMonto(doc.getDouble(Constants.BD_MONTO));
-                        prestamo.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
+                        deuda.setIdDeuda(doc.getId());
+                        deuda.setPrestamista(doc.getString(Constants.BD_PRESTAMISTA));
+                        deuda.setConcepto(doc.getString(Constants.BD_CONCEPTO));
+                        deuda.setDolar(doc.getBoolean(Constants.BD_DOLAR));
+                        deuda.setMonto(doc.getDouble(Constants.BD_MONTO));
+                        deuda.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
-                        listaPrestamos.add(prestamo);
+                        listaDeudas.add(deuda);
 
                     }
-                    prestamosAdapter.updateList(listaPrestamos);
-                    if (listaPrestamos.isEmpty()) {
+                    deudasAdapter.updateList(listaDeudas);
+                    if (listaDeudas.isEmpty()) {
                         tvSinLista.setVisibility(View.VISIBLE);
                     } else {
                         tvSinLista.setVisibility(View.GONE);
@@ -159,20 +161,20 @@ public class PrestamosFragment extends Fragment {
     }
 
     public void buscarItem(String text) {
-        if (listaPrestamos.isEmpty()) {
+        if (listaDeudas.isEmpty()) {
             Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
         } else {
             String userInput = text.toLowerCase();
             final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
-            for (AhorrosConstructor name : listaPrestamos) {
+            for (AhorrosConstructor name : listaDeudas) {
 
-                if (name.getConcepto().toLowerCase().contains(userInput)) {
+                if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
             }
 
-            prestamosAdapter.updateList(newList);
+            deudasAdapter.updateList(newList);
 
         }
     }
@@ -180,7 +182,7 @@ public class PrestamosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        cargarPrestamos();
+        cargarDeudas();
     }
 
 }
