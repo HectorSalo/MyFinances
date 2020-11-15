@@ -7,4 +7,5 @@ interface HomePresenter {
 
     fun valorCotizacionWebOk(valor: String, valorFloat: Float)
     fun valorCotizacionWebError(valorFloat: Float)
+    fun statusValorIngresos(statusOk: Boolean, ingresos: Float, message: String)
 }

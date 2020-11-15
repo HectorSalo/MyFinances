@@ -141,101 +141,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
-
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            int mesCobro;
-                            int yearCobro;
-
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Boolean activo = document.getBoolean(Constants.BD_MES_ACTIVO);
-                                if (activo == null || activo) {
-                                    Calendar calendarInicial = Calendar.getInstance();
-                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-                                    String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
-                                    if (tipoFrecuencia != null) {
-                                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
-                                        double duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
-
-                                        int multiploIngreso = 0;
-
-                                        calendarInicial.setTime(fechaInicial);
-                                        mesCobro = calendarInicial.get(Calendar.MONTH);
-                                        yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                        if (mesCobro == mesSelected) {
-                                            multiploIngreso = 1;
-                                        }
-
-                                        if (tipoFrecuencia.equals("Dias")) {
-                                            for (int j = 1; (mesCobro <= mesSelected && yearCobro == yearSelected); j++) {
-                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt));
-                                                mesCobro = calendarInicial.get(Calendar.MONTH);
-                                                yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                                if (mesCobro == mesSelected) {
-                                                    multiploIngreso = multiploIngreso + 1;
-                                                }
-                                            }
-                                        } else if (tipoFrecuencia.equals("Semanas")) {
-                                            for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * 7));
-                                                mesCobro = calendarInicial.get(Calendar.MONTH);
-                                                yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                                if (mesCobro == mesSelected) {
-                                                    multiploIngreso = multiploIngreso + 1;
-                                                }
-                                            }
-                                        } else if (tipoFrecuencia.equals("Meses")) {
-                                            for (int j = 1; mesCobro <= mesSelected && yearCobro == yearSelected; j++) {
-                                                calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt));
-                                                mesCobro = calendarInicial.get(Calendar.MONTH);
-                                                yearCobro = calendarInicial.get(Calendar.YEAR);
-
-                                                if (mesCobro == mesSelected) {
-                                                    multiploIngreso = multiploIngreso + 1;
-                                                }
-                                            }
-                                        }
-                                        if (dolar) {
-                                            montototal = montototal + (montoDetal * multiploIngreso);
-                                        } else {
-                                            montototal = montototal + ((montoDetal / valorCotizacion) * multiploIngreso);
-                                        }
-                                    } else {
-                                        if (dolar) {
-                                            montototal = montototal + montoDetal;
-                                        } else {
-                                            montototal = montototal + (montoDetal / valorCotizacion);
-                                        }
-                                    }
-                                }
-                                }
-                                montoIngresos = (float) montototal;
-                                cargarAhorros();
-
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting data: ", e);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
+        homePresenter.getIngresos(yearSelected, mesSelected);
     }
 
 
@@ -532,5 +438,17 @@ public class HomeFragment extends Fragment implements HomeView {
     public void onResume() {
         super.onResume();
         actualizarCotizacion();
+    }
+
+    @Override
+    public void statusValorIngresos(boolean statusOk, float ingresos, @NotNull String message) {
+        if (statusOk) {
+            montoIngresos = ingresos;
+            cargarAhorros();
+        } else {
+            montoIngresos = ingresos;
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 }

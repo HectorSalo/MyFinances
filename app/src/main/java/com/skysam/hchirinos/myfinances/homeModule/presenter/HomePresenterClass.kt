@@ -26,4 +26,8 @@ class HomePresenterClass(val homeView: HomeView, context: Context): HomePresente
     override fun valorCotizacionWebError(valorFloat: Float) {
         homeView.valorCotizacionWebError(valorFloat)
     }
+
+    override fun statusValorIngresos(statusOk: Boolean, ingresos: Float, message: String) {
+        homeView.statusValorIngresos(statusOk, ingresos, message)
+    }
 }
