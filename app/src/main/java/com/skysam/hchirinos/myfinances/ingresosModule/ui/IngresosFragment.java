@@ -43,7 +43,11 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
+import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenter;
+import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenterClass;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.EditarActivity;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +59,7 @@ import java.util.Objects;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 
-public class IngresosFragment extends Fragment {
+public class IngresosFragment extends Fragment implements IngresosView {
 
     private RecyclerView recyclerView;
     private IngresosAdapter ingresosAdapter;
@@ -67,6 +71,7 @@ public class IngresosFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
+    private IngresosPresenter ingresosPresenter;
 
 
     public IngresosFragment() {
@@ -98,6 +103,8 @@ public class IngresosFragment extends Fragment {
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        ingresosPresenter = new IngresosPresenterClass(this);
 
         fragmentCreado = true;
 
@@ -199,69 +206,9 @@ public class IngresosFragment extends Fragment {
 
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
-        String userID = user.getUid();
 
         listaIngresos = new ArrayList<>();
-
-        CollectionReference reference = db.collection(Constants.BD_INGRESOS).document(userID).collection(yearSelected + "-" + mesSelected);
-
-        Query query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        IngresosGastosConstructor ingreso = new IngresosGastosConstructor();
-                        ingreso.setIdIngreso(doc.getId());
-                        ingreso.setConcepto(doc.getString(Constants.BD_CONCEPTO));
-                        ingreso.setMonto(doc.getDouble(Constants.BD_MONTO));
-                        ingreso.setDolar(doc.getBoolean(Constants.BD_DOLAR));
-
-                        Boolean activo = doc.getBoolean(Constants.BD_MES_ACTIVO);
-                        if (activo == null) {
-                            ingreso.setMesActivo(true);
-                        } else {
-                            ingreso.setMesActivo(activo);
-                        }
-
-                        String tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA);
-                        if (tipoFrecuencia != null) {
-                            double duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                            int duracionFrecuenciaInt = (int) duracionFrecuencia;
-                            ingreso.setDuracionFrecuencia(duracionFrecuenciaInt);
-                            ingreso.setFechaIncial(doc.getDate(Constants.BD_FECHA_INCIAL));
-                            ingreso.setTipoFrecuencia(doc.getString(Constants.BD_TIPO_FRECUENCIA));
-                        } else {
-                            ingreso.setTipoFrecuencia(null);
-                        }
-
-                        Date fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL);
-                        if (fechaFinal != null) {
-                            ingreso.setFechaFinal(fechaFinal);
-                        } else {
-                            ingreso.setFechaFinal(null);
-                        }
-
-                        listaIngresos.add(ingreso);
-
-                    }
-                    ingresosAdapter.updateList(listaIngresos);
-
-                    if (listaIngresos.isEmpty()) {
-                        tvSinLista.setVisibility(View.VISIBLE);
-                    } else {
-                        tvSinLista.setVisibility(View.GONE);
-                    }
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                }
-
-                fragmentCreado = false;
-            }
-        });
-
+        ingresosPresenter.getIngresos(yearSelected, mesSelected);
     }
 
     private void crearDialog(final int position) {
@@ -289,20 +236,8 @@ public class IngresosFragment extends Fragment {
     }
 
     private void suspenderMes(int position) {
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(listaIngresos.get(position).getIdIngreso())
-                .update(Constants.BD_MES_ACTIVO, false)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        cargarIngresos();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        String idIngreso = listaIngresos.get(position).getIdIngreso();
+        ingresosPresenter.suspenderMes(yearSelected, mesSelected, idIngreso);
     }
 
     private void eliminarDefinitivo(final int position) {
@@ -418,5 +353,35 @@ public class IngresosFragment extends Fragment {
     public void onResume() {
         super.onResume();
         cargarIngresos();
+    }
+
+    @Override
+    public void statusListaIngresos(boolean statusOk, @NotNull ArrayList<IngresosGastosConstructor> ingresos, @NotNull String message) {
+        if (statusOk) {
+            listaIngresos = ingresos;
+            ingresosAdapter.updateList(listaIngresos);
+
+            if (listaIngresos.isEmpty()) {
+                tvSinLista.setVisibility(View.VISIBLE);
+            } else {
+                tvSinLista.setVisibility(View.GONE);
+            }
+
+            progressBar.setVisibility(View.GONE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+        }
+
+        fragmentCreado = false;
+    }
+
+    @Override
+    public void statusSuspenderMes(boolean statusOk) {
+        if (statusOk) {
+            cargarIngresos();
+        } else {
+            Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+        }
     }
 }

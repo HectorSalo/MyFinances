@@ -19,6 +19,22 @@ class HomePresenterClass(val homeView: HomeView, context: Context): HomePresente
         homeInteractor.getIngresos(year, month)
     }
 
+    override fun getAhoros(year: Int, month: Int) {
+        homeInteractor.getAhoros(year, month)
+    }
+
+    override fun getDeudas(year: Int, month: Int) {
+        homeInteractor.getDeudas(year, month)
+    }
+
+    override fun getPrestamos(year: Int, month: Int) {
+        homeInteractor.getPrestamos(year, month)
+    }
+
+    override fun getGastos(year: Int, month: Int) {
+        homeInteractor.getGastos(year, month)
+    }
+
     override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {
         homeView.valorCotizacionWebOk(valor, valorFloat)
     }
@@ -29,5 +45,21 @@ class HomePresenterClass(val homeView: HomeView, context: Context): HomePresente
 
     override fun statusValorIngresos(statusOk: Boolean, ingresos: Float, message: String) {
         homeView.statusValorIngresos(statusOk, ingresos, message)
+    }
+
+    override fun statusValorAhorros(statusOk: Boolean, ahorros: Float, message: String) {
+        homeView.statusValorAhorros(statusOk, ahorros, message)
+    }
+
+    override fun statusValorDeudas(statusOk: Boolean, deudas: Float, message: String) {
+        homeView.statusValorDeudas(statusOk, deudas, message)
+    }
+
+    override fun statusValorPrestamos(statusOk: Boolean, prestamos: Float, message: String) {
+        homeView.statusValorPrestamos(statusOk, prestamos, message)
+    }
+
+    override fun statusValorGastos(statusOk: Boolean, gastos: Float, message: String) {
+        homeView.statusValorGastos(statusOk, gastos, message)
     }
 }

@@ -146,220 +146,19 @@ public class HomeFragment extends Fragment implements HomeView {
 
 
     private void cargarAhorros() {
-        db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Date date = document.getDate(Constants.BD_FECHA_INGRESO);
-                                calendar.setTime(date);
-                                mesItemAhorro = calendar.get(Calendar.MONTH);
-
-                                if (mesSelected >= mesItemAhorro) {
-                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-
-                                        if (dolar) {
-                                            montototal = montototal + montoDetal;
-                                        } else {
-                                            montototal = montototal + (montoDetal / valorCotizacion);
-                                        }
-                                }
-                            }
-                            montoAhorros = (float) montototal;
-                            cargarPrestamos();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting data: ", e);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        homePresenter.getAhoros(yearSelected, mesSelected);
     }
 
     private void cargarPrestamos() {
-        db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-
-                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-
-                                    if (dolar) {
-                                        montototal = montototal + montoDetal;
-                                    } else {
-                                        montototal = montototal + (montoDetal / valorCotizacion);
-                                    }
-
-                            }
-                            montoPrestamos = (float) montototal;
-                            cargarGastos();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting data: ", e);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        homePresenter.getPrestamos(yearSelected, mesSelected);
     }
 
     private void cargarGastos() {
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            int mesPago = 0;
-                            int yearPago = 0;
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Boolean activo = document.getBoolean(Constants.BD_MES_ACTIVO);
-                                if (activo == null || activo) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    double montoDetal = document.getDouble(Constants.BD_MONTO);
-                                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-
-                                    String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
-                                    if (tipoFrecuencia != null) {
-                                        Calendar calendarInicial = Calendar.getInstance();
-                                        Calendar calendarPago = Calendar.getInstance();
-                                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
-                                        double duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
-
-                                        int multiploCobranza = 0;
-
-                                        calendarInicial.setTime(fechaInicial);
-                                        mesPago = calendarInicial.get(Calendar.MONTH);
-                                        yearPago = calendarInicial.get(Calendar.YEAR);
-
-                                        if (mesPago == mesSelected) {
-                                            multiploCobranza = 1;
-                                        }
-
-
-                                        if (tipoFrecuencia.equals("Dias")) {
-                                            for (int j = 1; (mesPago <= mesSelected && yearPago == yearSelected); j++) {
-                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j));
-                                                calendarPago.setTime(calendarInicial.getTime());
-                                                mesPago = calendarPago.get(Calendar.MONTH);
-                                                yearPago = calendarPago.get(Calendar.YEAR);
-                                                calendarInicial.setTime(fechaInicial);
-
-                                                if (mesPago == mesSelected) {
-                                                    multiploCobranza = multiploCobranza + 1;
-                                                }
-                                            }
-                                        } else if (tipoFrecuencia.equals("Semanas")) {
-                                            for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
-                                                calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuenciaInt * j * 7));
-                                                calendarPago.setTime(calendarInicial.getTime());
-                                                mesPago = calendarPago.get(Calendar.MONTH);
-                                                yearPago = calendarPago.get(Calendar.YEAR);
-                                                calendarInicial.setTime(fechaInicial);
-
-                                                if (mesPago == mesSelected) {
-                                                    multiploCobranza = multiploCobranza + 1;
-                                                }
-                                            }
-                                        } else if (tipoFrecuencia.equals("Meses")) {
-                                            for (int j = 1; mesPago <= mesSelected && yearPago == yearSelected; j++) {
-                                                calendarInicial.add(Calendar.MONTH, (duracionFrecuenciaInt * j));
-                                                calendarPago.setTime(calendarInicial.getTime());
-                                                mesPago = calendarPago.get(Calendar.MONTH);
-                                                yearPago = calendarPago.get(Calendar.YEAR);
-                                                calendarInicial.setTime(fechaInicial);
-
-                                                if (mesPago == mesSelected) {
-                                                    multiploCobranza = multiploCobranza + 1;
-                                                }
-                                            }
-                                        }
-                                        if (dolar) {
-                                            montototal = montototal + (montoDetal * multiploCobranza);
-                                        } else {
-                                            montototal = montototal + ((montoDetal / valorCotizacion) * multiploCobranza);
-                                        }
-                                    } else {
-                                        if (dolar) {
-                                            montototal = montototal + montoDetal;
-                                        } else {
-                                            montototal = montototal + (montoDetal / valorCotizacion);
-                                        }
-                                    }
-                                }
-                            }
-                            montoGastos = (float) montototal;
-                            cargarDeudas();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressBar.setVisibility(View.GONE);
-                Log.e(TAG, "Error getting data: ", e);
-            }
-        });
+        homePresenter.getGastos(yearSelected, mesSelected);
     }
 
     private void cargarDeudas() {
-        db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            double montototal = 0;
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                double montoDetal = document.getDouble(Constants.BD_MONTO);
-                                boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-
-                                if (dolar) {
-                                    montototal = montototal + montoDetal;
-                                } else {
-                                    montototal = montototal + (montoDetal / valorCotizacion);
-                                }
-                            }
-                            montoDeudas = (float) montototal;
-                            cargarFolios();
-                            progressBar.setVisibility(View.GONE);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Error getting data: ", e);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        homePresenter.getDeudas(yearSelected, mesSelected);
     }
 
     private void cargarFolios() {
@@ -405,13 +204,7 @@ public class HomeFragment extends Fragment implements HomeView {
             tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
             tvMontoTotal.setText("$" + montoTotal);
 
-            if (mesSelected == mesItemAhorro) {
-                if (sharedPreferences != null) {
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putFloat("ahorros_disponible", montoAhorros);
-                    editor.apply();
-                }
-            }
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -447,6 +240,54 @@ public class HomeFragment extends Fragment implements HomeView {
             cargarAhorros();
         } else {
             montoIngresos = ingresos;
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorAhorros(boolean statusOk, float ahorros, @NotNull String message) {
+        if (statusOk) {
+            montoAhorros = ahorros;
+            cargarPrestamos();
+        } else {
+            montoAhorros = ahorros;
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorDeudas(boolean statusOk, float deudas, @NotNull String message) {
+        if (statusOk) {
+            montoDeudas = deudas;
+            cargarFolios();
+        } else {
+            montoDeudas = deudas;
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorPrestamos(boolean statusOk, float prestamos, @NotNull String message) {
+        if (statusOk) {
+            montoPrestamos = prestamos;
+            cargarGastos();
+        } else {
+            montoPrestamos = prestamos;
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorGastos(boolean statusOk, float gastos, @NotNull String message) {
+        if (statusOk) {
+            montoGastos = gastos;
+            cargarDeudas();
+        } else {
+            montoGastos = gastos;
             progressBar.setVisibility(View.GONE);
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
