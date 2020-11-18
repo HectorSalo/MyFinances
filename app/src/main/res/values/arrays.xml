@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="years">
+        <item>2020</item>
+        <item>2021</item>
+    </string-array>
+
     <string-array name="meses">
         <item>Enero</item>
         <item>Febrero</item>

@@ -35,6 +35,10 @@ class HomePresenterClass(val homeView: HomeView, context: Context): HomePresente
         homeInteractor.getGastos(year, month)
     }
 
+    override fun moveDataNextYear(year: Int) {
+        homeInteractor.moveDataNextYear(year)
+    }
+
     override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {
         homeView.valorCotizacionWebOk(valor, valorFloat)
     }

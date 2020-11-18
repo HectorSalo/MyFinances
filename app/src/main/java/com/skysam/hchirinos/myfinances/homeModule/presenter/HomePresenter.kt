@@ -8,6 +8,7 @@ interface HomePresenter {
     fun getDeudas(year: Int, month: Int)
     fun getPrestamos(year: Int, month: Int)
     fun getGastos(year: Int, month: Int)
+    fun moveDataNextYear(year: Int)
 
     fun valorCotizacionWebOk(valor: String, valorFloat: Float)
     fun valorCotizacionWebError(valorFloat: Float)

@@ -8,4 +8,5 @@ interface HomeInteractor {
     fun getDeudas(year: Int, month: Int)
     fun getPrestamos(year: Int, month: Int)
     fun getGastos(year: Int, month: Int)
+    fun moveDataNextYear(year: Int)
 }

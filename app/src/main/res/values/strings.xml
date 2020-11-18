@@ -124,5 +124,10 @@
     <string name="title_listapendientes_detail">ListaPendientes Detail</string>
 
 
+    <!-- Dialog Move Next Year -->
+    <string name="dialog_title">Mover datos al siguiente año</string>
+    <string name="dialog_message">Toda la información almacenda en el mes de diciembre será copiada para el año siguiente,
+        exceptuando los Ingresos Únicos y Gastos Únicos.\nEste proceso tardará unos minutos</string>
+    <string name="dialog_btn_mover">Mover</string>
 
 </resources>

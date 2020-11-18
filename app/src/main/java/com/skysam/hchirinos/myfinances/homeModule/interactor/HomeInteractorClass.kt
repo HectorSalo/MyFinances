@@ -290,6 +290,10 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                 })
     }
 
+    override fun moveDataNextYear(year: Int) {
+
+    }
+
     private class Cotizacion(val homePresenter: HomePresenter, val context: Context) : AsyncTask<Void?, Void?, Void?>() {
         var valor: String? = null
         var valorCotizacion: Float? = null

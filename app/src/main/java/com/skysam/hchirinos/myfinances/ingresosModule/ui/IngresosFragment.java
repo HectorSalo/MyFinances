@@ -27,18 +27,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
@@ -54,7 +48,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -123,14 +116,26 @@ public class IngresosFragment extends Fragment implements IngresosView {
         progressBar = view.findViewById(R.id.progressBar_ingresos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
-        Spinner spinner = view.findViewById(R.id.spinner_ingreso);
+        Spinner spinnerMes = view.findViewById(R.id.spinner_ingreso_mes);
+        Spinner spinnerYear = view.findViewById(R.id.spinner_ingreso_year);
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
-        spinner.setAdapter(adapterMeses);
+        spinnerMes.setAdapter(adapterMeses);
 
-        spinner.setSelection(mesSelected);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        List<String> listaYear = Arrays.asList(getResources().getStringArray(R.array.years));
+        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYear);
+        spinnerYear.setAdapter(adapterYears);
+
+        if (yearSelected == 2020) {
+            spinnerYear.setSelection(0);
+        }
+        if (yearSelected == 2021) {
+            spinnerYear.setSelection(1);
+        }
+
+        spinnerMes.setSelection(mesSelected);
+        spinnerMes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
@@ -141,6 +146,28 @@ public class IngresosFragment extends Fragment implements IngresosView {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                switch (position) {
+                    case 0:
+                        yearSelected = 2020;
+                        break;
+                    case 1:
+                        yearSelected = 2021;
+                        break;
+                }
+                if (!fragmentCreado) {
+                    cargarIngresos();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });

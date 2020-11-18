@@ -40,7 +40,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
-import com.skysam.hchirinos.myfinances.gastosModule.ui.GastosAdapter;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.EditarActivity;
@@ -106,13 +105,26 @@ public class GastosFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
-        Spinner spinner = view.findViewById(R.id.spinner_gastos);
+        Spinner spinner = view.findViewById(R.id.spinner_gastos_mes);
+        Spinner spinnerYear = view.findViewById(R.id.spinner_gastos_year);
 
         fragmentCreado = true;
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
+
+        List<String> listaYear = Arrays.asList(getResources().getStringArray(R.array.years));
+        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYear);
+        spinnerYear.setAdapter(adapterYears);
+
+
+        if (yearSelected == 2020) {
+            spinnerYear.setSelection(0);
+        }
+        if (yearSelected == 2021) {
+            spinnerYear.setSelection(1);
+        }
 
         spinner.setSelection(mesSelected);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -126,6 +138,28 @@ public class GastosFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                switch (position) {
+                    case 0:
+                        yearSelected = 2020;
+                        break;
+                    case 1:
+                        yearSelected = 2021;
+                        break;
+                }
+                if (!fragmentCreado) {
+                    cargarGastos();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });

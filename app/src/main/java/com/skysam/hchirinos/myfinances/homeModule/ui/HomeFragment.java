@@ -62,13 +62,8 @@ public class HomeFragment extends Fragment implements HomeView {
     private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
     private ProgressBar progressBar;
     private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma;
-    private SharedPreferences sharedPreferences;
-    private float valorCotizacion;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private Calendar calendar = Calendar.getInstance();
-    private int mesSelected, mesItemAhorro, yearSelected;
+    private int mesSelected, yearSelected;
     private LinearLayout linearLayout;
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
 
@@ -105,10 +100,17 @@ public class HomeFragment extends Fragment implements HomeView {
         tvSuma = view.findViewById(R.id.textView_suma);
         tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
-        Spinner spinner = view.findViewById(R.id.spinner_meses);
+        Spinner spinnerMeses = view.findViewById(R.id.spinner_meses);
+        Spinner spinnerYears = view.findViewById(R.id.spinner_years);
+
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
-        spinner.setAdapter(adapterMeses);
+        spinnerMeses.setAdapter(adapterMeses);
+
+        List<String> listaYears = Arrays.asList(getResources().getStringArray(R.array.years));
+        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYears);
+        spinnerYears.setAdapter(adapterYears);
+
 
         montoIngresos = 0;
         montoAhorros = 0;
@@ -119,9 +121,22 @@ public class HomeFragment extends Fragment implements HomeView {
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
         yearSelected = calendar.get(Calendar.YEAR);
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        spinner.setSelection(mesSelected);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (mesSelected == 10 && currentDay > 14) {
+            MoveToNextYearDialog moveToNextYearDialog = new MoveToNextYearDialog(yearSelected, homePresenter);
+            moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+        }
+
+        if (yearSelected == 2020) {
+            spinnerYears.setSelection(0);
+        }
+        if (yearSelected == 2021) {
+            spinnerYears.setSelection(1);
+        }
+
+        spinnerMeses.setSelection(mesSelected);
+        spinnerMeses.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mesSelected = position;
@@ -130,6 +145,26 @@ public class HomeFragment extends Fragment implements HomeView {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerYears.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                switch (position) {
+                    case 0:
+                        yearSelected = 2020;
+                        break;
+                    case 1:
+                        yearSelected = 2021;
+                        break;
+                }
+                cargarIngresos();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
@@ -222,7 +257,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
     @Override
     public void valorCotizacionWebError(float valorFloat) {
-        tvCotizacionDolar.setText("Bs.S " + valorCotizacion);
+        tvCotizacionDolar.setText("Bs.S " + valorFloat);
         cargarIngresos();
     }
 
