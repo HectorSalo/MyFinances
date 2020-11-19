@@ -141,7 +141,7 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                     } else {
                         homePresenter.statusValorAhorros(false, 0f, "Error al obtener los Ahorros")
                     }
-                }).addOnFailureListener(OnFailureListener { e ->
+                }).addOnFailureListener(OnFailureListener {
                     homePresenter.statusValorAhorros(false, 0f, "Error al obtener los Ahorros")
                 })
     }
@@ -167,7 +167,7 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                     } else {
                         homePresenter.statusValorDeudas(false, 0f, "Error al obtener las Deudas")
                     }
-                }).addOnFailureListener(OnFailureListener { e ->
+                }).addOnFailureListener(OnFailureListener {
                     homePresenter.statusValorDeudas(false, 0f, "Error al obtener las Deudas")
                 })
     }
@@ -193,7 +193,7 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                     } else {
                         homePresenter.statusValorPrestamos(false, 0f, "Error al obtener los Préstamos")
                     }
-                }).addOnFailureListener(OnFailureListener { e ->
+                }).addOnFailureListener(OnFailureListener {
                     homePresenter.statusValorPrestamos(false, 0f, "Error al obtener los Préstamos")
                 })
     }

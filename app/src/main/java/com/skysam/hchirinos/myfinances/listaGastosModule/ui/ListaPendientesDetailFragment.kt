@@ -67,8 +67,8 @@ class ListaPendientesDetailFragment : Fragment() {
 
         setupRecyclerView(binding.rvItemsLista)
 
-        val view = activity?.findViewById<FloatingActionButton>(R.id.fab)
-        view!!.setOnClickListener { crearItem() }
+        val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
+        fab!!.setOnClickListener { crearItem() }
 
         binding.extendedFab.setOnClickListener {
             crearItem()

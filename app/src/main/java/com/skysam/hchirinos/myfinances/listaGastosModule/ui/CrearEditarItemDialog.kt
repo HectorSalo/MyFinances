@@ -188,7 +188,7 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
         val month = calendar[Calendar.MONTH]
         val year = calendar[Calendar.YEAR]
 
-        val datePickerDialog = DatePickerDialog(requireContext(), OnDateSetListener { view, year, month, dayOfMonth ->
+        val datePickerDialog = DatePickerDialog(requireContext(), OnDateSetListener { _, year, month, dayOfMonth ->
             calendarSelec.set(year, month, dayOfMonth)
             fechaSelec = calendarSelec.time
             binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec!!)

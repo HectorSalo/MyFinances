@@ -59,7 +59,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
 
         setupRecyclerView(activityListapendientesListBinding.includeListapendientesList.rvListapendientesList)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
             val crearListaDialog = CrearEditarListaDialog(twoPane, true, listas, null, adapter)
             crearListaDialog.show(supportFragmentManager, title.toString())
         }
@@ -103,7 +103,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
                         activityListapendientesListBinding.includeListapendientesList.rvListapendientesList.visibility = View.VISIBLE
                     }
                 }
-                .addOnFailureListener { exception ->
+                .addOnFailureListener {
                     Toast.makeText(applicationContext, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
                     activityListapendientesListBinding.includeListapendientesList.progressBar.visibility = View.GONE
                 }

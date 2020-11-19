@@ -22,6 +22,6 @@ class MoveToNextYearDialog(private val year: Int, private val homePresenter: Hom
     }
 
     private fun moverDatos() {
-        homePresenter.
+        //homePresenter.
     }
 }
