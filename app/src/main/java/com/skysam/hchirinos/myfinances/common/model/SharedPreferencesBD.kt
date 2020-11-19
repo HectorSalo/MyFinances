@@ -5,8 +5,6 @@ import android.content.SharedPreferences
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 
 object SharedPreferencesBD {
-    const val VALOR_COTIZACION = "valor_cotizacion"
-
     var sharedPreferences: SharedPreferences? = null
 
     fun getInstance(uid: String, context: Context): SharedPreferences {
@@ -23,11 +21,11 @@ object SharedPreferencesBD {
 
     fun saveCotizacion(uid: String, context: Context, valorFloat: Float) {
         val editor = getInstance(uid, context).edit()
-        editor.putFloat(VALOR_COTIZACION, valorFloat)
+        editor.putFloat(Constants.VALOR_COTIZACION, valorFloat)
         editor.apply()
     }
 
     fun getCotizacion(uid: String, context: Context): Float {
-        return getInstance(uid, context).getFloat(VALOR_COTIZACION, 1f)
+        return getInstance(uid, context).getFloat(Constants.VALOR_COTIZACION, 1f)
     }
 }

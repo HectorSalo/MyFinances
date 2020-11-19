@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -66,6 +67,7 @@ public class HomeFragment extends Fragment implements HomeView {
     private LinearLayout linearLayout;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
+    private MoveToNextYearDialog moveToNextYearDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -102,6 +104,7 @@ public class HomeFragment extends Fragment implements HomeView {
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
         Spinner spinnerMeses = view.findViewById(R.id.spinner_meses);
         Spinner spinnerYears = view.findViewById(R.id.spinner_years);
+        ImageButton imageButton = view.findViewById(R.id.ib_transfer);
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
@@ -123,9 +126,8 @@ public class HomeFragment extends Fragment implements HomeView {
         yearSelected = calendar.get(Calendar.YEAR);
         int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        if (mesSelected == 10 && currentDay > 14) {
-            MoveToNextYearDialog moveToNextYearDialog = new MoveToNextYearDialog(yearSelected, homePresenter);
-            moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+        if (mesSelected == 11 && currentDay > 14) {
+            imageButton.setVisibility(View.VISIBLE);
         }
 
         if (yearSelected == 2020) {
@@ -166,6 +168,15 @@ public class HomeFragment extends Fragment implements HomeView {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToNextYearDialog = new MoveToNextYearDialog(yearSelected, homePresenter);
+                moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+                moveToNextYearDialog.setCancelable(false);
             }
         });
 
@@ -326,5 +337,11 @@ public class HomeFragment extends Fragment implements HomeView {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void statusMoveNextYear(boolean statusOk, @NotNull String message) {
+        moveToNextYearDialog.dismiss();
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

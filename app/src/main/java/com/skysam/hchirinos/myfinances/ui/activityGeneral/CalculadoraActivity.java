@@ -16,6 +16,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.Constants;
+
+import java.util.Locale;
 
 public class CalculadoraActivity extends AppCompatActivity {
 
@@ -39,27 +42,20 @@ public class CalculadoraActivity extends AppCompatActivity {
 
         bolivares = true;
 
-        valorCotizacion = sharedPreferences.getFloat("valor_cotizacion", 1);
+        valorCotizacion = sharedPreferences.getFloat(Constants.VALOR_COTIZACION, 1);
 
         etIngreso.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String monto = String.valueOf(s);
-                if (monto.isEmpty()) {
-                    convertirMoneda("0");
-                } else {
-                    convertirMoneda(monto);
-                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                format(s.toString(), etIngreso, this);
             }
         });
 
@@ -82,10 +78,12 @@ public class CalculadoraActivity extends AppCompatActivity {
             layoutResultado.setHint(getResources().getString(R.string.calculadora_dolares));
             bolivares = true;
         }
-        etIngreso.setText("");
+        etIngreso.setText(R.string.text_calculadora_cero);
+        etResultado.setText(R.string.text_calculadora_cero);
     }
 
     private void convertirMoneda (String monto) {
+        monto = monto.replace(".", "").replace(",", ".");
         float montoIngresado = Float.parseFloat(monto);
         double montoTotal;
 
@@ -95,11 +93,22 @@ public class CalculadoraActivity extends AppCompatActivity {
             montoTotal = montoIngresado * valorCotizacion;
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            DecimalFormat df = new DecimalFormat("#,###.0000");
-            etResultado.setText(df.format(montoTotal));
-        } else {
-            etResultado.setText(String.format("%.4f", montoTotal));
-        }
+        monto = String.format(Locale.getDefault(), "%,.2f",montoTotal);
+        etResultado.setText(monto);
     }
+
+
+    public void format (String cadena, TextInputEditText editText, TextWatcher textWatcher) {
+        cadena = cadena.replace(",","").replace(".","");
+        double cantidad = Double.parseDouble(cadena)/100;
+        cadena = String.format(Locale.getDefault(), "%,.2f",cantidad);
+
+        editText.removeTextChangedListener(textWatcher);
+        editText.setText(cadena);
+        editText.setSelection(cadena.length());
+        editText.addTextChangedListener(textWatcher);
+
+        convertirMoneda(cadena);
+    }
+
 }

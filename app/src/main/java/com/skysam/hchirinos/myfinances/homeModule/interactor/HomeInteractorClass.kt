@@ -3,7 +3,6 @@ package com.skysam.hchirinos.myfinances.homeModule.interactor
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
-import android.view.View
 import androidx.constraintlayout.widget.Constraints
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
@@ -285,13 +284,182 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                     } else {
                         homePresenter.statusValorGastos(false, 0f, "Error al obtener los Gastos")
                     }
-                }).addOnFailureListener(OnFailureListener { e ->
+                }).addOnFailureListener(OnFailureListener {
                     homePresenter.statusValorGastos(false, 0f, "Error al obtener los Gastos")
                 })
     }
 
     override fun moveDataNextYear(year: Int) {
+        val user = FirebaseAuthentication.getCurrentUser()!!.uid
+        FirebaseFirestore.getIngresosReference(user, year, 11)
+                .get()
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful) {
+                        for (doc in task.result!!) {
+                            val activo = doc.getBoolean(Constants.BD_MES_ACTIVO)
+                            val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                            if (activo == null || activo) {
+                                if (tipoFrecuencia != null) {
+                                    val docData: MutableMap<String, Any?> = HashMap()
+                                    docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                    docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                    val fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL)
+                                    docData[Constants.BD_FECHA_INCIAL] = fechaInicial
+                                    docData[Constants.BD_FECHA_FINAL] = doc.getDate(Constants.BD_FECHA_FINAL)
+                                    docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+                                    docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
+                                    docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                                    docData[Constants.BD_MES_ACTIVO] = true
 
+                                    for (j in 0..11) {
+                                        FirebaseFirestore.getIngresosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                                .set(docData)
+                                                .addOnSuccessListener {  }
+                                                .addOnFailureListener {
+                                                    homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
+                                                }
+                                    }
+                                }
+                            }
+                        }
+                        moveAhorros(user, year)
+                    } else {
+                        homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
+                    }
+                }
+    }
+
+    private fun moveAhorros(user: String, year: Int) {
+        FirebaseFirestore.getAhorrosReference(user, year, 11)
+                .get()
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful) {
+                        for (doc in task.result!!) {
+                                val docData: MutableMap<String, Any?> = HashMap()
+                                docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                val fechaIngreso = doc.getDate(Constants.BD_FECHA_INGRESO)
+                                docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
+                                docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+                                docData[Constants.BD_ORIGEN] = doc.getString(Constants.BD_ORIGEN)
+
+                                for (j in 0..11) {
+                                    FirebaseFirestore.getAhorrosReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                            .set(docData)
+                                            .addOnSuccessListener {  }
+                                            .addOnFailureListener {
+                                                homePresenter.statusMoveNextYear(false, "Error al copiar los Ahorros. Intente más tarde")
+                                            }
+                                }
+
+                        }
+                        movePrestamos(user, year)
+                    } else {
+                        homePresenter.statusMoveNextYear(false, "Error al copiar los Ahorros. Intente más tarde")
+                    }
+                }
+
+    }
+
+    private fun movePrestamos(user: String, year: Int) {
+        FirebaseFirestore.getPrestamosReference(user, year, 11)
+                .get()
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful) {
+                        for (doc in task.result!!) {
+                                val docData: MutableMap<String, Any?> = HashMap()
+                                docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                val fechaIngreso = doc.getDate(Constants.BD_FECHA_INGRESO)
+                                docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
+                                docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+
+
+                                for (j in 0..11) {
+                                    FirebaseFirestore.getPrestamosReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                            .set(docData)
+                                            .addOnSuccessListener {  }
+                                            .addOnFailureListener {
+                                                homePresenter.statusMoveNextYear(false, "Error al copiar los Préstamos. Intente más tarde")
+                                            }
+                                }
+
+                        }
+                        moveGastos(user, year)
+                    } else {
+                        homePresenter.statusMoveNextYear(false, "Error al copiar los Préstamos. Intente más tarde")
+                    }
+                }
+    }
+
+    private fun moveGastos(user: String, year: Int) {
+        FirebaseFirestore.getGastosReference(user, year, 11)
+                .get()
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful) {
+                        for (doc in task.result!!) {
+                            val activo = doc.getBoolean(Constants.BD_MES_ACTIVO)
+                            val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                            if (activo == null || activo) {
+                                if (tipoFrecuencia != null) {
+                                    val docData: MutableMap<String, Any?> = HashMap()
+                                    docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                    docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                    val fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL)
+                                    docData[Constants.BD_FECHA_INCIAL] = fechaInicial
+                                    docData[Constants.BD_FECHA_FINAL] = doc.getDate(Constants.BD_FECHA_FINAL)
+                                    docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+                                    docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
+                                    docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                                    docData[Constants.BD_MES_ACTIVO] = true
+
+                                    for (j in 0..11) {
+                                        FirebaseFirestore.getGastosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                                .set(docData)
+                                                .addOnSuccessListener {  }
+                                                .addOnFailureListener {
+                                                    homePresenter.statusMoveNextYear(false, "Error al copiar los Gastos. Intente más tarde")
+                                                }
+                                    }
+                                }
+                            }
+                        }
+                        moveDeudas(user, year)
+                    } else {
+                        homePresenter.statusMoveNextYear(false, "Error al copiar los Gastos. Intente más tarde")
+                    }
+                }
+    }
+
+    private fun moveDeudas(user: String, year: Int) {
+        FirebaseFirestore.getDeudasReference(user, year, 11)
+                .get()
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful) {
+                        for (doc in task.result!!) {
+                                    val docData: MutableMap<String, Any?> = HashMap()
+                                    docData[Constants.BD_PRESTAMISTA] = doc.getString(Constants.BD_PRESTAMISTA)
+                                    docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                    docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                    val fechaIngreso = doc.getDate(Constants.BD_FECHA_INGRESO)
+                                    docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
+                                    docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+
+                                    for (j in 0..11) {
+                                        FirebaseFirestore.getDeudasReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                                .set(docData)
+                                                .addOnSuccessListener {  }
+                                                .addOnFailureListener {
+                                                    homePresenter.statusMoveNextYear(false, "Error al copiar los Deudas. Intente más tarde")
+                                                }
+                                    }
+
+                        }
+                      homePresenter.statusMoveNextYear(true, "Elementos copiados exitosamente")
+                    } else {
+                        homePresenter.statusMoveNextYear(false, "Error al copiar los Deudas. Intente más tarde")
+                    }
+                }
     }
 
     private class Cotizacion(val homePresenter: HomePresenter, val context: Context) : AsyncTask<Void?, Void?, Void?>() {

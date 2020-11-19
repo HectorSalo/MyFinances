@@ -39,6 +39,7 @@ public class Constants {
     public static final String PREFERENCE_NOTIFICATION_ACTIVE = "notificationActive";
     public static final int CONTEXT_PREFERENCE = 0;
 
+    public static final String VALOR_COTIZACION = "valor_cotizacion";
     public static final String USER = "user";
 
 }

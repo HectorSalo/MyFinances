@@ -66,4 +66,8 @@ class HomePresenterClass(val homeView: HomeView, context: Context): HomePresente
     override fun statusValorGastos(statusOk: Boolean, gastos: Float, message: String) {
         homeView.statusValorGastos(statusOk, gastos, message)
     }
+
+    override fun statusMoveNextYear(statusOk: Boolean, message: String) {
+        homeView.statusMoveNextYear(statusOk, message)
+    }
 }

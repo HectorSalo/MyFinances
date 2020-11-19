@@ -69,6 +69,7 @@
 
     <string name="calculadora_bolivares">Bolívares:</string>
     <string name="calculadora_dolares">Dólares:</string>
+    <string name="text_calculadora_cero">0,00</string>
 
     <string name="btn_nueva_lista">Nueva Lista</string>
     <string name="btn_nuevo_item">Nuevo Ítem</string>
@@ -127,7 +128,7 @@
     <!-- Dialog Move Next Year -->
     <string name="dialog_title">Mover datos al siguiente año</string>
     <string name="dialog_message">Toda la información almacenda en el mes de diciembre será copiada para el año siguiente,
-        exceptuando los Ingresos Únicos y Gastos Únicos.\nEste proceso tardará unos minutos</string>
+        exceptuando los Ingresos Únicos y Gastos Únicos.\nEsta opción estara disponible sólo hasta el 31 de diciembre del presente año.\nEste proceso tardará unos minutos.</string>
     <string name="dialog_btn_mover">Mover</string>
 
 </resources>
