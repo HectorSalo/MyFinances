@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
@@ -27,10 +28,16 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private var dialog : AlertDialog? = null
+    private lateinit var imagenesListas: ArrayList<ImagenesListasConstructor>
+    private lateinit var imagenesListasAdapter: ImagenesListasAdapter
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogCrearListaBinding.inflate(layoutInflater)
+
+        imagenesListas = ArrayList()
+        imagenesListasAdapter = ImagenesListasAdapter(imagenesListas)
+        binding.rvImagenesListas.adapter = imagenesListasAdapter
 
         if (!guardar) {
             binding.etNombre.setText(lista[position!!].nombreLista)
