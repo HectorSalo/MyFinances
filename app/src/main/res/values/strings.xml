@@ -72,6 +72,7 @@
     <string name="text_calculadora_cero">0,00</string>
 
     <string name="btn_nueva_lista">Nueva Lista</string>
+    <string name="text_editar_lista">Editar Lista</string>
     <string name="btn_nuevo_item">Nuevo Ítem</string>
     <string name="sin_listas">No hay listas creadas.</string>
     <string name="sin_items">No hay ítems guardados en: </string>

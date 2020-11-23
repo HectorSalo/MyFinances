@@ -38,4 +38,8 @@ object FirebaseFirestore {
         return getInstance().collection(Constants.BD_DEUDAS).document(uid).collection("$year$SEPARATOR$month")
     }
 
+    fun getImages(): CollectionReference {
+        return getInstance().collection(Constants.BD_IMAGENES_LISTAS)
+    }
+
 }

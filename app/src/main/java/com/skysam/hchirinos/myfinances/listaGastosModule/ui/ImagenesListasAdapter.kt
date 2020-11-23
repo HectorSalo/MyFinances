@@ -15,18 +15,10 @@ import com.google.android.material.card.MaterialCardView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 
-class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstructor>):
+class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstructor>, private var context: Context):
         RecyclerView.Adapter<ImagenesListasAdapter.ViewHolder>() {
 
     private lateinit var mContext: Context
-    private val onClickListener: View.OnClickListener
-    private lateinit var cardView: MaterialCardView
-
-    init {
-        onClickListener = View.OnClickListener { v ->
-
-        }
-    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imagen: ImageView = view.findViewById(R.id.iv_listas)
@@ -34,9 +26,9 @@ class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstr
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
+        val view = LayoutInflater.from(context)
                 .inflate(R.layout.cardview_imagenes_listas, parent, false)
-        mContext = parent.context
+        //mContext = parent.context
         return ViewHolder(view)
     }
 
@@ -48,12 +40,12 @@ class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstr
                 .error(android.R.drawable.ic_menu_gallery)
                 .placeholder(android.R.drawable.ic_menu_gallery)
 
-        Glide.with(mContext).load(item.photoUrl)
+        Glide.with(context).load(item.photoUrl)
                 .apply(options).into(holder.imagen)
 
         with(holder.itemView) {
             tag = item
-            setOnClickListener(onClickListener)
+            //setOnClickListener(onClickListener)
         }
     }
 

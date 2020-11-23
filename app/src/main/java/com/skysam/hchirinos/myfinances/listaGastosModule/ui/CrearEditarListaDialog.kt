@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,12 +19,15 @@ import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListas
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
+import com.skysam.hchirinos.myfinances.listaGastosModule.interactor.CrearEditarListaInteractorClass
+import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
+import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenterClass
 import java.util.*
 import kotlin.collections.ArrayList
 
 class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: Boolean, private val lista: ArrayList<ListasConstructor>, private val position: Int?,
                              private val adapter: ListasPendientesAdapter):
-        DialogFragment() {
+        DialogFragment(), CrearEditarListaView {
     private var _binding : DialogCrearListaBinding? = null
     private val binding get() = _binding!!
     private val user = FirebaseAuth.getInstance().currentUser
@@ -30,21 +35,22 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private var dialog : AlertDialog? = null
     private lateinit var imagenesListas: ArrayList<ImagenesListasConstructor>
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
+    private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogCrearListaBinding.inflate(layoutInflater)
 
-        imagenesListas = ArrayList()
-        imagenesListasAdapter = ImagenesListasAdapter(imagenesListas)
-        binding.rvImagenesListas.adapter = imagenesListasAdapter
+        crearEditarListaPresenter.getImages()
 
+        var title = getString(R.string.btn_nueva_lista)
         if (!guardar) {
             binding.etNombre.setText(lista[position!!].nombreLista)
+            title = getString(R.string.text_editar_lista)
         }
 
         val builder = AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.btn_nueva_lista))
+                .setTitle(title)
                 .setView(binding.root)
                 .setPositiveButton(getString(R.string.btn_guardar), null)
                 .setNegativeButton(getString(R.string.btn_cancelar), null)
@@ -132,5 +138,13 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                     Toast.makeText(context, getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show()
                 }
     }
+
+    override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
+        imagenesListas = ArrayList()
+        imagenesListas = imagenes
+        imagenesListasAdapter = ImagenesListasAdapter(imagenesListas, requireContext())
+        binding.rvImagenesListas.adapter = imagenesListasAdapter
+    }
+
 
 }

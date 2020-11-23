@@ -492,10 +492,15 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                 valor = data.select("h6.text-center").text()
 
                 if (valor != null) {
-                    val valor1: String = valor!!.replace("Bs.S", "")
+                    val valor1: String = valor!!.replace("Bs.S ", "")
                     val valor2 = valor1.replace(".", "")
-                    val valorNeto = valor2.replace(",", ".")
+                    val values: List<String> = valor2.split(" ")
+                    val valor3 = values[0]
+                    val valorNeto = valor3.replace(",", ".")
                     valorCotizacion = valorNeto.toFloat()
+
+                    val values2: List<String> = valor1.split(" ")
+                    valor = values2[0]
                 }
             } catch (e: IOException) {
                 e.printStackTrace()

@@ -7,6 +7,7 @@ public class Constants {
     public static final String BD_PRESTAMOS = "prestamos";
     public static final String BD_GASTOS = "gastos";
     public static final String BD_DEUDAS = "deudas";
+    public static final String BD_IMAGENES_LISTAS = "imagenesListas";
 
     public static final String BD_CONCEPTO= "concepto";
     public static final String BD_MONTO = "monto";
@@ -26,6 +27,8 @@ public class Constants {
     public static final String BD_NOMBRE = "nombre";
     public static final String BD_CANTIDAD_ITEMS = "cantidadItems";
     public static final String BD_FECHA_APROXIMADA = "fechaAproximada";
+
+    public static final String BD_IMAGEN = "imagen";
 
     public static final String PREFERENCE_TIPO_BLOQUEO = "tipoBloqueo";
     public static final String PREFERENCE_SIN_BLOQUEO = "sinBloqueo";

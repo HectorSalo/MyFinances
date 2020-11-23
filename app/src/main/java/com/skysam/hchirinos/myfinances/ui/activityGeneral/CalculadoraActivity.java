@@ -93,7 +93,7 @@ public class CalculadoraActivity extends AppCompatActivity {
             montoTotal = montoIngresado * valorCotizacion;
         }
 
-        monto = String.format(Locale.getDefault(), "%,.2f",montoTotal);
+        monto = String.format(Locale.GERMANY, "%,.2f",montoTotal);
         etResultado.setText(monto);
     }
 
@@ -101,7 +101,7 @@ public class CalculadoraActivity extends AppCompatActivity {
     public void format (String cadena, TextInputEditText editText, TextWatcher textWatcher) {
         cadena = cadena.replace(",","").replace(".","");
         double cantidad = Double.parseDouble(cadena)/100;
-        cadena = String.format(Locale.getDefault(), "%,.2f",cantidad);
+        cadena = String.format(Locale.GERMANY, "%,.2f",cantidad);
 
         editText.removeTextChangedListener(textWatcher);
         editText.setText(cadena);
