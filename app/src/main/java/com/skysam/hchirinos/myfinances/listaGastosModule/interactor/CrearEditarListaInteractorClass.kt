@@ -10,11 +10,16 @@ import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarLi
 class CrearEditarListaInteractorClass(val crearEditarListaPresenter: CrearEditarListaPresenter): CrearEditarListaInteractor {
     override fun getImages() {
         val imagenes = ArrayList<ImagenesListasConstructor>()
+        val imagenFirst = ImagenesListasConstructor()
+        imagenFirst.photoUrl = null
+        imagenFirst.imageSelected = true
+        imagenes.add(imagenFirst)
         FirebaseFirestore.getImages().get()
                 .addOnSuccessListener { result ->
             for (document in result) {
                 val imagen = ImagenesListasConstructor()
                 imagen.photoUrl = document.getString(Constants.BD_IMAGEN)
+                imagen.imageSelected = false
                 imagenes.add(imagen)
             }
             crearEditarListaPresenter.cargarImagenes(imagenes)

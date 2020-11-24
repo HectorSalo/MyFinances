@@ -2,10 +2,18 @@ package com.skysam.hchirinos.myfinances.common.model.constructores;
 
 public class ListasConstructor {
 
-    private String nombreLista, idLista;
+    private String nombreLista, idLista, imagen;
     private int cantidadItems;
 
     public ListasConstructor() {
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public String getNombreLista() {

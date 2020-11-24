@@ -27,7 +27,7 @@ import kotlin.collections.ArrayList
 
 class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: Boolean, private val lista: ArrayList<ListasConstructor>, private val position: Int?,
                              private val adapter: ListasPendientesAdapter):
-        DialogFragment(), CrearEditarListaView {
+        DialogFragment(), CrearEditarListaView, CrearEditarListaClick {
     private var _binding : DialogCrearListaBinding? = null
     private val binding get() = _binding!!
     private val user = FirebaseAuth.getInstance().currentUser
@@ -36,6 +36,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private lateinit var imagenesListas: ArrayList<ImagenesListasConstructor>
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
     private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
+    private var imagen: String? = null
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -105,6 +106,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                         itemNuevo.nombreLista = nombre
                         itemNuevo.idLista = docId
                         itemNuevo.cantidadItems = 0
+                        itemNuevo.imagen = imagen
                         lista.add(itemNuevo)
                         adapter.updateList(lista)
                     } else {
@@ -142,8 +144,17 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
         imagenesListas = ArrayList()
         imagenesListas = imagenes
-        imagenesListasAdapter = ImagenesListasAdapter(imagenesListas, requireContext())
+        imagenesListasAdapter = ImagenesListasAdapter(imagenesListas, requireContext(), this)
         binding.rvImagenesListas.adapter = imagenesListasAdapter
+    }
+
+    override fun onImageClick(position: Int) {
+        for (j in 0 until imagenesListas.size) {
+            imagenesListas[j].imageSelected = false
+        }
+        imagen = imagenesListas[position].photoUrl
+        imagenesListas[position].imageSelected = true
+        imagenesListasAdapter.update(imagenesListas)
     }
 
 

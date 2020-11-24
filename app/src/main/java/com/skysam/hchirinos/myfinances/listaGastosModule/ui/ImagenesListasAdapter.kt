@@ -15,10 +15,9 @@ import com.google.android.material.card.MaterialCardView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 
-class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstructor>, private var context: Context):
+class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstructor>, private var context: Context,
+private var crearEditarListaClick: CrearEditarListaClick):
         RecyclerView.Adapter<ImagenesListasAdapter.ViewHolder>() {
-
-    private lateinit var mContext: Context
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imagen: ImageView = view.findViewById(R.id.iv_listas)
@@ -28,7 +27,6 @@ class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstr
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context)
                 .inflate(R.layout.cardview_imagenes_listas, parent, false)
-        //mContext = parent.context
         return ViewHolder(view)
     }
 
@@ -37,17 +35,33 @@ class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstr
 
         val options = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .error(android.R.drawable.ic_menu_gallery)
+                .error(R.drawable.ic_image_not_selected_96)
                 .placeholder(android.R.drawable.ic_menu_gallery)
 
-        Glide.with(context).load(item.photoUrl)
-                .apply(options).into(holder.imagen)
+        if (item.photoUrl != null) {
+            Glide.with(context).load(item.photoUrl)
+                    .apply(options).into(holder.imagen)
+        } else {
+            Glide.with(context).load(R.drawable.ic_image_not_selected_96)
+                    .apply(options).into(holder.imagen)
+        }
+
+        if (item.imageSelected!!) {
+            holder.cardview.strokeColor = holder.itemView.resources.getColor(R.color.design_default_color_secondary_variant)
+        }
 
         with(holder.itemView) {
             tag = item
-            //setOnClickListener(onClickListener)
+            holder.itemView.setOnClickListener {
+                crearEditarListaClick.onImageClick(position)
+            }
         }
     }
 
     override fun getItemCount(): Int = imagenes.size
+
+    fun update(imagenesNew: ArrayList<ImagenesListasConstructor>) {
+        imagenes = imagenesNew
+        notifyDataSetChanged()
+    }
 }
