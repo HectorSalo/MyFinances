@@ -47,6 +47,8 @@ class ListaPendientesDetailActivity : AppCompatActivity() {
                             intent.getStringExtra(ListaPendientesDetailFragment.ARG_ITEM_ID))
                     putString(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE,
                             intent.getStringExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE))
+                    putString(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN,
+                            intent.getStringExtra(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN))
                 }
             }
 

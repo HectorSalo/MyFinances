@@ -8,10 +8,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
@@ -39,6 +43,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
                     arguments = Bundle().apply {
                         putString(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista!!.idLista)
                         putString(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista!!.nombreLista)
+                        putString(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN, itemLista!!.imagen)
                         putBoolean(ListaPendientesDetailFragment.ARG_TWO_PANE, twoPane)
                     }
                 }
@@ -50,6 +55,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
                 val intent = Intent(v.context, ListaPendientesDetailActivity::class.java).apply {
                     putExtra(ListaPendientesDetailFragment.ARG_ITEM_ID, itemLista!!.idLista)
                     putExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista!!.nombreLista)
+                    putExtra(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN, itemLista!!.imagen)
                 }
                 v.context.startActivity(intent)
             }
@@ -71,12 +77,21 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = listas[position]
         holder.nombre.text = item.nombreLista
+
         val itemsCantidad =  item.cantidadItems
         if (itemsCantidad == 0) {
             holder.cantidad.text = "Sin ítems"
         } else {
             holder.cantidad.text = "Items: ${item.cantidadItems}"
         }
+
+        val options = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .error(android.R.drawable.ic_menu_gallery)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+
+        Glide.with(parentActivity.applicationContext).load(item.imagen)
+                .apply(options).into(holder.imagen)
 
         with(holder.itemView) {
             tag = item
@@ -90,6 +105,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nombre: TextView = view.findViewById(R.id.textView_nombre_lista)
         val cantidad: TextView = view.findViewById(R.id.textView_cantidad_items)
+        val imagen: ImageView = view.findViewById(R.id.iv_listas)
     }
 
     fun updateList(newList: ArrayList<ListasConstructor>) {

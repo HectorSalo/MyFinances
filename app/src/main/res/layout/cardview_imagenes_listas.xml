@@ -5,8 +5,7 @@
     android:layout_height="wrap_content"
     android:id="@+id/cardview"
     android:layout_margin="4dp"
-    app:strokeColor="?attr/colorOnPrimary"
-    app:strokeWidth="2dp">
+    app:strokeWidth="4dp">
 
 
     <RelativeLayout
@@ -17,7 +16,8 @@
             android:id="@+id/iv_listas"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            app:srcCompat="@android:drawable/ic_menu_gallery" />
+            app:srcCompat="@android:drawable/ic_menu_gallery"
+            android:scaleType="centerCrop"/>
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

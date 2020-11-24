@@ -88,6 +88,7 @@ class ListaPendientesListActivity : AppCompatActivity() {
                         val cantidad = cantidadD?.toInt()
                         lista.cantidadItems = cantidad!!
                         lista.nombreLista = document.getString(Constants.BD_NOMBRE)
+                        lista.imagen = document.getString(Constants.BD_IMAGEN)
 
                         listas.add(lista)
                     }

@@ -35,6 +35,11 @@ private var crearEditarListaClick: CrearEditarListaClick):
 
         val options = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .error(android.R.drawable.ic_menu_gallery)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+
+        val options2 = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .error(R.drawable.ic_image_not_selected_96)
                 .placeholder(android.R.drawable.ic_menu_gallery)
 
@@ -43,16 +48,19 @@ private var crearEditarListaClick: CrearEditarListaClick):
                     .apply(options).into(holder.imagen)
         } else {
             Glide.with(context).load(R.drawable.ic_image_not_selected_96)
-                    .apply(options).into(holder.imagen)
+                    .apply(options2).into(holder.imagen)
         }
 
         if (item.imageSelected!!) {
             holder.cardview.strokeColor = holder.itemView.resources.getColor(R.color.design_default_color_secondary_variant)
+        } else {
+            holder.cardview.strokeColor = holder.itemView.resources.getColor(android.R.color.darker_gray)
         }
 
         with(holder.itemView) {
             tag = item
             holder.itemView.setOnClickListener {
+                update(position)
                 crearEditarListaClick.onImageClick(position)
             }
         }
@@ -60,8 +68,11 @@ private var crearEditarListaClick: CrearEditarListaClick):
 
     override fun getItemCount(): Int = imagenes.size
 
-    fun update(imagenesNew: ArrayList<ImagenesListasConstructor>) {
-        imagenes = imagenesNew
+    fun update(position: Int) {
+        for (j in 0 until imagenes.size) {
+            imagenes[j].imageSelected = false
+        }
+        imagenes[position].imageSelected = true
         notifyDataSetChanged()
     }
 }

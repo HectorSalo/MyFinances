@@ -27,7 +27,6 @@ public class Constants {
     public static final String BD_NOMBRE = "nombre";
     public static final String BD_CANTIDAD_ITEMS = "cantidadItems";
     public static final String BD_FECHA_APROXIMADA = "fechaAproximada";
-
     public static final String BD_IMAGEN = "imagen";
 
     public static final String PREFERENCE_TIPO_BLOQUEO = "tipoBloqueo";

@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -16,8 +18,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.ListapendientesDetailBinding
 
 
@@ -42,6 +44,12 @@ class ListaPendientesDetailFragment : Fragment() {
             if (it.containsKey(ARG_ITEM_NOMBRE)) {
                 activity?.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = it.getString(ARG_ITEM_NOMBRE)
             }
+            if (it.containsKey(ARG_ITEM_IMAGEN)) {
+                if (it.getString(ARG_ITEM_IMAGEN) != null) {
+                    val imageView: ImageView = activity?.findViewById<ImageView>(R.id.iv_listas)!!
+                    Glide.with(this).load(it.getString(ARG_ITEM_IMAGEN)).into(imageView)
+                }
+            }
             if (it.containsKey(ARG_TWO_PANE)) {
                 twoPane = true
             }
@@ -49,7 +57,7 @@ class ListaPendientesDetailFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         _binding = ListapendientesDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -135,6 +143,7 @@ class ListaPendientesDetailFragment : Fragment() {
     companion object {
         const val ARG_ITEM_ID = "item_id"
         const val ARG_ITEM_NOMBRE = "item_nombre"
+        const val ARG_ITEM_IMAGEN = "item_imagen"
         const val ARG_TWO_PANE = "two_pane"
     }
 

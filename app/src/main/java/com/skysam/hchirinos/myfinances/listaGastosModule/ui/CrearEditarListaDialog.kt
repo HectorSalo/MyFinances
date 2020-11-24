@@ -79,10 +79,11 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         val calendar = Calendar.getInstance()
         val fechaIngreso = calendar.time
 
-        val docData: MutableMap<String, Any> = HashMap()
+        val docData: MutableMap<String, Any?> = HashMap()
         docData[Constants.BD_NOMBRE] = nombre
         docData[Constants.BD_CANTIDAD_ITEMS] = 0
         docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
+        docData[Constants.BD_IMAGEN] = imagen
 
         db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS)
                 .add(docData)
@@ -91,7 +92,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                     Log.d(Constraints.TAG, "DocumentSnapshot written succesfully")
 
                     if (twoPane) {
-                        var itemNuevo: ListasConstructor?
+                        val itemNuevo: ListasConstructor?
                         val fragment = ListaPendientesDetailFragment().apply {
                             arguments = Bundle().apply {
                                 putString(ListaPendientesDetailFragment.ARG_ITEM_ID, docId)
@@ -113,6 +114,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                         val intent = Intent(context, ListaPendientesDetailActivity::class.java).apply {
                             putExtra(ListaPendientesDetailFragment.ARG_ITEM_ID, docId)
                             putExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, nombre)
+                            putExtra(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN, imagen)
                         }
                         context?.startActivity(intent)
                     }
@@ -129,11 +131,12 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         Toast.makeText(context, "Actualizando...", Toast.LENGTH_SHORT).show()
 
         db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(lista[position!!].idLista)
-                .update(Constants.BD_NOMBRE, nombre)
+                .update(Constants.BD_NOMBRE, nombre, Constants.BD_IMAGEN, imagen)
                 .addOnSuccessListener {
                     Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
                     dialog?.dismiss()
                     lista[position].nombreLista = nombre
+                    lista[position].imagen = imagen
                     adapter.updateList(lista)
                 }
                 .addOnFailureListener {
@@ -144,17 +147,22 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
         imagenesListas = ArrayList()
         imagenesListas = imagenes
+
+        if (!guardar) {
+            imagen = lista[position!!].imagen
+            if (lista[position].imagen != null) {
+                for (j in 0 until imagenesListas.size) {
+                    imagenesListas[j].imageSelected = imagenesListas[j].photoUrl.equals(lista[position].imagen)
+                }
+            }
+        }
+
         imagenesListasAdapter = ImagenesListasAdapter(imagenesListas, requireContext(), this)
         binding.rvImagenesListas.adapter = imagenesListasAdapter
     }
 
     override fun onImageClick(position: Int) {
-        for (j in 0 until imagenesListas.size) {
-            imagenesListas[j].imageSelected = false
-        }
         imagen = imagenesListas[position].photoUrl
-        imagenesListas[position].imageSelected = true
-        imagenesListasAdapter.update(imagenesListas)
     }
 
 
