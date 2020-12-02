@@ -185,14 +185,14 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
         val calendarSelec = Calendar.getInstance()
         val calendar = Calendar.getInstance()
         val day = calendar[Calendar.DAY_OF_MONTH]
-        val month = calendar[Calendar.MONTH]
-        val year = calendar[Calendar.YEAR]
+        val monthCurrent = calendar[Calendar.MONTH]
+        val yearCurrent = calendar[Calendar.YEAR]
 
         val datePickerDialog = DatePickerDialog(requireContext(), OnDateSetListener { _, year, month, dayOfMonth ->
             calendarSelec.set(year, month, dayOfMonth)
             fechaSelec = calendarSelec.time
             binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec!!)
-        }, year, month, day)
+        }, yearCurrent, monthCurrent, day)
         datePickerDialog.show()
     }
 }

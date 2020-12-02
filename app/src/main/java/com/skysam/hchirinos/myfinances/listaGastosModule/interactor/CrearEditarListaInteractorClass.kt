@@ -13,7 +13,13 @@ class CrearEditarListaInteractorClass(val crearEditarListaPresenter: CrearEditar
         val imagenFirst = ImagenesListasConstructor()
         imagenFirst.photoUrl = null
         imagenFirst.imageSelected = true
-        imagenes.add(imagenFirst)
+        imagenes.add(0, imagenFirst)
+
+        val imagenSecond = ImagenesListasConstructor()
+        imagenSecond.photoUrl = null
+        imagenSecond.imageSelected = false
+        imagenes.add(1, imagenSecond)
+
         FirebaseFirestore.getImages().get()
                 .addOnSuccessListener { result ->
             for (document in result) {

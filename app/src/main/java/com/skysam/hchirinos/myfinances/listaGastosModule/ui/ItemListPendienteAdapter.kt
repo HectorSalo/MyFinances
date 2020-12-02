@@ -3,6 +3,7 @@ package com.skysam.hchirinos.myfinances.listaGastosModule.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -120,8 +121,8 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
         }
         snackbar.show()
 
-        val handler = Handler()
-        handler.postDelayed({
+        Handler(Looper.getMainLooper())
+                .postDelayed({
             if (!items.contains(item)) {
                 deleteItem(item)
             }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -43,24 +44,40 @@ private var crearEditarListaClick: CrearEditarListaClick):
                 .error(R.drawable.ic_image_not_selected_96)
                 .placeholder(android.R.drawable.ic_menu_gallery)
 
+        val options3 = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .error(R.drawable.ic_add_photo_96)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+
         if (item.photoUrl != null) {
             Glide.with(context).load(item.photoUrl)
                     .apply(options).into(holder.imagen)
         } else {
-            Glide.with(context).load(R.drawable.ic_image_not_selected_96)
-                    .apply(options2).into(holder.imagen)
+            when (position) {
+                0-> {
+                    Glide.with(context).load(R.drawable.ic_image_not_selected_96)
+                            .apply(options2).into(holder.imagen)
+                }
+                1-> {
+                    Glide.with(context).load(R.drawable.ic_add_photo_96)
+                            .apply(options3).into(holder.imagen)
+                }
+            }
+
         }
 
         if (item.imageSelected!!) {
-            holder.cardview.strokeColor = holder.itemView.resources.getColor(R.color.design_default_color_secondary_variant)
+            holder.cardview.strokeColor = ContextCompat.getColor(context, R.color.design_default_color_secondary_variant)
         } else {
-            holder.cardview.strokeColor = holder.itemView.resources.getColor(android.R.color.darker_gray)
+            holder.cardview.strokeColor = ContextCompat.getColor(context, android.R.color.darker_gray)
         }
 
         with(holder.itemView) {
             tag = item
             holder.itemView.setOnClickListener {
-                update(position)
+                if (position != 1) {
+                    update(position)
+                }
                 crearEditarListaClick.onImageClick(position)
             }
         }

@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -151,8 +152,8 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
         }
         snackbar.show()
 
-        val handler = Handler()
-        handler.postDelayed({
+        Handler(Looper.getMainLooper())
+                .postDelayed({
             if (!listas.contains(lista)) {
                 deleteLista(lista.idLista)
             }

@@ -7,7 +7,7 @@ import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
 import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.LoginPresenter
 
-class LoginInteractorClass(val loginPresenter: LoginPresenter, val context: Context): LoginInteractor {
+class LoginInteractorClass(private val loginPresenter: LoginPresenter, val context: Context): LoginInteractor {
 
     override fun getCurrentUser() {
         val user = FirebaseAuthentication.getCurrentUser()

@@ -44,4 +44,7 @@ public class Constants {
     public static final String VALOR_COTIZACION = "valor_cotizacion";
     public static final String USER = "user";
 
+    public static final int RP_STORAGE = 23;
+    public static  final  int RC_PHOTO_PICKER = 22;
+
 }

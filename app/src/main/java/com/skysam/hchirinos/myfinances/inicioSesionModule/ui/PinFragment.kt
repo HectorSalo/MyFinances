@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,6 @@ import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.FragmentPinBinding
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity
-import kotlinx.android.synthetic.main.fragment_pin.*
 
 class PinFragment : Fragment() {
 
@@ -24,7 +24,7 @@ class PinFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         _binding = FragmentPinBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -37,14 +37,15 @@ class PinFragment : Fragment() {
         val pinAlmacenado = sharedPreferences?.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
 
         binding.button.setOnClickListener {
-            button.hideKeyboard()
+            binding.button.hideKeyboard()
             binding.inputPin.error = null
             if (pinAlmacenado == binding.etRegistrarPin.text.toString()) {
                 binding.linearLayout.visibility = View.GONE
                 binding.lottieAnimationView.visibility = View.VISIBLE
                 binding.lottieAnimationView.setAnimation("pin_check.json")
                 binding.lottieAnimationView.playAnimation()
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper())
+                        .postDelayed({
                     context?.startActivity(Intent(context, HomeActivity::class.java))
                 }, 2500)
             } else {
@@ -53,7 +54,7 @@ class PinFragment : Fragment() {
         }
     }
 
-    fun View.hideKeyboard() {
+    private fun View.hideKeyboard() {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }

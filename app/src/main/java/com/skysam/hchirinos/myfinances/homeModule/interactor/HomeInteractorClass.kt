@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.homeModule.interactor
 
 import android.content.Context
-import android.os.AsyncTask
 import android.util.Log
 import androidx.constraintlayout.widget.Constraints
 import com.google.android.gms.tasks.OnCompleteListener
@@ -12,15 +11,56 @@ import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthenticat
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
-import java.io.IOException
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
-class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context): HomeInteractor {
+class HomeInteractorClass(private val homePresenter: HomePresenter, val context: Context): HomeInteractor, CoroutineScope {
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     override fun obtenerCotizacionWeb() {
-        val cotizacion: Cotizacion = Cotizacion(homePresenter, context)
-        cotizacion.execute()
+
+        launch {
+            var valor: String? = null
+            var valorCotizacion: Float? = null
+            val url = "https://monitordolarvenezuela.com/"
+
+            withContext(Dispatchers.IO) {
+                try {
+                    val doc = Jsoup.connect(url).get()
+                    val data = doc.select("div.back-white-tabla")
+                    valor = data.select("h6.text-center").text()
+                } catch (e: Exception) {
+                    Log.e("Error", e.toString())
+                }
+            }
+            if (valor != null) {
+                val valor1: String = valor!!.replace("Bs.S ", "")
+                val valor2 = valor1.replace(".", "")
+                val values: List<String> = valor2.split(" ")
+                val valor3 = values[0]
+                val valorNeto = valor3.replace(",", ".")
+                valorCotizacion = valorNeto.toFloat()
+
+                val values2: List<String> = valor1.split(" ")
+                valor = values2[0]
+            }
+
+            if (valor != null) {
+                homePresenter.valorCotizacionWebOk(valor!!, valorCotizacion!!)
+            } else {
+                obtenerCotizacionShared()
+            }
+        }
+
+    }
+
+    fun obtenerCotizacionShared() {
+        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context))
     }
 
     override fun guardarCotizacionShared(valorFloat: Float) {
@@ -50,7 +90,7 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                                     val duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                     val duracionFrecuenciaInt = duracionFrecuencia.toInt()
                                     var multiploIngreso = 0
-                                    calendarInicial.time = fechaInicial
+                                    calendarInicial.time = fechaInicial!!
                                     mesCobro = calendarInicial[Calendar.MONTH]
                                     yearCobro = calendarInicial[Calendar.YEAR]
                                     if (mesCobro == month) {
@@ -204,8 +244,8 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
-                        var mesPago = 0
-                        var yearPago = 0
+                        var mesPago: Int
+                        var yearPago: Int
                         for (document in task.result!!) {
                             val activo = document.getBoolean(Constants.BD_MES_ACTIVO)
                             if (activo == null || activo) {
@@ -461,58 +501,5 @@ class HomeInteractorClass(val homePresenter: HomePresenter, val context: Context
                     }
                 }
     }
-
-    private class Cotizacion(val homePresenter: HomePresenter, val context: Context) : AsyncTask<Void?, Void?, Void?>() {
-        var valor: String? = null
-        var valorCotizacion: Float? = null
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-        }
-
-        override fun onPostExecute(aVoid: Void?) {
-            super.onPostExecute(aVoid)
-            if (valor != null) {
-                homePresenter.valorCotizacionWebOk(valor!!, valorCotizacion!!)
-            } else {
-                obtenerCotizacionShared()
-            }
-        }
-
-        override fun onCancelled() {
-            super.onCancelled()
-            obtenerCotizacionShared()
-        }
-
-        override fun doInBackground(vararg voids: Void?): Void? {
-            val url = "https://monitordolarvenezuela.com/"
-            try {
-                val doc = Jsoup.connect(url).get()
-                val data = doc.select("div.back-white-tabla")
-                valor = data.select("h6.text-center").text()
-
-                if (valor != null) {
-                    val valor1: String = valor!!.replace("Bs.S ", "")
-                    val valor2 = valor1.replace(".", "")
-                    val values: List<String> = valor2.split(" ")
-                    val valor3 = values[0]
-                    val valorNeto = valor3.replace(",", ".")
-                    valorCotizacion = valorNeto.toFloat()
-
-                    val values2: List<String> = valor1.split(" ")
-                    valor = values2[0]
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return null
-        }
-
-        fun obtenerCotizacionShared() {
-            homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context))
-        }
-    }
-
-
 
 }

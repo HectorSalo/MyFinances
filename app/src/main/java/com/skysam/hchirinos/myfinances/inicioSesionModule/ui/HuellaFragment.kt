@@ -55,7 +55,7 @@ class HuellaFragment : Fragment() {
     private fun crearDialogHuella() {
         lateinit var biometricPrompt: BiometricPrompt
 
-        var executor: Executor = ContextCompat.getMainExecutor(requireContext())
+        val executor: Executor = ContextCompat.getMainExecutor(requireContext())
         biometricPrompt = BiometricPrompt(this, executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationError(errorCode: Int,
@@ -87,7 +87,7 @@ class HuellaFragment : Fragment() {
                     }
                 })
 
-        var promptInfo: BiometricPrompt.PromptInfo = BiometricPrompt.PromptInfo.Builder()
+        val promptInfo: BiometricPrompt.PromptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Bienvenido a Mis Finanzas")
                 .setSubtitle(getString(R.string.text_coloque_huella))
                 .setNegativeButtonText("Acceder con PIN de respaldo")

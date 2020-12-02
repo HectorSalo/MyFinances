@@ -8,8 +8,8 @@ android {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 3
-        versionName "3.5.0"
+        versionCode 4
+        versionName "4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,4 +60,4 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+

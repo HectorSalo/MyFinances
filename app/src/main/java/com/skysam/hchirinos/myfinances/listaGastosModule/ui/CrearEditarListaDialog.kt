@@ -1,25 +1,27 @@
 package com.skysam.hchirinos.myfinances.listaGastosModule.ui
 
+import android.Manifest
+import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
-import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
-import com.skysam.hchirinos.myfinances.listaGastosModule.interactor.CrearEditarListaInteractorClass
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenterClass
 import java.util.*
@@ -67,7 +69,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
 
     private fun validarLista() {
         val nombre = binding.etNombre.text.toString()
-        if (nombre.isNullOrEmpty()) {
+        if (nombre.isEmpty()) {
             binding.inputNombre.error = getString(R.string.error_campo_vacio)
             return
         }
@@ -87,7 +89,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
 
         db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS)
                 .add(docData)
-                .addOnSuccessListener {document ->
+                .addOnSuccessListener { document ->
                     val docId = document.id
                     Log.d(Constraints.TAG, "DocumentSnapshot written succesfully")
 
@@ -120,11 +122,11 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                     }
                     dialog?.dismiss()
                 }
-                .addOnFailureListener(OnFailureListener { e ->
+                .addOnFailureListener { e ->
                     Log.w(Constraints.TAG, "Error adding document", e)
                     Toast.makeText(context, getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show()
                     dialog?.dismiss()
-                })
+                }
     }
 
     private fun editarLista(nombre: String) {
@@ -162,7 +164,49 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
     override fun onImageClick(position: Int) {
-        imagen = imagenesListas[position].photoUrl
+        if (position != 1) {
+            imagen = imagenesListas[position].photoUrl
+        } else {
+            checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Constants.RP_STORAGE)
+        }
+    }
+
+    private fun checkPermission(permissionStr: String, requestPermission: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(requireContext(), permissionStr) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(permissionStr), requestPermission)
+                return
+            }
+        }
+        when (requestPermission) {
+            Constants.RP_STORAGE -> fromGallery()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Constants.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
+            data?.let { showImage(it) }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                Constants.RP_STORAGE -> fromGallery()
+            }
+        }
+    }
+
+    private fun showImage(it: Intent) {
+
+    }
+
+
+    private fun fromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, Constants.RC_PHOTO_PICKER)
     }
 
 
