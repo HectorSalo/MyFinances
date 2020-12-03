@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
     private HomePresenter homePresenter;
     private PieChart pieBalance;
-    private float montoIngresos, montoGastos, montoDeudas, montoPrestamos, montoAhorros;
+    private float montoIngresos, montoGastos;
     private ProgressBar progressBar;
     private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma;
     private int mesSelected, yearSelected;
@@ -96,10 +96,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
 
         montoIngresos = 0;
-        montoAhorros = 0;
-        montoDeudas = 0;
         montoGastos = 0;
-        montoPrestamos = 0;
 
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
@@ -170,21 +167,8 @@ public class HomeFragment extends Fragment implements HomeView {
         homePresenter.getIngresos(yearSelected, mesSelected);
     }
 
-
-    private void cargarAhorros() {
-        homePresenter.getAhoros(yearSelected, mesSelected);
-    }
-
-    private void cargarPrestamos() {
-        homePresenter.getPrestamos(yearSelected, mesSelected);
-    }
-
     private void cargarGastos() {
         homePresenter.getGastos(yearSelected, mesSelected);
-    }
-
-    private void cargarDeudas() {
-        homePresenter.getDeudas(yearSelected, mesSelected);
     }
 
     private void cargarFolios() {
@@ -199,16 +183,13 @@ public class HomeFragment extends Fragment implements HomeView {
 
             ArrayList<PieEntry> pieEntries = new ArrayList<>();
             pieEntries.add(new PieEntry(montoIngresos, requireContext().getString(R.string.pie_ingresos)));
-            pieEntries.add(new PieEntry(montoAhorros, getContext().getString(R.string.pie_ahorros)));
-            pieEntries.add(new PieEntry(montoPrestamos, getContext().getString(R.string.pie_prestamos)));
             pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
-            pieEntries.add(new PieEntry(montoDeudas, getContext().getString(R.string.pie_deudas)));
 
 
             PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
             pieDataSet.setValueTextSize(18);
-            pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300), ContextCompat.getColor(getContext(), R.color.md_green_700), ContextCompat.getColor(getContext(), R.color.md_light_green_A700),
-                    ContextCompat.getColor(getContext(), R.color.md_red_400), ContextCompat.getColor(getContext(), R.color.md_red_900));
+            pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300),
+                    ContextCompat.getColor(getContext(), R.color.md_red_900));
             pieDataSet.setFormSize(16);
             PieData pieData = new PieData(pieDataSet);
 
@@ -216,7 +197,7 @@ public class HomeFragment extends Fragment implements HomeView {
             pieBalance.getLegend().setTextColor(ContextCompat.getColor(requireContext(), R.color.md_teal_700));
             pieBalance.invalidate();
 
-            float montoTotal = montoIngresos + montoAhorros + montoPrestamos - montoGastos - montoDeudas;
+            float montoTotal = montoIngresos - montoGastos;
             if (montoTotal > 0) {
                 tvSuperDeficit.setText("Tiene un superávit de:");
                 linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
@@ -227,7 +208,7 @@ public class HomeFragment extends Fragment implements HomeView {
                 tvSuperDeficit.setText("Balance en cero");
                 linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
             }
-            tvSuma.setText("Suma: " + montoIngresos + " + " + montoAhorros + " + " + montoPrestamos + " - " + montoGastos + " - " + montoDeudas);
+            tvSuma.setText(getString(R.string.text_total_balance_mensual, montoIngresos, montoGastos));
             tvMontoTotal.setText("$" + montoTotal);
 
             progressBar.setVisibility(View.GONE);
@@ -263,45 +244,9 @@ public class HomeFragment extends Fragment implements HomeView {
     public void statusValorIngresos(boolean statusOk, float ingresos, @NotNull String message) {
         if (statusOk) {
             montoIngresos = ingresos;
-            cargarAhorros();
-        } else {
-            montoIngresos = ingresos;
-            progressBar.setVisibility(View.GONE);
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void statusValorAhorros(boolean statusOk, float ahorros, @NotNull String message) {
-        if (statusOk) {
-            montoAhorros = ahorros;
-            cargarPrestamos();
-        } else {
-            montoAhorros = ahorros;
-            progressBar.setVisibility(View.GONE);
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void statusValorDeudas(boolean statusOk, float deudas, @NotNull String message) {
-        if (statusOk) {
-            montoDeudas = deudas;
-            cargarFolios();
-        } else {
-            montoDeudas = deudas;
-            progressBar.setVisibility(View.GONE);
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void statusValorPrestamos(boolean statusOk, float prestamos, @NotNull String message) {
-        if (statusOk) {
-            montoPrestamos = prestamos;
             cargarGastos();
         } else {
-            montoPrestamos = prestamos;
+            montoIngresos = ingresos;
             progressBar.setVisibility(View.GONE);
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
@@ -311,7 +256,7 @@ public class HomeFragment extends Fragment implements HomeView {
     public void statusValorGastos(boolean statusOk, float gastos, @NotNull String message) {
         if (statusOk) {
             montoGastos = gastos;
-            cargarDeudas();
+            cargarFolios();
         } else {
             montoGastos = gastos;
             progressBar.setVisibility(View.GONE);
