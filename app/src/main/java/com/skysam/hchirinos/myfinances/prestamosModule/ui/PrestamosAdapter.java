@@ -73,12 +73,10 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_cobro:
-                                ingresarCobro(i);
-                                break;
-                            default:
-                                break;
+                        if (item.getItemId() == R.id.menu_cobro) {
+                            ingresarCobro(i);
+                        } else if (item.getItemId() == R.id.menu_aumento) {
+                            ingresarAumento(i);
                         }
                         return false;
                     }
@@ -121,16 +119,16 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
         TextView textView = v.findViewById(R.id.textView_cotizacion);
         final EditText editText = v.findViewById(R.id.editText_cotizacion);
 
-
         if (b) {
             textView.setText("$");
         } else {
             textView.setText("Bs. ");
         }
+
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto cobrado")
                 .setView(v)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Cobrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!editText.getText().toString().isEmpty()) {
@@ -226,5 +224,39 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
                         }
                     });
         }
+    }
+
+
+    private void ingresarAumento(final int position) {
+        boolean b = listaPrestamos.get(position).isDolar();
+        final double montoOriginal = listaPrestamos.get(position).getMonto();
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View v = inflater.inflate(R.layout.layout_cotizacion_dolar, null);
+        TextView textView = v.findViewById(R.id.textView_cotizacion);
+        final EditText editText = v.findViewById(R.id.editText_cotizacion);
+
+
+        if (b) {
+            textView.setText("$");
+        } else {
+            textView.setText("Bs. ");
+        }
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        dialog.setTitle("Ingrese el monto de aumento")
+                .setView(v)
+                .setPositiveButton("Aumentar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!editText.getText().toString().isEmpty()) {
+                            double valor = Double.parseDouble(editText.getText().toString());
+                            if (valor > 0) {
+                                double total = montoOriginal + valor;
+                                actualizarMonto(position, total);
+                            } else {
+                                Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }).show();
     }
 }

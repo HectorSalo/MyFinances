@@ -5,7 +5,7 @@
         android:id="@+id/menu_abono"/>
 
     <item
-        android:title="@string/menu_aumento"
+        android:title="@string/menu_aumento_deuda"
         android:id="@+id/menu_aumento"/>
 
 </menu>

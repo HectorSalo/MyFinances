@@ -77,15 +77,10 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_abono:
-                                ingresarAbono(i);
-                                break;
-                            case R.id.menu_aumento:
-                                ingresarAumento(i);
-                                break;
-                            default:
-                                break;
+                        if (item.getItemId() == R.id.menu_abono) {
+                            ingresarAbono(i);
+                        } else if (item.getItemId() == R.id.menu_aumento) {
+                            ingresarAumento(i);
                         }
                         return false;
                     }
@@ -138,7 +133,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto a abonar")
                 .setView(v)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Abonar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!editText.getText().toString().isEmpty()) {
@@ -253,7 +248,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto de aumento")
                 .setView(v)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Aumentar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!editText.getText().toString().isEmpty()) {

@@ -15,8 +15,9 @@
     <string name="menu_deudas">Deudas</string>
     <string name="menu_ajustes">Ajustes</string>
     <string name="menu_abono">Abonar deuda</string>
-    <string name="menu_aumento">Aumentar deuda</string>
+    <string name="menu_aumento_deuda">Aumentar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
+    <string name="menu_aumento_prestamo">Aumentar préstamo</string>
 
 
     <string name="pie_ingresos">Ingresos</string>
