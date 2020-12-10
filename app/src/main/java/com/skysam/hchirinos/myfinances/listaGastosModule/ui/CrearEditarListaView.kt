@@ -4,4 +4,6 @@ import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListas
 
 interface CrearEditarListaView {
     fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>)
+    fun progressUploadImage(progress: Double)
+    fun resultUploadImage(statusOk: Boolean, data: String)
 }

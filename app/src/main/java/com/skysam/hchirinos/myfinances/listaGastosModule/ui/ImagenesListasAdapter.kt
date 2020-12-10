@@ -44,26 +44,12 @@ private var crearEditarListaClick: CrearEditarListaClick):
                 .error(R.drawable.ic_image_not_selected_96)
                 .placeholder(android.R.drawable.ic_menu_gallery)
 
-        val options3 = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .error(R.drawable.ic_add_photo_96)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-
         if (item.photoUrl != null) {
             Glide.with(context).load(item.photoUrl)
                     .apply(options).into(holder.imagen)
         } else {
-            when (position) {
-                0-> {
-                    Glide.with(context).load(R.drawable.ic_image_not_selected_96)
-                            .apply(options2).into(holder.imagen)
-                }
-                1-> {
-                    Glide.with(context).load(R.drawable.ic_add_photo_96)
-                            .apply(options3).into(holder.imagen)
-                }
-            }
-
+            Glide.with(context).load(R.drawable.ic_image_not_selected_96)
+                    .apply(options2).into(holder.imagen)
         }
 
         if (item.imageSelected!!) {
@@ -75,9 +61,7 @@ private var crearEditarListaClick: CrearEditarListaClick):
         with(holder.itemView) {
             tag = item
             holder.itemView.setOnClickListener {
-                if (position != 1) {
-                    update(position)
-                }
+                update(position)
                 crearEditarListaClick.onImageClick(position)
             }
         }

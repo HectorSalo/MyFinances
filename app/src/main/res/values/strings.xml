@@ -80,6 +80,10 @@
     <string name="sin_items">No hay ítems guardados en: </string>
     <string name="sin_lista_seleccionada">Seleccione una lista para ver los ítems.</string>
     <string name="nombre_crear_lista">Nombre:</string>
+    <string name="text_rb_imagenes_predefinidas">Imágenes predefinidas</string>
+    <string name="text_rb_galeria">Desde galería</string>
+    <string name="error_sin_imagen_galeria">Debe escoger una imagen de la galería</string>
+    <string name="subiendo_imagen">Subiendo imagen. Por favor, espere.</string>
 
     <string name="monto_aproximado">Monto aproximado:</string>
     <string name="fecha_aproximada">Fecha de gasto aproximada:</string>
@@ -133,5 +137,6 @@
     <string name="dialog_message">Toda la información almacenda en el mes de diciembre será copiada para el año siguiente,
         exceptuando los Ingresos Únicos y Gastos Únicos.\nEsta opción estara disponible sólo hasta el 31 de diciembre del presente año.\nEste proceso tardará unos minutos.</string>
     <string name="dialog_btn_mover">Mover</string>
+
 
 </resources>

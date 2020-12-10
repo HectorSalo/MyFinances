@@ -1,9 +1,13 @@
 package com.skysam.hchirinos.myfinances.listaGastosModule.interactor
 
+import android.net.Uri
 import android.util.Log
 import androidx.constraintlayout.widget.Constraints.TAG
+import com.google.firebase.storage.StorageReference
+import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
+import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseStorage
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
 
@@ -14,11 +18,6 @@ class CrearEditarListaInteractorClass(val crearEditarListaPresenter: CrearEditar
         imagenFirst.photoUrl = null
         imagenFirst.imageSelected = true
         imagenes.add(0, imagenFirst)
-
-        val imagenSecond = ImagenesListasConstructor()
-        imagenSecond.photoUrl = null
-        imagenSecond.imageSelected = false
-        imagenes.add(1, imagenSecond)
 
         FirebaseFirestore.getImages().get()
                 .addOnSuccessListener { result ->
@@ -33,5 +32,27 @@ class CrearEditarListaInteractorClass(val crearEditarListaPresenter: CrearEditar
                 .addOnFailureListener { exception->
                     Log.d(TAG, "Error getting documents: ", exception)
                 }
+    }
+
+    override fun uploadImage(uri: Uri, uid: String) {
+        if (uri.lastPathSegment != null) {
+            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(uid)
+                    .child(FirebaseStorage.PATH_IMAGES_LISTS).child(uri.lastPathSegment!!)
+
+            photoRef.putFile(uri).addOnSuccessListener { task ->
+                task.storage.downloadUrl.addOnSuccessListener { uri ->
+                    if (uri != null) {
+                        crearEditarListaPresenter.resultUploadImage(true, uri.toString())
+                    } else {
+                        crearEditarListaPresenter.resultUploadImage(false, getString(R.string.error_guardar_data))
+                    }
+                }
+            }
+                    .addOnFailureListener {  }
+                    .addOnProgressListener { task ->
+                        val progress = (100.0 * task.bytesTransferred) / task.totalByteCount
+                        crearEditarListaPresenter.progressUploadImage(progress)
+                    }
+        }
     }
 }

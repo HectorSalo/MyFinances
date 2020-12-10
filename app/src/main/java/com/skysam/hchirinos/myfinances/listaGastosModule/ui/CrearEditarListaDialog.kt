@@ -6,15 +6,19 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
@@ -24,6 +28,7 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenterClass
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,6 +44,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
     private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
     private var imagen: String? = null
+    private var uriLocal: Uri? = null
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -64,6 +70,22 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             binding.inputNombre.error = null
             validarLista()
         }
+
+        binding.rgImagenes.setOnCheckedChangeListener { _, i ->
+            when(i) {
+                R.id.rb_imagenes_predifinidas -> {
+                    binding.rvImagenesListas.visibility = View.VISIBLE
+                    binding.ibGaleria.visibility = View.GONE
+                }
+                R.id.rb_galeria -> {
+                    binding.rvImagenesListas.visibility = View.GONE
+                    binding.ibGaleria.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        binding.ibGaleria.setOnClickListener { checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Constants.RP_STORAGE) }
+
         return dialog as AlertDialog
     }
 
@@ -73,7 +95,19 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             binding.inputNombre.error = getString(R.string.error_campo_vacio)
             return
         }
-        if (guardar) guardarLista(nombre) else editarLista(nombre)
+
+        if (binding.rbGaleria.isChecked) {
+            if (uriLocal == null) {
+                Toast.makeText(context, getString(R.string.error_sin_imagen_galeria), Toast.LENGTH_SHORT).show()
+            } else {
+                //mPresenter.updateImage(Uri.parse(urlLocal))
+                binding.tvSubirImagen.visibility = View.VISIBLE
+                binding.pbSubirImagen.visibility = View.VISIBLE
+                dialog!!.setCancelable(false)
+            }
+        } else {
+            if (guardar) guardarLista(nombre) else editarLista(nombre)
+        }
     }
 
     private fun guardarLista(nombre: String) {
@@ -163,12 +197,23 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         binding.rvImagenesListas.adapter = imagenesListasAdapter
     }
 
-    override fun onImageClick(position: Int) {
-        if (position != 1) {
-            imagen = imagenesListas[position].photoUrl
+    override fun progressUploadImage(progress: Double) {
+        binding.pbSubirImagen.progress = progress.toInt()
+    }
+
+    override fun resultUploadImage(statusOk: Boolean, data: String) {
+        if (statusOk) {
+            imagen = data
+            val nombre = binding.etNombre.text.toString()
+            if (guardar) guardarLista(nombre) else editarLista(nombre)
         } else {
-            checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Constants.RP_STORAGE)
+            Toast.makeText(context, data, Toast.LENGTH_SHORT).show()
         }
+    }
+
+
+    override fun onImageClick(position: Int) {
+        imagen = imagenesListas[position].photoUrl
     }
 
     private fun checkPermission(permissionStr: String, requestPermission: Int) {
@@ -200,7 +245,22 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
     private fun showImage(it: Intent) {
+        uriLocal = it.data
 
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (uriLocal != null) {
+                    val imageDecoder = ImageDecoder.createSource(requireActivity().contentResolver, uriLocal!!)
+                    val bitmap = ImageDecoder.decodeBitmap(imageDecoder)
+                    binding.ibGaleria.setImageBitmap(bitmap)
+                }
+            } else {
+                val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uriLocal)
+                binding.ibGaleria.setImageBitmap(bitmap)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
 
