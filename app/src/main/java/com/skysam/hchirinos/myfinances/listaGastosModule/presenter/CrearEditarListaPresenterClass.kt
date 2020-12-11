@@ -12,8 +12,8 @@ class CrearEditarListaPresenterClass(val crearEditarListaView: CrearEditarListaV
         crearEditarListaInteractor.getImages()
     }
 
-    override fun uploadImage(uri: Uri, uid: String) {
-        TODO("Not yet implemented")
+    override fun uploadImage(uri: Uri) {
+        crearEditarListaInteractor.uploadImage(uri)
     }
 
     override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {

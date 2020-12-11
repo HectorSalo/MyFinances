@@ -100,9 +100,10 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             if (uriLocal == null) {
                 Toast.makeText(context, getString(R.string.error_sin_imagen_galeria), Toast.LENGTH_SHORT).show()
             } else {
-                //mPresenter.updateImage(Uri.parse(urlLocal))
+                crearEditarListaPresenter.uploadImage(uriLocal!!)
                 binding.tvSubirImagen.visibility = View.VISIBLE
                 binding.pbSubirImagen.visibility = View.VISIBLE
+                binding.ibGaleria.isClickable = false
                 dialog!!.setCancelable(false)
             }
         } else {
@@ -207,6 +208,9 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             val nombre = binding.etNombre.text.toString()
             if (guardar) guardarLista(nombre) else editarLista(nombre)
         } else {
+            binding.tvSubirImagen.visibility = View.GONE
+            binding.pbSubirImagen.visibility = View.GONE
+            binding.ibGaleria.isClickable = true
             Toast.makeText(context, data, Toast.LENGTH_SHORT).show()
         }
     }
