@@ -84,6 +84,7 @@
     <string name="text_rb_galeria">Desde galería</string>
     <string name="error_sin_imagen_galeria">Debe escoger una imagen de la galería</string>
     <string name="subiendo_imagen">Subiendo imagen. Por favor, espere.</string>
+    <string name="error_image_notfound">Imagen/archivo no encontrado.</string>
 
     <string name="monto_aproximado">Monto aproximado:</string>
     <string name="fecha_aproximada">Fecha de gasto aproximada:</string>

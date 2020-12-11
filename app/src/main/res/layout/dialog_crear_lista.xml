@@ -76,8 +76,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rg_imagenes"
         app:srcCompat="@drawable/ic_add_photo_96"
-        android:visibility="gone"
-        android:maxHeight="@dimen/item_width"/>
+        android:visibility="gone"/>
 
     <ProgressBar
         android:id="@+id/pb_subir_imagen"

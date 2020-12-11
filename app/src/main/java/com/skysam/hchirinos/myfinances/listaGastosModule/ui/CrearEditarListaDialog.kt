@@ -18,12 +18,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
@@ -44,7 +46,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
     private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
     private var imagen: String? = null
-    private var uriLocal: Uri? = null
+    private var uriLocal: String? = null
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -100,7 +102,8 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             if (uriLocal == null) {
                 Toast.makeText(context, getString(R.string.error_sin_imagen_galeria), Toast.LENGTH_SHORT).show()
             } else {
-                crearEditarListaPresenter.uploadImage(uriLocal!!)
+                crearEditarListaPresenter.uploadImage(Uri.parse(uriLocal))
+                binding.etNombre.isEnabled = false
                 binding.tvSubirImagen.visibility = View.VISIBLE
                 binding.pbSubirImagen.visibility = View.VISIBLE
                 binding.ibGaleria.isClickable = false
@@ -191,6 +194,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                 for (j in 0 until imagenesListas.size) {
                     imagenesListas[j].imageSelected = imagenesListas[j].photoUrl.equals(lista[position].imagen)
                 }
+                previewImage(imagen)
             }
         }
 
@@ -211,6 +215,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             binding.tvSubirImagen.visibility = View.GONE
             binding.pbSubirImagen.visibility = View.GONE
             binding.ibGaleria.isClickable = true
+            binding.etNombre.isEnabled = true
             Toast.makeText(context, data, Toast.LENGTH_SHORT).show()
         }
     }
@@ -249,21 +254,18 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
     private fun showImage(it: Intent) {
-        uriLocal = it.data
+        uriLocal = it.dataString
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (uriLocal != null) {
-                    val imageDecoder = ImageDecoder.createSource(requireActivity().contentResolver, uriLocal!!)
-                    val bitmap = ImageDecoder.decodeBitmap(imageDecoder)
-                    binding.ibGaleria.setImageBitmap(bitmap)
-                }
-            } else {
-                val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uriLocal)
-                binding.ibGaleria.setImageBitmap(bitmap)
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
+        previewImage(uriLocal)
+    }
+
+    private fun previewImage(url: String?) {
+        val test = url
+        val sizeImagePreview = resources.getDimensionPixelSize(R.dimen.size_img_preview)
+        val bitmap = ClassesCommon.reduceBitmap(url, sizeImagePreview, sizeImagePreview)
+
+        if (bitmap != null) {
+            binding.ibGaleria.setImageBitmap(bitmap)
         }
     }
 
