@@ -46,6 +46,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
     private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
     private var imagen: String? = null
+    private var imagenVieja: String? = null
     private var uriLocal: String? = null
 
 
@@ -173,15 +174,26 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(lista[position!!].idLista)
                 .update(Constants.BD_NOMBRE, nombre, Constants.BD_IMAGEN, imagen)
                 .addOnSuccessListener {
-                    Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
-                    dialog?.dismiss()
-                    lista[position].nombreLista = nombre
-                    lista[position].imagen = imagen
-                    adapter.updateList(lista)
+                    if (!imagenVieja.equals(imagen)) {
+                        deleteImageOld()
+                    }
+                    updateSuccess(nombre)
                 }
                 .addOnFailureListener {
                     Toast.makeText(context, getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show()
                 }
+    }
+
+    private fun deleteImageOld() {
+        crearEditarListaPresenter.deleteOldImage(imagenVieja)
+    }
+
+    private fun updateSuccess(nombre: String) {
+        Toast.makeText(context, getString(R.string.process_succes), Toast.LENGTH_SHORT).show()
+        dialog?.dismiss()
+        lista[position!!].nombreLista = nombre
+        lista[position].imagen = imagen
+        adapter.updateList(lista)
     }
 
     override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
@@ -189,12 +201,15 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         imagenesListas = imagenes
 
         if (!guardar) {
-            imagen = lista[position!!].imagen
+            imagenVieja = lista[position!!].imagen
+            imagen = lista[position].imagen
             if (lista[position].imagen != null) {
                 for (j in 0 until imagenesListas.size) {
                     imagenesListas[j].imageSelected = imagenesListas[j].photoUrl.equals(lista[position].imagen)
                 }
-                previewImage(imagen)
+                Glide.with(requireContext()).load(imagen)
+                        .error(R.drawable.ic_add_photo_96)
+                        .into(binding.ibGaleria)
             }
         }
 
@@ -260,7 +275,6 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
     private fun previewImage(url: String?) {
-        val test = url
         val sizeImagePreview = resources.getDimensionPixelSize(R.dimen.size_img_preview)
         val bitmap = ClassesCommon.reduceBitmap(url, sizeImagePreview, sizeImagePreview)
 

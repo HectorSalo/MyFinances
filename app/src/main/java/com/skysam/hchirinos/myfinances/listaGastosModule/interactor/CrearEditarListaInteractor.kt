@@ -5,4 +5,5 @@ import android.net.Uri
 interface CrearEditarListaInteractor {
     fun getImages()
     fun uploadImage(uri: Uri)
+    fun deleteOldImage(image: String?)
 }

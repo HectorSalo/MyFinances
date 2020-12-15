@@ -6,6 +6,7 @@ import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListas
 interface CrearEditarListaPresenter {
     fun getImages()
     fun uploadImage(uri: Uri)
+    fun deleteOldImage(image: String?)
 
     fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>)
     fun progressUploadImage(progress: Double)

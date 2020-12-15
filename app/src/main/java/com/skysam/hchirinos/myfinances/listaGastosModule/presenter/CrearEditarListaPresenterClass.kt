@@ -16,6 +16,10 @@ class CrearEditarListaPresenterClass(val crearEditarListaView: CrearEditarListaV
         crearEditarListaInteractor.uploadImage(uri)
     }
 
+    override fun deleteOldImage(image: String?) {
+        crearEditarListaInteractor.deleteOldImage(image)
+    }
+
     override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
         crearEditarListaView.cargarImagenes(imagenes)
     }
@@ -27,6 +31,7 @@ class CrearEditarListaPresenterClass(val crearEditarListaView: CrearEditarListaV
     override fun resultUploadImage(statusOk: Boolean, data: String) {
         crearEditarListaView.resultUploadImage(statusOk, data)
     }
+
 
 
 }

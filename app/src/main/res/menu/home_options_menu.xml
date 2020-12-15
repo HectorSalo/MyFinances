@@ -18,7 +18,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/menu_calculadora"
-        android:icon="@drawable/ic_keyboard_24"
+        android:icon="@drawable/ic_calculator_24"
         android:title="@string/texto_vacio"
         app:showAsAction="always" />
 
