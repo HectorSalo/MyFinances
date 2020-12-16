@@ -18,4 +18,8 @@ object FirebaseStorage {
     fun getPhotosReferenceByUid(uid: String) : StorageReference {
         return getInstance().reference.child(uid)
     }
+
+    fun getPhotosReferenceByUrl(url: String) : StorageReference {
+        return getInstance().getReferenceFromUrl(url)
+    }
 }

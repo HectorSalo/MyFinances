@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseStorage
 
 class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
@@ -155,17 +156,18 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
         Handler(Looper.getMainLooper())
                 .postDelayed({
             if (!listas.contains(lista)) {
-                deleteLista(lista.idLista)
+                deleteLista(lista.idLista, lista.imagen)
             }
         }, 3000)
     }
 
-    private fun deleteLista(id: String) {
+    private fun deleteLista(id: String, url: String?) {
         db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(id)
                 .delete()
                 .addOnSuccessListener(OnSuccessListener<Void?> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!")
                     deleteCollection(id)
+                    if (url != null) FirebaseStorage.getPhotosReferenceByUrl(url).delete()
                 })
                 .addOnFailureListener(OnFailureListener { e ->
                     Log.w("Delete", "Error deleting document", e)

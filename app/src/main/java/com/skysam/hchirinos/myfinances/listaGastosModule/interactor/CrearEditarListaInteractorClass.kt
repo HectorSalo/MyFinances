@@ -64,8 +64,7 @@ class CrearEditarListaInteractorClass(private val crearEditarListaPresenter: Cre
 
     override fun deleteOldImage(image: String?) {
         if (image != null) {
-            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(FirebaseAuthentication.getCurrentUser()!!.uid)
-                    .child(FirebaseStorage.PATH_IMAGES_LISTS).child(image)
+            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUrl(image)
 
             photoRef.delete()
         }
