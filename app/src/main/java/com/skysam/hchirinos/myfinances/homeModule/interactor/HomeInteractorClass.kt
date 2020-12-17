@@ -81,59 +81,40 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             Log.d(Constraints.TAG, document.id + " => " + document.data)
                             val activo = document.getBoolean(Constants.BD_MES_ACTIVO)
                             if (activo == null || activo) {
-                                val calendarInicial = Calendar.getInstance()
+                                val calendarCobro = Calendar.getInstance()
                                 val montoDetal = document.getDouble(Constants.BD_MONTO)!!
                                 val dolar = document.getBoolean(Constants.BD_DOLAR)!!
                                 val tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA)
                                 if (tipoFrecuencia != null) {
-                                    val fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL)
+                                    calendarCobro.time = document.getDate(Constants.BD_FECHA_INCIAL)!!
                                     val duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                     val duracionFrecuenciaInt = duracionFrecuencia.toInt()
-                                    var multiploIngreso = 0
-                                    calendarInicial.time = fechaInicial!!
-                                    mesCobro = calendarInicial[Calendar.MONTH]
-                                    yearCobro = calendarInicial[Calendar.YEAR]
-                                    if (mesCobro == month) {
-                                        multiploIngreso = 1
-                                    }
-                                    if (tipoFrecuencia == "Dias") {
-                                        var j = 1
-                                        while (mesCobro <= month && yearCobro == year) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
-                                            mesCobro = calendarInicial[Calendar.MONTH]
-                                            yearCobro = calendarInicial[Calendar.YEAR]
-                                            if (mesCobro == month) {
-                                                multiploIngreso += 1
+                                    mesCobro = calendarCobro[Calendar.MONTH]
+                                    yearCobro = calendarCobro[Calendar.YEAR]
+
+                                    while (mesCobro <= month && yearCobro == year) {
+                                        when(tipoFrecuencia) {
+                                            "Dias" -> {
+                                                calendarCobro.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
                                             }
-                                            j++
-                                        }
-                                    } else if (tipoFrecuencia == "Semanas") {
-                                        var j = 1
-                                        while (mesCobro <= month && yearCobro == year) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
-                                            mesCobro = calendarInicial[Calendar.MONTH]
-                                            yearCobro = calendarInicial[Calendar.YEAR]
-                                            if (mesCobro == month) {
-                                                multiploIngreso += 1
+                                            "Semanas" -> {
+                                                calendarCobro.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
                                             }
-                                            j++
-                                        }
-                                    } else if (tipoFrecuencia == "Meses") {
-                                        var j = 1
-                                        while (mesCobro <= month && yearCobro == year) {
-                                            calendarInicial.add(Calendar.MONTH, duracionFrecuenciaInt)
-                                            mesCobro = calendarInicial[Calendar.MONTH]
-                                            yearCobro = calendarInicial[Calendar.YEAR]
-                                            if (mesCobro == month) {
-                                                multiploIngreso += 1
+                                            "Meses" -> {
+                                                calendarCobro.add(Calendar.MONTH, duracionFrecuenciaInt)
                                             }
-                                            j++
                                         }
-                                    }
-                                    montototal = if (dolar) {
-                                        montototal + montoDetal * multiploIngreso
-                                    } else {
-                                        montototal + montoDetal / valorCotizacion * multiploIngreso
+                                        mesCobro = calendarCobro[Calendar.MONTH]
+                                        yearCobro = calendarCobro[Calendar.YEAR]
+
+                                        if (mesCobro == month) {
+                                            montototal = if (dolar) {
+                                                montototal + montoDetal
+                                            } else {
+                                                montototal + montoDetal / valorCotizacion
+                                            }
+                                        }
+
                                     }
                                 } else {
                                     montototal = if (dolar) {
@@ -244,62 +225,35 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                 val dolar = document.getBoolean(Constants.BD_DOLAR)!!
                                 val tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA)
                                 if (tipoFrecuencia != null) {
-                                    val calendarInicial = Calendar.getInstance()
                                     val calendarPago = Calendar.getInstance()
-                                    val fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL)
+                                    calendarPago.time = document.getDate(Constants.BD_FECHA_INCIAL)!!
                                     val duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                     val duracionFrecuenciaInt = duracionFrecuencia.toInt()
-                                    var multiploCobranza = 0
-                                    calendarInicial.time = fechaInicial!!
-                                    mesPago = calendarInicial[Calendar.MONTH]
-                                    yearPago = calendarInicial[Calendar.YEAR]
-                                    if (mesPago == month) {
-                                        multiploCobranza = 1
-                                    }
-                                    if (tipoFrecuencia == "Dias") {
-                                        var j = 1
-                                        while (mesPago <= month && yearPago == year) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * j)
-                                            calendarPago.time = calendarInicial.time
-                                            mesPago = calendarPago[Calendar.MONTH]
-                                            yearPago = calendarPago[Calendar.YEAR]
-                                            calendarInicial.time = fechaInicial
-                                            if (mesPago == month) {
-                                                multiploCobranza += 1
+                                    mesPago = calendarPago[Calendar.MONTH]
+                                    yearPago = calendarPago[Calendar.YEAR]
+
+                                    while (mesPago <= month && yearPago == year) {
+                                        when(tipoFrecuencia) {
+                                            "Dias" -> {
+                                                calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
                                             }
-                                            j++
-                                        }
-                                    } else if (tipoFrecuencia == "Semanas") {
-                                        var j = 1
-                                        while (mesPago <= month && yearPago == year) {
-                                            calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * j * 7)
-                                            calendarPago.time = calendarInicial.time
-                                            mesPago = calendarPago[Calendar.MONTH]
-                                            yearPago = calendarPago[Calendar.YEAR]
-                                            calendarInicial.time = fechaInicial
-                                            if (mesPago == month) {
-                                                multiploCobranza += 1
+                                            "Semanas" -> {
+                                                calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
                                             }
-                                            j++
-                                        }
-                                    } else if (tipoFrecuencia == "Meses") {
-                                        var j = 1
-                                        while (mesPago <= month && yearPago == year) {
-                                            calendarInicial.add(Calendar.MONTH, duracionFrecuenciaInt * j)
-                                            calendarPago.time = calendarInicial.time
-                                            mesPago = calendarPago[Calendar.MONTH]
-                                            yearPago = calendarPago[Calendar.YEAR]
-                                            calendarInicial.time = fechaInicial
-                                            if (mesPago == month) {
-                                                multiploCobranza += 1
+                                            "Meses" -> {
+                                                calendarPago.add(Calendar.MONTH, duracionFrecuenciaInt)
                                             }
-                                            j++
                                         }
-                                    }
-                                    montototal = if (dolar) {
-                                        montototal + montoDetal * multiploCobranza
-                                    } else {
-                                        montototal + montoDetal / valorCotizacion * multiploCobranza
+                                        mesPago = calendarPago[Calendar.MONTH]
+                                        yearPago = calendarPago[Calendar.YEAR]
+
+                                        if (mesPago == month) {
+                                            montototal = if (dolar) {
+                                                montototal + montoDetal
+                                            } else {
+                                                montototal + montoDetal / valorCotizacion
+                                            }
+                                        }
                                     }
                                 } else {
                                     montototal = if (dolar) {
