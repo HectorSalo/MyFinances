@@ -19,7 +19,8 @@ class IngresosInteractorClass(val ingresosPresenter: IngresosPresenter): Ingreso
         query.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 for (doc in task.result!!) {
-                    val perteneceMes = false
+                    var perteneceMes = true
+                    val calendarCobro = Calendar.getInstance()
                     val ingreso = IngresosGastosConstructor()
                     ingreso.idIngreso = doc.id
                     ingreso.concepto = doc.getString(Constants.BD_CONCEPTO)
@@ -34,19 +35,20 @@ class IngresosInteractorClass(val ingresosPresenter: IngresosPresenter): Ingreso
                     val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                     if (tipoFrecuencia != null) {
                         val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
-                        val fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL)
-                        val fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
+                        calendarCobro.time = doc.getDate(Constants.BD_FECHA_INCIAL)!!
                         val duracionFrecuenciaInt = duracionFrecuencia.toInt()
                         ingreso.duracionFrecuencia = duracionFrecuenciaInt
-                        ingreso.fechaIncial = fechaInicial
+                        ingreso.fechaIncial = doc.getDate(Constants.BD_FECHA_INCIAL)!!
                         ingreso.tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
-                        ingreso.fechaFinal = fechaFinal
+                        ingreso.fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
 
 
-                        mesCobro = calendarCobro[Calendar.MONTH]
-                        yearCobro = calendarCobro[Calendar.YEAR]
+                        var mesCobro = calendarCobro[Calendar.MONTH]
+                        var yearCobro = calendarCobro[Calendar.YEAR]
 
                         while (mesCobro <= month && yearCobro == year) {
+                            perteneceMes = mesCobro == month
+
                             when(tipoFrecuencia) {
                                 "Dias" -> {
                                     calendarCobro.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
@@ -58,28 +60,20 @@ class IngresosInteractorClass(val ingresosPresenter: IngresosPresenter): Ingreso
                                     calendarCobro.add(Calendar.MONTH, duracionFrecuenciaInt)
                                 }
                             }
-                            mesCobro = calendarCobro[Calendar.MONTH]
-                            yearCobro = calendarCobro[Calendar.YEAR]
 
-                            if (mesCobro == month) {
-                                montototal = if (dolar) {
-                                    montototal + montoDetal
-                                } else {
-                                    montototal + montoDetal / valorCotizacion
-                                }
+                            if (perteneceMes) {
+                                mesCobro += 12
+                            } else {
+                                mesCobro = calendarCobro[Calendar.MONTH]
+                                yearCobro = calendarCobro[Calendar.YEAR]
                             }
-
                         }
-
-
-
-
                     } else {
                         ingreso.tipoFrecuencia = null
                         ingreso.fechaFinal = null
                     }
 
-                    listaIngresos.add(ingreso)
+                    if (perteneceMes) listaIngresos.add(ingreso)
                 }
                 ingresosPresenter.statusListaIngresos(true, listaIngresos, "")
             } else {

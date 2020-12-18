@@ -245,12 +245,15 @@ public class GastosFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                        boolean perteneceMes = true;
+                        Calendar calendarPago = Calendar.getInstance();
                         IngresosGastosConstructor gasto = new IngresosGastosConstructor();
                         gasto.setIdGasto(doc.getId());
                         gasto.setConcepto(doc.getString(Constants.BD_CONCEPTO));
                         gasto.setMonto(doc.getDouble(Constants.BD_MONTO));
                         gasto.setDolar(doc.getBoolean(Constants.BD_DOLAR));
                         gasto.setFechaIncial(doc.getDate(Constants.BD_FECHA_INCIAL));
+                        calendarPago.setTime(doc.getDate(Constants.BD_FECHA_INCIAL));
                         String tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA);
 
                         Boolean activo = doc.getBoolean(Constants.BD_MES_ACTIVO);
@@ -266,18 +269,44 @@ public class GastosFragment extends Fragment {
                             gasto.setDuracionFrecuencia(duracionFrecuenciaInt);
 
                             gasto.setTipoFrecuencia(doc.getString(Constants.BD_TIPO_FRECUENCIA));
+
+                            int mesPago = calendarPago.get(Calendar.MONTH);
+                            int yearPago = calendarPago.get(Calendar.YEAR);
+
+                            for (int j = 0; mesPago <= mesSelected && yearPago == yearSelected; j++) {
+                                perteneceMes = mesPago == mesSelected;
+
+                                switch (tipoFrecuencia) {
+                                    case "Dias":
+                                        calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt);
+                                        break;
+                                    case "Semanas":
+                                        calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7);
+                                        break;
+                                    case "Meses":
+                                        calendarPago.add(Calendar.MONTH, duracionFrecuenciaInt);
+                                        break;
+                                }
+
+                                if (perteneceMes) {
+                                    mesPago += 12;
+                                } else {
+                                    mesPago = calendarPago.get(Calendar.MONTH);
+                                    yearPago = calendarPago.get(Calendar.YEAR);
+                                }
+                            }
+
+
                         } else {
                             gasto.setTipoFrecuencia(null);
                         }
 
                         Date fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL);
-                        if (fechaFinal != null) {
-                            gasto.setFechaFinal(fechaFinal);
-                        } else {
-                            gasto.setFechaFinal(null);
-                        }
+                        gasto.setFechaFinal(fechaFinal);
 
-                        listaGastos.add(gasto);
+                        if (perteneceMes) {
+                            listaGastos.add(gasto);
+                        }
 
                     }
                     gastosAdapter.updateList(listaGastos);

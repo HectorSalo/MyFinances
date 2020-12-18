@@ -93,6 +93,14 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                     yearCobro = calendarCobro[Calendar.YEAR]
 
                                     while (mesCobro <= month && yearCobro == year) {
+                                        if (mesCobro == month) {
+                                            montototal = if (dolar) {
+                                                montototal + montoDetal
+                                            } else {
+                                                montototal + montoDetal / valorCotizacion
+                                            }
+                                        }
+
                                         when(tipoFrecuencia) {
                                             "Dias" -> {
                                                 calendarCobro.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
@@ -106,15 +114,6 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         }
                                         mesCobro = calendarCobro[Calendar.MONTH]
                                         yearCobro = calendarCobro[Calendar.YEAR]
-
-                                        if (mesCobro == month) {
-                                            montototal = if (dolar) {
-                                                montototal + montoDetal
-                                            } else {
-                                                montototal + montoDetal / valorCotizacion
-                                            }
-                                        }
-
                                     }
                                 } else {
                                     montototal = if (dolar) {
@@ -233,6 +232,14 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                     yearPago = calendarPago[Calendar.YEAR]
 
                                     while (mesPago <= month && yearPago == year) {
+                                        if (mesPago == month) {
+                                            montototal = if (dolar) {
+                                                montototal + montoDetal
+                                            } else {
+                                                montototal + montoDetal / valorCotizacion
+                                            }
+                                        }
+
                                         when(tipoFrecuencia) {
                                             "Dias" -> {
                                                 calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
@@ -246,14 +253,6 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         }
                                         mesPago = calendarPago[Calendar.MONTH]
                                         yearPago = calendarPago[Calendar.YEAR]
-
-                                        if (mesPago == month) {
-                                            montototal = if (dolar) {
-                                                montototal + montoDetal
-                                            } else {
-                                                montototal + montoDetal / valorCotizacion
-                                            }
-                                        }
                                     }
                                 } else {
                                     montototal = if (dolar) {

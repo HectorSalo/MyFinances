@@ -35,7 +35,7 @@ import com.skysam.hchirinos.myfinances.listaGastosModule.ui.ListaPendientesListA
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
     private BottomSheetDialog bottomSheetDialog;
-    private HomeFragment homeFragment;
+    private ContainerViewPageFragment containerViewPage;
     private IngresosFragment ingresosFragment;
     private AhorrosFragment ahorrosFragment;
     private PrestamosFragment prestamosFragment;
@@ -108,14 +108,14 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         });
 
-        homeFragment = new HomeFragment();
+        containerViewPage = new ContainerViewPageFragment();
         ingresosFragment = new IngresosFragment();
         ahorrosFragment = new AhorrosFragment();
         prestamosFragment = new PrestamosFragment();
         gastosFragment = new GastosFragment();
         deudasFragment = new DeudasFragment();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, homeFragment, "home").commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, containerViewPage, "home").commit();
     }
 
 
@@ -173,7 +173,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 int id = menuItem.getItemId();
                 switch (id){
                     case R.id.menu_home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, homeFragment, "home").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, containerViewPage, "home").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
                         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
                         itemBuscar.setVisible(false);
