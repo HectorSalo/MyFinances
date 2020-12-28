@@ -1,15 +1,14 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui
 
 import android.os.Bundle
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
@@ -30,12 +29,10 @@ class ContainerViewPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sectionPageAdapter = SectionPageAdapter(requireActivity().supportFragmentManager)
-        val viewPager: ViewPager = view.findViewById(R.id.view_pager)
-        viewPager.adapter = sectionPageAdapter
-
+        val sectionPageAdapter = SectionPageAdapter(childFragmentManager)
+        binding.viewPager.adapter = sectionPageAdapter
         iniciarPuntosSlide(0)
-        viewPager.addOnPageChangeListener(viewListener)
+        binding.viewPager.addOnPageChangeListener(viewListener)
 
     }
 
@@ -43,6 +40,7 @@ class ContainerViewPageFragment : Fragment() {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
         override fun onPageSelected(position: Int) {
             iniciarPuntosSlide(position)
+            Toast.makeText(requireContext(), "$position", Toast.LENGTH_SHORT).show()
         }
 
         override fun onPageScrollStateChanged(state: Int) {}
@@ -64,8 +62,9 @@ class ContainerViewPageFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
+
 }

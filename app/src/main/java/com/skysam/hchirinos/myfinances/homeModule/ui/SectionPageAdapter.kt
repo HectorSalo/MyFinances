@@ -10,8 +10,9 @@ class SectionPageAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIO
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> HomeFragment.newInstance()
-            1 -> DetallesHomeFragment.newInstance()
+            1 -> CronologiaFragment.newInstance()
             else -> HomeFragment.newInstance()
         }
     }
+
 }
