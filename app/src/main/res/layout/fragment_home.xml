@@ -7,26 +7,6 @@
     tools:context=".homeModule.ui.HomeFragment">
 
 
-    <Spinner
-        android:id="@+id/spinner_years"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Spinner
-        android:id="@+id/spinner_meses"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/spinner_years"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_balance"
         android:layout_width="0dp"
@@ -36,7 +16,7 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_meses" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <LinearLayout
@@ -127,19 +107,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/ib_transfer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="#00FFFFFF"
-        android:tint="?attr/colorControlNormal"
-        android:contentDescription="@string/texto_vacio"
-        android:src="@drawable/ic_transfer_48"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

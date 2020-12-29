@@ -86,80 +86,21 @@ public class HomeFragment extends Fragment implements HomeView {
         tvSuma = view.findViewById(R.id.textView_suma);
         tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
-        Spinner spinnerMeses = view.findViewById(R.id.spinner_meses);
-        Spinner spinnerYears = view.findViewById(R.id.spinner_years);
-        ImageButton imageButton = view.findViewById(R.id.ib_transfer);
 
-        List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
+       /* List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
         spinnerMeses.setAdapter(adapterMeses);
 
         List<String> listaYears = Arrays.asList(getResources().getStringArray(R.array.years));
         ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYears);
-        spinnerYears.setAdapter(adapterYears);
-
-
-        montoIngresos = 0;
-        montoGastos = 0;
+        spinnerYears.setAdapter(adapterYears);*/
 
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
         yearSelected = calendar.get(Calendar.YEAR);
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        if (mesSelected == 11 && currentDay > 14) {
-            imageButton.setVisibility(View.VISIBLE);
-        }
-
-        if (yearSelected == 2020) {
-            spinnerYears.setSelection(0);
-        }
-        if (yearSelected == 2021) {
-            spinnerYears.setSelection(1);
-        }
-
-        spinnerMeses.setSelection(mesSelected);
-        spinnerMeses.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mesSelected = position;
-                cargarIngresos();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        spinnerYears.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                switch (position) {
-                    case 0:
-                        yearSelected = 2020;
-                        break;
-                    case 1:
-                        yearSelected = 2021;
-                        break;
-                }
-                cargarIngresos();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToNextYearDialog = new MoveToNextYearDialog(yearSelected, homePresenter);
-                moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
-                moveToNextYearDialog.setCancelable(false);
-            }
-        });
+        montoIngresos = 0;
+        montoGastos = 0;
 
         cargarFolios();
 

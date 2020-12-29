@@ -1,9 +1,7 @@
-package com.skysam.hchirinos.myfinances.homeModule.presenter
+package com.skysam.hchirinos.myfinances.homeModule.ui
 
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
 
-interface CronologiaPresenter {
-    fun getCronologia(month: Int, year: Int)
-
+interface CronologiaView {
     fun listCronologia(list: ArrayList<ItemCronologiaConstructor>)
 }

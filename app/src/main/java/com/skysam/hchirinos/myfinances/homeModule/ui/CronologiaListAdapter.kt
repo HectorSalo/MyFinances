@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
-import com.skysam.hchirinos.myfinances.listaGastosModule.ui.ImagenesListasAdapter
-import org.w3c.dom.Text
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class CronologiaListAdapter (private var list: ArrayList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
-    class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+class CronologiaListAdapter(private var list: ArrayList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val concepto: TextView = view.findViewById(R.id.tv_concepto)
         val monto : TextView = view.findViewById(R.id.tv_monto)
         val fecha: TextView = view.findViewById(R.id.tv_fecha)
@@ -27,7 +27,24 @@ class CronologiaListAdapter (private var list: ArrayList<ItemCronologiaConstruct
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val tf = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault())
+        val item = list[position]
+        holder.concepto.text = item.concepto
+
+        if (item.isDolar!!) {
+            holder.monto.text = "$ ${item.monto.toString()}"
+        } else {
+            holder.monto.text = "Bs. ${item.monto.toString()}"
+        }
+
+        holder.fecha.text = tf.format(item.fecha!!)
+
+        if (item.pasivo!!) {
+            holder.imagen.setImageResource(R.drawable.ic_trending_down_24)
+        } else {
+            holder.imagen.setImageResource(R.drawable.ic_trending_up_24)
+        }
+
     }
 
     override fun getItemCount(): Int = list.size

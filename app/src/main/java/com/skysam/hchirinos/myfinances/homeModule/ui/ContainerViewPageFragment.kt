@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
+import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
+import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass
 import java.util.*
 
 
@@ -34,13 +34,44 @@ class ContainerViewPageFragment : Fragment() {
         iniciarPuntosSlide(0)
         binding.viewPager.addOnPageChangeListener(viewListener)
 
+        val calendar = Calendar.getInstance()
+        val mesSelected = calendar[Calendar.MONTH]
+        val yearSelected = calendar[Calendar.YEAR]
+        val currentDay = calendar[Calendar.DAY_OF_MONTH]
+
+        if (mesSelected == 11 && currentDay > 14) {
+            binding.ibTransfer.visibility = View.VISIBLE
+        }
+        val mesString = when (mesSelected) {
+            0-> "Enero"
+            1-> "Febrero"
+            2-> "Marzo"
+            3-> "Abril"
+            4-> "Mayo"
+            5-> "Junio"
+            6-> "Julio"
+            7-> "Agosto"
+            8-> "Septiembre"
+            9-> "Octubre"
+            10-> "Noviembre"
+            11-> "Diciembre"
+            else -> null
+        }
+        binding.tvYear.text = "$yearSelected"
+        binding.tvMes.text = mesString
+
+        binding.ibTransfer.setOnClickListener(View.OnClickListener {
+           /* moveToNextYearDialog = MoveToNextYearDialog(yearSelected, homePresenter)
+            moveToNextYearDialog.show(requireActivity().supportFragmentManager, tag)
+            moveToNextYearDialog.setCancelable(false)*/
+        })
+
     }
 
     private val viewListener: OnPageChangeListener = object : OnPageChangeListener {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
         override fun onPageSelected(position: Int) {
             iniciarPuntosSlide(position)
-            Toast.makeText(requireContext(), "$position", Toast.LENGTH_SHORT).show()
         }
 
         override fun onPageScrollStateChanged(state: Int) {}
