@@ -156,9 +156,10 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                 }
                             }
                         }
+                        homePresenter.statusValorAhorros(true, montototal.toFloat(), montototal.toString())
                     }
                 }).addOnFailureListener(OnFailureListener {
-
+                    homePresenter.statusValorAhorros(false, 0f, "Error al obtener ahorros")
                 })
     }
 
@@ -179,9 +180,10 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                 montototal + montoDetal / valorCotizacion
                             }
                         }
+                        homePresenter.statusValorDeudas(true, montototal.toFloat(), montototal.toString())
                     }
                 }).addOnFailureListener(OnFailureListener {
-
+                    homePresenter.statusValorDeudas(false, 0f, "Error al obtener deudas")
                 })
     }
 
@@ -202,8 +204,10 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                 montototal + montoDetal / valorCotizacion
                             }
                         }
+                        homePresenter.statusValorPrestamos(true, montototal.toFloat(), montototal.toString())
                     }
                 }).addOnFailureListener(OnFailureListener {
+                    homePresenter.statusValorPrestamos(false, 0f, "Error al obtener préstamos")
                 })
     }
 

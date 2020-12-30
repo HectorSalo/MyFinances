@@ -3,7 +3,7 @@
     package="com.skysam.hchirinos.myfinances">
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -16,9 +16,13 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".graficosModule.ui.GraphicsActivity"
+            android:label="@string/title_activity_graphics"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".listaGastosModule.ui.ListaPendientesListActivity"
             android:label="@string/title_activity_lista_gastos"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".listaGastosModule.ui.ListaPendientesDetailActivity"
             android:label="@string/title_listapendientes_detail"

@@ -8,4 +8,8 @@
         android:title="@string/menu_aumento_deuda"
         android:id="@+id/menu_aumento"/>
 
+    <item
+        android:title="@string/menu_historial_pagos"
+        android:id="@+id/menu_historial_pagos"/>
+
 </menu>

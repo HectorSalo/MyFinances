@@ -18,6 +18,8 @@
     <string name="menu_aumento_deuda">Aumentar deuda</string>
     <string name="menu_cobro">Agregar cobranza</string>
     <string name="menu_aumento_prestamo">Aumentar préstamo</string>
+    <string name="menu_historial_pagos">Historial de pagos</string>
+    <string name="menu_historial_cobros">Historial de cobros</string>
 
 
     <string name="pie_ingresos">Ingresos</string>
@@ -144,6 +146,17 @@
 
     <!-- Graficos -->
     <string name="menu_graphs">Gráficos</string>
+    <string name="title_activity_graphics">GraphicsActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
 
 
 </resources>

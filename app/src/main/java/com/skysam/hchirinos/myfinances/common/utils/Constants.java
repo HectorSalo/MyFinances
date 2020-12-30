@@ -21,6 +21,7 @@ public class Constants {
     public static final String BD_ORIGEN = "origen";
     public static final String BD_PRESTAMISTA = "prestamista";
     public static final String BD_FECHA_INGRESO = "fechaIngreso";
+    public static final String BD_FECHA_HISTORIAL = "fechaHistorial";
 
     public static final String BD_LISTA_GASTOS = "listaGastos";
     public static final String BD_TODAS_LISTAS = "todasListas";

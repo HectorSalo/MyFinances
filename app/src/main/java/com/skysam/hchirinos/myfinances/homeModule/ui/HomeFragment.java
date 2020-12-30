@@ -42,12 +42,11 @@ public class HomeFragment extends Fragment implements HomeView {
     private PieChart pieBalance;
     private float montoIngresos, montoGastos;
     private ProgressBar progressBar;
-    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma;
+    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros, tvPrestamos;
     private int mesSelected, yearSelected;
     private LinearLayout linearLayout;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
-    private MoveToNextYearDialog moveToNextYearDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -86,6 +85,9 @@ public class HomeFragment extends Fragment implements HomeView {
         tvSuma = view.findViewById(R.id.textView_suma);
         tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
+        tvDeudas = view.findViewById(R.id.tv_total_deudas);
+        tvAhorros = view.findViewById(R.id.tv_total_ahorros);
+        tvPrestamos = view.findViewById(R.id.tv_total_prestamos);
 
        /* List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
         ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
@@ -115,6 +117,19 @@ public class HomeFragment extends Fragment implements HomeView {
     private void cargarGastos() {
         homePresenter.getGastos(yearSelected, mesSelected);
     }
+
+    private void cargarDeudas() {
+        homePresenter.getDeudas(yearSelected, mesSelected);
+    }
+
+    private void cargarAhorros() {
+        homePresenter.getAhorros(yearSelected, mesSelected);
+    }
+
+    private void cargarPrestamos() {
+        homePresenter.getPrestamos(yearSelected, mesSelected);
+    }
+
 
     private void cargarFolios() {
 
@@ -201,6 +216,7 @@ public class HomeFragment extends Fragment implements HomeView {
     public void statusValorGastos(boolean statusOk, float gastos, @NotNull String message) {
         if (statusOk) {
             montoGastos = gastos;
+            cargarDeudas();
             cargarFolios();
         } else {
             montoGastos = gastos;
@@ -211,7 +227,36 @@ public class HomeFragment extends Fragment implements HomeView {
 
     @Override
     public void statusMoveNextYear(boolean statusOk, @NotNull String message) {
-        moveToNextYearDialog.dismiss();
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void statusValorDeudas(boolean statusOk, float deudas, @NotNull String message) {
+        if (statusOk) {
+            tvDeudas.setText("Deudas hasta la fecha: $" + message);
+            cargarPrestamos();
+        } else {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorPrestamos(boolean statusOk, float prestamos, @NotNull String message) {
+        if (statusOk) {
+            tvPrestamos.setText("Préstamos hasta la fecha: $" + message);
+            cargarAhorros();
+        } else {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void statusValorAhorros(boolean statusOk, float ahorros, @NotNull String message) {
+        if (statusOk) {
+            tvAhorros.setText("Ahorros hasta la fecha: $" + message);
+            cargarAhorros();
+        } else {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 }

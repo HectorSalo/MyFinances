@@ -7,5 +7,8 @@
     <item
         android:title="@string/menu_aumento_prestamo"
         android:id="@+id/menu_aumento"/>
+    <item
+        android:title="@string/menu_historial_cobros"
+        android:id="@+id/menu_historial_cobros"/>
 
 </menu>
