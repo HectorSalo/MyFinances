@@ -3,7 +3,9 @@ package com.skysam.hchirinos.myfinances.homeModule.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -119,9 +121,13 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        if (menu instanceof MenuBuilder) {
+            ((MenuBuilder) menu).setOptionalIconsVisible(true);
+        }
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
         itemBuscar = menu.findItem(R.id.menu_buscar);
         itemBuscar.setVisible(false);

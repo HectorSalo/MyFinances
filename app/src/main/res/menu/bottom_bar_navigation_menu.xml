@@ -12,7 +12,7 @@
     <item
         android:id="@+id/menu_ahorros"
         android:title="@string/menu_ahorros"
-        android:icon="@drawable/ic_ahorros_24dp"/>
+        android:icon="@drawable/ic_ahorros_24"/>
     <item
         android:id="@+id/menu_prestamos"
         android:title="@string/menu_prestamos"

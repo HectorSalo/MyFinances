@@ -5,36 +5,27 @@
     tools:context=".homeModule.ui.HomeActivity">
 
     <item
-        android:id="@+id/menu_ajustes"
-        android:title=""
-        android:icon="@drawable/ic_add_36dp"
-        app:showAsAction="always">
-
-        <menu>
-            <item
-                android:title="@string/menu_ajustes"
-                android:icon="@drawable/ic_add_36dp"
-                android:orderInCategory="100"
-                android:id="@+id/test_menu"/>
-        </menu>
-    </item>
-    <item
         android:id="@+id/menu_buscar"
         android:title="@string/texto_vacio"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"
         android:icon="@drawable/ic_search_24"/>
     <item
-        android:id="@+id/menu_lista_gastos"
-        android:icon="@drawable/ic_list_gastos_24"
-        android:title="@string/texto_vacio"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/menu_calculadora"
         android:icon="@drawable/ic_calculator_24"
         android:title="@string/texto_vacio"
         app:showAsAction="always" />
-
-
-
+    <item
+        android:id="@+id/menu_graphs"
+        android:icon="@drawable/ic_graphs_24"
+        android:title="@string/menu_graphs"/>
+    <item
+        android:id="@+id/menu_lista_gastos"
+        android:icon="@drawable/ic_lista_gasto_24"
+        android:title="@string/title_activity_lista_gastos" />
+    <item
+        android:id="@+id/menu_ajustes"
+        android:title="@string/menu_ajustes"
+        android:icon="@drawable/ic_settings_24"
+        />
 </menu>

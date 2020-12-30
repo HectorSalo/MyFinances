@@ -142,5 +142,8 @@
     <!-- Cronologia Fragment -->
     <string name="sin_items_cronologia">No tiene transacciones este mes</string>
 
+    <!-- Graficos -->
+    <string name="menu_graphs">Gráficos</string>
+
 
 </resources>
