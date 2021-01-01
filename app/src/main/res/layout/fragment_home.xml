@@ -12,7 +12,7 @@
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_balance"
         android:layout_width="0dp"
-        android:layout_height="350dp"
+        android:layout_height="@dimen/dimen_charts"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"

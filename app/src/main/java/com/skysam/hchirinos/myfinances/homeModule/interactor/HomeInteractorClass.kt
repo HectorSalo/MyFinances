@@ -145,15 +145,12 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             val date = document.getDate(Constants.BD_FECHA_INGRESO)
                             val calendar = Calendar.getInstance()
                             calendar.time = date!!
-                            val mesItemAhorro = calendar.get(Calendar.MONTH)
-                            if (month >= mesItemAhorro) {
-                                val montoDetal = document.getDouble(Constants.BD_MONTO)!!
-                                val dolar = document.getBoolean(Constants.BD_DOLAR)!!
-                                montototal += if (dolar) {
-                                    montoDetal
-                                } else {
-                                    montoDetal / valorCotizacion
-                                }
+                            val montoDetal = document.getDouble(Constants.BD_MONTO)!!
+                            val dolar = document.getBoolean(Constants.BD_DOLAR)!!
+                            montototal += if (dolar) {
+                                montoDetal
+                            } else {
+                                montoDetal / valorCotizacion
                             }
                         }
                         homePresenter.statusValorAhorros(true, montototal.toFloat(), montototal.toString())
@@ -244,7 +241,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                             }
                                         }
 
-                                        when(tipoFrecuencia) {
+                                        when (tipoFrecuencia) {
                                             "Dias" -> {
                                                 calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
                                             }
@@ -287,24 +284,74 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                             if (activo == null || activo) {
                                 if (tipoFrecuencia != null) {
-                                    val docData: MutableMap<String, Any?> = HashMap()
-                                    docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
-                                    docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
-                                    val fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL)
-                                    docData[Constants.BD_FECHA_INCIAL] = fechaInicial
-                                    docData[Constants.BD_FECHA_FINAL] = doc.getDate(Constants.BD_FECHA_FINAL)
-                                    docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
-                                    docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
-                                    docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
-                                    docData[Constants.BD_MES_ACTIVO] = true
+                                    var mesC: Int = 0
+                                    var dayC: Int = 0
+                                    val calendar = Calendar.getInstance()
+                                    val fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
+                                    if (fechaFinal != null) {
+                                        calendar.time = fechaFinal
+                                        mesC = calendar.get(Calendar.MONTH)
+                                        dayC = calendar.get(Calendar.DAY_OF_MONTH)
+                                    }
 
-                                    for (j in 0..11) {
-                                        FirebaseFirestore.getIngresosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
-                                                .set(docData)
-                                                .addOnSuccessListener {  }
-                                                .addOnFailureListener {
-                                                    homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
+                                    if (fechaFinal == null || (mesC == 11 && dayC == 31)) {
+                                        val calendarFinal = Calendar.getInstance()
+                                        calendarFinal.set(year+1, 11, 31)
+                                        var fechaInicial: Date? = null
+
+                                        var mesInicial = 0
+                                        var yearInicial = 0
+                                        val calendarInicial = Calendar.getInstance()
+                                        calendarInicial.time = doc.getDate(Constants.BD_FECHA_INCIAL)!!
+                                        val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
+                                        val duracionFrecuenciaInt = duracionFrecuencia.toInt()
+
+                                        mesInicial = calendarInicial[Calendar.MONTH]
+                                        yearInicial = calendarInicial[Calendar.YEAR]
+
+                                        while (mesInicial <= 11 && yearInicial <= (year+1)) {
+                                            if (yearInicial == (year+1)) {
+                                                fechaInicial = calendarInicial.time
+                                            }
+
+                                            when(tipoFrecuencia) {
+                                                "Dias" -> {
+                                                    calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
                                                 }
+                                                "Semanas" -> {
+                                                    calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
+                                                }
+                                                "Meses" -> {
+                                                    calendarInicial.add(Calendar.MONTH, duracionFrecuenciaInt)
+                                                }
+                                            }
+                                            if (yearInicial != (year+1)) {
+                                                mesInicial = calendarInicial[Calendar.MONTH]
+                                                yearInicial = calendarInicial[Calendar.YEAR]
+                                            } else {
+                                                mesInicial = 13
+                                            }
+                                        }
+
+
+                                        val docData: MutableMap<String, Any?> = HashMap()
+                                        docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                        docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                        docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+                                        docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
+                                        docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                                        docData[Constants.BD_MES_ACTIVO] = true
+                                        docData[Constants.BD_FECHA_FINAL] = calendarFinal.time
+                                        docData[Constants.BD_FECHA_INCIAL] = fechaInicial
+
+                                        for (j in 0..11) {
+                                            FirebaseFirestore.getIngresosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                                    .set(docData)
+                                                    .addOnSuccessListener {  }
+                                                    .addOnFailureListener {
+                                                        homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
+                                                    }
+                                        }
                                     }
                                 }
                             }
@@ -389,24 +436,75 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                             if (activo == null || activo) {
                                 if (tipoFrecuencia != null) {
-                                    val docData: MutableMap<String, Any?> = HashMap()
-                                    docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
-                                    docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
-                                    val fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL)
-                                    docData[Constants.BD_FECHA_INCIAL] = fechaInicial
-                                    docData[Constants.BD_FECHA_FINAL] = doc.getDate(Constants.BD_FECHA_FINAL)
-                                    docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
-                                    docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
-                                    docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
-                                    docData[Constants.BD_MES_ACTIVO] = true
+                                    var mesC: Int = 0
+                                    var dayC: Int = 0
+                                    val calendar = Calendar.getInstance()
+                                    val fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
+                                    if (fechaFinal != null) {
+                                        calendar.time = fechaFinal
+                                        mesC = calendar.get(Calendar.MONTH)
+                                        dayC = calendar.get(Calendar.DAY_OF_MONTH)
+                                    }
 
-                                    for (j in 0..11) {
-                                        FirebaseFirestore.getGastosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
-                                                .set(docData)
-                                                .addOnSuccessListener {  }
-                                                .addOnFailureListener {
-                                                    homePresenter.statusMoveNextYear(false, "Error al copiar los Gastos. Intente más tarde")
+
+                                    if (fechaFinal == null || (mesC == 11 && dayC == 31)) {
+                                        val calendarFinal = Calendar.getInstance()
+                                        calendarFinal.set(year+1, 11, 31)
+                                        var fechaInicial: Date? = null
+
+                                        var mesInicial: Int
+                                        var yearInicial: Int
+                                        val calendarInicial = Calendar.getInstance()
+                                        calendarInicial.time = doc.getDate(Constants.BD_FECHA_INCIAL)!!
+                                        val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
+                                        val duracionFrecuenciaInt = duracionFrecuencia.toInt()
+
+                                        mesInicial = calendarInicial[Calendar.MONTH]
+                                        yearInicial = calendarInicial[Calendar.YEAR]
+
+                                        while (mesInicial <= 11 && yearInicial <= (year+1)) {
+                                            if (yearInicial == (year+1)) {
+                                                fechaInicial = calendarInicial.time
+                                            }
+
+                                            when(tipoFrecuencia) {
+                                                "Dias" -> {
+                                                    calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
                                                 }
+                                                "Semanas" -> {
+                                                    calendarInicial.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
+                                                }
+                                                "Meses" -> {
+                                                    calendarInicial.add(Calendar.MONTH, duracionFrecuenciaInt)
+                                                }
+                                            }
+                                            if (yearInicial != (year+1)) {
+                                                mesInicial = calendarInicial[Calendar.MONTH]
+                                                yearInicial = calendarInicial[Calendar.YEAR]
+                                            } else {
+                                                mesInicial = 13
+                                            }
+                                        }
+
+
+                                        val docData: MutableMap<String, Any?> = HashMap()
+                                        docData[Constants.BD_CONCEPTO] = doc.getString(Constants.BD_CONCEPTO)
+                                        docData[Constants.BD_MONTO] = doc.getDouble(Constants.BD_MONTO)
+                                        docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
+                                        docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
+                                        docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
+                                        docData[Constants.BD_MES_ACTIVO] = true
+                                        docData[Constants.BD_FECHA_FINAL] = calendarFinal.time
+                                        docData[Constants.BD_FECHA_INCIAL] = fechaInicial
+
+                                        for (j in 0..11) {
+                                            FirebaseFirestore.getGastosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                                    .set(docData)
+                                                    .addOnSuccessListener {  }
+                                                    .addOnFailureListener {
+                                                        homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
+                                                    }
+                                        }
                                     }
                                 }
                             }

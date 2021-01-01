@@ -89,14 +89,6 @@ public class HomeFragment extends Fragment implements HomeView {
         tvAhorros = view.findViewById(R.id.tv_total_ahorros);
         tvPrestamos = view.findViewById(R.id.tv_total_prestamos);
 
-       /* List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
-        spinnerMeses.setAdapter(adapterMeses);
-
-        List<String> listaYears = Arrays.asList(getResources().getStringArray(R.array.years));
-        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYears);
-        spinnerYears.setAdapter(adapterYears);*/
-
         Calendar calendar = Calendar.getInstance();
         mesSelected = calendar.get(Calendar.MONTH);
         yearSelected = calendar.get(Calendar.YEAR);

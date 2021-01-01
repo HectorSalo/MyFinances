@@ -5,16 +5,29 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:id="@+id/nav_totales"
+            android:icon="@drawable/ic_approximately_equal_24"
+            android:title="@string/label_nav_totales" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/nav_ingresos"
+            android:icon="@drawable/ic_ingresos_24dp"
+            android:title="@string/menu_ingresos"/>
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/nav_ahorros"
+            android:icon="@drawable/ic_ahorros_24"
+            android:title="@string/menu_ahorros" />
+
+        <item
+            android:id="@+id/nav_prestamos"
+            android:icon="@drawable/ic_prestamos_24dp"
+            android:title="@string/menu_prestamos" />
+        <item
+            android:id="@+id/nav_gastos"
+            android:icon="@drawable/ic_egresos_24dp"
+            android:title="@string/menu_egresos" />
+        <item
+            android:id="@+id/nav_deudas"
+            android:icon="@drawable/ic_deudas_24dp"
+            android:title="@string/menu_deudas" />
     </group>
 </menu>

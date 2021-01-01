@@ -399,7 +399,7 @@ public class GastosFragment extends Fragment {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(fechaFinal);
             final int mesFinal = calendar.get(Calendar.MONTH);
-            for (int i = mesSelected; i < mesFinal; i++) {
+            for (int i = mesSelected; i <= mesFinal; i++) {
                 final int finalI = i;
                 db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()

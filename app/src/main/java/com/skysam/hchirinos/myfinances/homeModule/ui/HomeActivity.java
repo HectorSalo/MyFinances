@@ -27,6 +27,7 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.deudasModule.ui.DeudasFragment;
 import com.skysam.hchirinos.myfinances.gastosModule.ui.GastosFragment;
 import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AhorrosFragment;
+import com.skysam.hchirinos.myfinances.graficosModule.ui.GraphicsActivity;
 import com.skysam.hchirinos.myfinances.ingresosModule.ui.IngresosFragment;
 import com.skysam.hchirinos.myfinances.prestamosModule.ui.PrestamosFragment;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.CalculadoraActivity;
@@ -155,6 +156,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 break;
             case R.id.menu_lista_gastos:
                 startActivity(new Intent(this, ListaPendientesListActivity.class));
+                break;
+            case R.id.menu_graphs:
+                startActivity(new Intent(this, GraphicsActivity.class));
                 break;
             default:
                 break;

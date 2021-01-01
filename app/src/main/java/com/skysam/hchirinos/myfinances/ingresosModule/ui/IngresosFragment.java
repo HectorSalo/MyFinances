@@ -299,7 +299,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(fechaFinal);
             final int mesFinal = calendar.get(Calendar.MONTH);
-            for (int i = mesSelected; i < mesFinal; i++) {
+            for (int i = mesSelected; i <= mesFinal; i++) {
                 final int finalI = i;
                 db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()
