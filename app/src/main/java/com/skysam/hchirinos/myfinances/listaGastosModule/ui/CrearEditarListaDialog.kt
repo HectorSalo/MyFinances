@@ -175,7 +175,13 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
                 .update(Constants.BD_NOMBRE, nombre, Constants.BD_IMAGEN, imagen)
                 .addOnSuccessListener {
                     if (!imagenVieja.equals(imagen)) {
-                        deleteImageOld()
+                        var x = 0
+                        for (j in 0 until imagenesListas.size) {
+                           if (imagenesListas[j].photoUrl.equals(imagenVieja)) {
+                               x += 1
+                           }
+                        }
+                        if (x == 0) deleteImageOld()
                     }
                     updateSuccess(nombre)
                 }

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -29,11 +30,17 @@ class CerrarSesionDialog : DialogFragment() {
     }
 
     private fun cerrarSesion() {
-        FirebaseAuth.getInstance().signOut()
-        configurarPreferencesDefault()
+        val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)
+        editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
+        editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
+        editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
+        editor.commit()
 
         var providerId = ""
-        user?.let {
+        user.let {
             for (profile in it.providerData) {
                 providerId = profile.providerId
             }
@@ -48,24 +55,19 @@ class CerrarSesionDialog : DialogFragment() {
             val googleSingInClient : GoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
             googleSingInClient.signOut().addOnSuccessListener {
-                val intent = Intent(requireContext(), InicSesionActivity::class.java)
-                startActivity(intent)
+                close()
+            }.addOnFailureListener { e->
+                Log.e("Msg", e.toString())
             }
         } else {
-            val intent = Intent(requireContext(), InicSesionActivity::class.java)
-            startActivity(intent)
+            close()
         }
     }
 
-    private fun configurarPreferencesDefault() {
-        val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)
-        editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
-        editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
-        editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
-        editor.apply()
+    private fun close() {
+        FirebaseAuth.getInstance().signOut()
+        val intent = Intent(requireContext(), InicSesionActivity::class.java)
+        startActivity(intent)
     }
 }
 

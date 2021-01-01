@@ -91,40 +91,42 @@ class ListaPendientesDetailFragment : Fragment() {
     }
 
     private fun cargarLista() {
-        items = ArrayList()
-        binding.progressBar.visibility = View.VISIBLE
-        val reference = db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista!!)
+        if (_binding != null) {
+            items = ArrayList()
+            binding.progressBar.visibility = View.VISIBLE
+            val reference = db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista!!)
 
-        reference.orderBy(Constants.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
-                .get().addOnSuccessListener { result ->
-                    for (document in result) {
-                        val item = ItemGastosConstructor()
+            reference.orderBy(Constants.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
+                    .get().addOnSuccessListener { result ->
+                        for (document in result) {
+                            val item = ItemGastosConstructor()
 
-                        item.idItem = document.id
-                        item.idListItem = idLista
-                        item.concepto = document.getString(Constants.BD_CONCEPTO)
-                        item.montoAproximado = document.getDouble(Constants.BD_MONTO)!!
-                        item.fechaIngreso = document.getDate(Constants.BD_FECHA_INGRESO)
-                        item.fechaAproximada = document.getDate(Constants.BD_FECHA_APROXIMADA)
+                            item.idItem = document.id
+                            item.idListItem = idLista
+                            item.concepto = document.getString(Constants.BD_CONCEPTO)
+                            item.montoAproximado = document.getDouble(Constants.BD_MONTO)!!
+                            item.fechaIngreso = document.getDate(Constants.BD_FECHA_INGRESO)
+                            item.fechaAproximada = document.getDate(Constants.BD_FECHA_APROXIMADA)
 
-                        items.add(item)
+                            items.add(item)
+                        }
+                        adapter.updateList(items)
+
+                        binding.progressBar.visibility = View.GONE
+
+                        if (items.isNullOrEmpty()) {
+                            binding.tvInfoLista.visibility = View.VISIBLE
+                            binding.rvItemsLista.visibility = View.GONE
+                        } else {
+                            binding.tvInfoLista.visibility = View.GONE
+                            binding.rvItemsLista.visibility = View.VISIBLE
+                        }
                     }
-                    adapter.updateList(items)
-
-                    binding.progressBar.visibility = View.GONE
-
-                    if (items.isNullOrEmpty()) {
-                        binding.tvInfoLista.visibility = View.VISIBLE
-                        binding.rvItemsLista.visibility = View.GONE
-                    } else {
-                        binding.tvInfoLista.visibility = View.GONE
-                        binding.rvItemsLista.visibility = View.VISIBLE
+                    .addOnFailureListener {
+                        Toast.makeText(context, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
+                        binding.progressBar.visibility = View.GONE
                     }
-                }
-                .addOnFailureListener {
-                    Toast.makeText(context, getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show()
-                    binding.progressBar.visibility = View.GONE
-                }
+        }
 
     }
 

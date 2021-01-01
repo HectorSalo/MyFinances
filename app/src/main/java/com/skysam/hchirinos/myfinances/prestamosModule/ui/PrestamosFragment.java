@@ -29,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
@@ -73,8 +74,7 @@ public class PrestamosFragment extends Fragment {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                requireActivity().getSupportFragmentManager().
-                        beginTransaction().replace(R.id.container_fragments, new HomeFragment(), "home").commit();
+                ((HomeActivity) requireActivity()).goHome();
             }
         };
 

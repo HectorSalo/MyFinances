@@ -183,12 +183,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                 int id = menuItem.getItemId();
                 switch (id){
                     case R.id.menu_home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, containerViewPage, "home").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
-                        itemBuscar.setVisible(false);
-                        agregar = 0;
-                        bottomSheetDialog.dismiss();
+                        goHome();
                         break;
                     case R.id.menu_ingresos:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
@@ -275,6 +270,15 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
 
     }
 
+    public void goHome() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, containerViewPage, "home").commit();
+        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+        floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
+        itemBuscar.setVisible(false);
+        agregar = 0;
+        bottomSheetDialog.dismiss();
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -312,4 +316,5 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onClick(View view) {
         floatingActionButton.setVisibility(View.GONE);
     }
+
 }

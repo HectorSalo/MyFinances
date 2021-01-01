@@ -26,9 +26,9 @@ class LoginInteractorClass(private val loginPresenter: LoginPresenter, val conte
 
     override fun authWithGoogle(acct: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
-        if (FirebaseAuthentication.getInstance().signInWithCredential(credential).isSuccessful) {
+        FirebaseAuthentication.getInstance().signInWithCredential(credential).addOnSuccessListener {
             loginPresenter.authWithGoogleStatus(true)
-        } else {
+        }.addOnFailureListener {
             loginPresenter.authWithGoogleStatus(false)
         }
     }
