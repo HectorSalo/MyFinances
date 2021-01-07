@@ -19,7 +19,8 @@ class LoginInteractorClass(private val loginPresenter: LoginPresenter, val conte
     }
 
     override fun sendEmailRecovery(email: String) {
-        if (FirebaseAuthentication.getInstance().sendPasswordResetEmail(email).isSuccessful) {
+        FirebaseAuthentication.getInstance().sendPasswordResetEmail(email)
+                .addOnSuccessListener{
           loginPresenter.emailRecoverySuccesfully()
         }
     }

@@ -30,6 +30,7 @@ class CerrarSesionDialog : DialogFragment() {
     }
 
     private fun cerrarSesion() {
+        FirebaseAuth.getInstance().signOut()
         val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
@@ -54,18 +55,13 @@ class CerrarSesionDialog : DialogFragment() {
 
             val googleSingInClient : GoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
-            googleSingInClient.signOut().addOnSuccessListener {
-                close()
-            }.addOnFailureListener { e->
-                Log.e("Msg", e.toString())
-            }
-        } else {
-            close()
+            googleSingInClient.signOut()
+
         }
+        close()
     }
 
     private fun close() {
-        FirebaseAuth.getInstance().signOut()
         val intent = Intent(requireContext(), InicSesionActivity::class.java)
         startActivity(intent)
     }

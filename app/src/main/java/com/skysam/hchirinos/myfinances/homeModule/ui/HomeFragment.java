@@ -246,7 +246,6 @@ public class HomeFragment extends Fragment implements HomeView {
     public void statusValorAhorros(boolean statusOk, float ahorros, @NotNull String message) {
         if (statusOk) {
             tvAhorros.setText("Ahorros hasta la fecha: $" + message);
-            cargarAhorros();
         } else {
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
