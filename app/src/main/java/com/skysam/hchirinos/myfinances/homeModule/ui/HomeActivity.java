@@ -4,16 +4,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SearchView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -34,6 +39,8 @@ import com.skysam.hchirinos.myfinances.ui.activityGeneral.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ajustesModule.ui.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity;
 import com.skysam.hchirinos.myfinances.listaGastosModule.ui.ListaPendientesListActivity;
+
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
@@ -136,6 +143,14 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
         searchView.setOnSearchClickListener(this);
+
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View view = findViewById(R.id.menu_calculadora);
+                configTutorial(view);
+            }
+        }, 2000);
         return true;
     }
 
@@ -315,6 +330,25 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public void onClick(View view) {
         floatingActionButton.setVisibility(View.GONE);
+    }
+
+
+    private void configTutorial(View view) {
+        new MaterialShowcaseView.Builder(this)
+                .setContentTextColor(ContextCompat.getColor(this, R.color.color_message_tutorial))
+                .setDismissTextColor(ContextCompat.getColor(this, android.R.color.white))
+                .setMaskColour(ContextCompat.getColor(this, R.color.color_background_tutorial))
+                .setTarget(view)
+                .setTargetTouchable(true)
+                .setContentText(R.string.calc_tuto_message)
+                .setDismissText(R.string.btn_tuto_ok)
+                .setDismissStyle(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD_ITALIC))
+                .singleUse(getString(R.string.calc_tuto_id))
+                .setDelay(2000)
+                .setFadeDuration(600)
+                .setDismissOnTargetTouch(true)
+                .setDismissOnTouch(false)
+                .show();
     }
 
 }

@@ -232,7 +232,7 @@ public class GastosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
         listaGastos = new ArrayList<>();
-        gastosAdapter = new GastosAdapter(listaGastos, getContext());
+        gastosAdapter = new GastosAdapter(listaGastos, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(gastosAdapter);

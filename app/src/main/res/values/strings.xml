@@ -155,4 +155,14 @@
     <string name="label_nav_totales">Totales</string>
 
 
+    <!-- Tutorial -->
+    <string name="btn_tuto_ok">Entendido</string>
+    <string name="calc_tuto_message">Con esta función podrá convertir dólares a bolívares o viceversa con la tasa actualizada.</string>
+    <string name="calc_tuto_id">tutoCalc01</string>
+    <string name="swipe_tuto_message">Al deslizar a la derecha podrá eliminar el ítem. Al hacerlo hacia la izquierda, lo editará</string>
+    <string name="swipe_ingresos_tuto_id">tutoSwIn01</string>
+    <string name="swipe_ahorros_tuto_id">tutoSwAh01</string>
+    <string name="swipe_gastos_tuto_id">tutoSwGa01</string>
+
+
 </resources>

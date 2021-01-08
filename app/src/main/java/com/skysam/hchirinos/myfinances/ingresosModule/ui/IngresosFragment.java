@@ -110,7 +110,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
         recyclerView = view.findViewById(R.id.rv_ingresos);
 
         listaIngresos = new ArrayList<>();
-        ingresosAdapter = new IngresosAdapter(listaIngresos, getContext());
+        ingresosAdapter = new IngresosAdapter(listaIngresos, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ingresosAdapter);

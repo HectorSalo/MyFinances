@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#4F001C</color>
     <color name="colorAccent">#B5436D</color>
 
+    <color name="color_background_tutorial">#F2515659</color>
+    <color name="color_message_tutorial">#00E5FF</color>
+
 
 
 

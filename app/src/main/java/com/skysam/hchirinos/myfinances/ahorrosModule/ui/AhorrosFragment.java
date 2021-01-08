@@ -106,7 +106,7 @@ public class AhorrosFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_ahorros);
 
-        ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext());
+        ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ahorrosAdapter);
@@ -253,7 +253,7 @@ public class AhorrosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         String userID = user.getUid();
         listaAhorros = new ArrayList<>();
-        ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext());
+        ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ahorrosAdapter);
