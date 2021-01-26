@@ -2,7 +2,6 @@ package com.skysam.hchirinos.myfinances.gastosModule.ui;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,8 +23,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,7 +48,12 @@ public class AgregarGastoFragment extends Fragment {
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia, spinnerEscogerMes;
-    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbGastoFijo, rbGastoMes;
+    private RadioButton rbBs;
+    private RadioButton rbDias;
+    private RadioButton rbSemanas;
+    private RadioButton rbMeses;
+    private RadioButton rbGastoFijo;
+    private RadioButton rbGastoMes;
     private TextView tvFechaInicio, tvFechaFinal;
     private Date fechaSelecInicial, fechaSelecFinal;
     private FirebaseUser user;
@@ -96,7 +97,7 @@ public class AgregarGastoFragment extends Fragment {
         etMonto = view.findViewById(R.id.et_monto);
         etMontoLayout = view.findViewById(R.id.outlined_monto);
         rbBs = view.findViewById(R.id.radioButton_bolivares);
-        rbDolar = view.findViewById(R.id.radioButton_dolares);
+        RadioButton rbDolar = view.findViewById(R.id.radioButton_dolares);
         rbDias = view.findViewById(R.id.radioButton_dias);
         rbSemanas = view.findViewById(R.id.radioButton_semanas);
         rbMeses = view.findViewById(R.id.radioButton_meses);
@@ -118,13 +119,13 @@ public class AgregarGastoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         spinnerEscogerMes = view.findViewById(R.id.spinner_escoger_mes);
 
         List<String> listaEscogerMes = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterEscogerMes = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaEscogerMes);
+        ArrayAdapter<String> adapterEscogerMes = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaEscogerMes);
         spinnerEscogerMes.setAdapter(adapterEscogerMes);
         spinnerEscogerMes.setSelection(mesActual);
 
@@ -133,51 +134,33 @@ public class AgregarGastoFragment extends Fragment {
         fechaSelecFinal = new Date();
         fechaSelecFinal = null;
 
-        radioGasto.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radioButton_gasto_fijo:
-                        linearLayoutEscogerMes.setVisibility(View.GONE);
-                        linearLayoutFecha.setVisibility(View.VISIBLE);
-                        linearLayoutFrecuencia.setVisibility(View.VISIBLE);
-                        radioGroupFrecuencia.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.radioButton_gasto_mes:
-                        linearLayoutEscogerMes.setVisibility(View.VISIBLE);
-                        linearLayoutFecha.setVisibility(View.GONE);
-                        linearLayoutFrecuencia.setVisibility(View.GONE);
-                        radioGroupFrecuencia.setVisibility(View.GONE);
-                        break;
-                    default:
-                        break;
-                }
+        radioGasto.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radioButton_gasto_fijo:
+                    linearLayoutEscogerMes.setVisibility(View.GONE);
+                    linearLayoutFecha.setVisibility(View.VISIBLE);
+                    linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+                    radioGroupFrecuencia.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.radioButton_gasto_mes:
+                    linearLayoutEscogerMes.setVisibility(View.VISIBLE);
+                    linearLayoutFecha.setVisibility(View.GONE);
+                    linearLayoutFrecuencia.setVisibility(View.GONE);
+                    radioGroupFrecuencia.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
             }
         });
 
         btnGuardar = view.findViewById(R.id.button_first);
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validarDatos();
-            }
-        });
+        btnGuardar.setOnClickListener(view1 -> validarDatos());
 
         ibFechaInicial = view.findViewById(R.id.imageButton_inicial);
-        ibFechaInicial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                seleccionarFecha(true);
-            }
-        });
+        ibFechaInicial.setOnClickListener(v -> seleccionarFecha(true));
 
         ibFechaFinal = view.findViewById(R.id.imageButton_final);
-        ibFechaFinal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                crearDialogFechaFinal();
-            }
-        });
+        ibFechaFinal.setOnClickListener(view12 -> crearDialogFechaFinal());
 
         if (getArguments() != null) {
             String concepto = getArguments().getString(Constants.BD_CONCEPTO);
@@ -253,15 +236,11 @@ public class AgregarGastoFragment extends Fragment {
 
     private void guardarDatosFijos(String concepto) {
         progressBar.setVisibility(View.VISIBLE);
-        boolean dolar = false;
+        boolean dolar;
         String tipoFrecuencia = null;
         int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
 
-        if (rbBs.isChecked()) {
-            dolar = false;
-        } else if (rbDolar.isChecked()) {
-            dolar = true;
-        }
+        dolar = !rbBs.isChecked();
 
         if (rbDias.isChecked()) {
             tipoFrecuencia = "Dias";
@@ -287,32 +266,26 @@ public class AgregarGastoFragment extends Fragment {
             final int finalJ = j;
             db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (finalJ == mesSelecFinal) {
-                                if (itemListGastos) {
-                                    borrarItemListGastos();
-                                } else {
-                                    progressBar.setVisibility(View.GONE);
-                                    requireActivity().finish();
-                                }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot written succesfully");
+                        if (finalJ == mesSelecFinal) {
+                            if (itemListGastos) {
+                                borrarItemListGastos();
+                            } else {
+                                progressBar.setVisibility(View.GONE);
+                                requireActivity().finish();
                             }
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                            Toast.makeText(getContext(), "Error al guardar en el mes " + (finalJ + 1) + ". Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etConceptoLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnGuardar.setEnabled(true);
-                            ibFechaInicial.setEnabled(true);
-                            ibFechaFinal.setEnabled(true);
-                        }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar en el mes " + (finalJ + 1) + ". Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
+                        ibFechaInicial.setEnabled(true);
+                        ibFechaFinal.setEnabled(true);
                     });
         }
     }
@@ -323,11 +296,7 @@ public class AgregarGastoFragment extends Fragment {
         boolean dolar;
         int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
 
-        if (rbBs.isChecked()) {
-            dolar = false;
-        } else {
-            dolar = true;
-        }
+        dolar = !rbBs.isChecked();
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -345,30 +314,24 @@ public class AgregarGastoFragment extends Fragment {
 
             db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (itemListGastos) {
-                                borrarItemListGastos();
-                            } else {
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot written succesfully");
+                        if (itemListGastos) {
+                            borrarItemListGastos();
+                        } else {
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                            Toast.makeText(getContext(), "Error al guardar en el mes. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etConceptoLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnGuardar.setEnabled(true);
-                            ibFechaInicial.setEnabled(true);
-                            ibFechaFinal.setEnabled(true);
-                        }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar en el mes. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
+                        ibFechaInicial.setEnabled(true);
+                        ibFechaFinal.setEnabled(true);
                     });
 
     }
@@ -386,20 +349,17 @@ public class AgregarGastoFragment extends Fragment {
         int month = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                if (inicial) {
-                    calendarSelecInicial.set(anualActual, month, dayOfMonth);
-                    mesSelecInicial = month;
-                    fechaSelecInicial = calendarSelecInicial.getTime();
-                    tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
-                } else {
-                    calendarSelecFinal.set(anualActual, month, dayOfMonth);
-                    mesSelecFinal = month;
-                    fechaSelecFinal = calendarSelecFinal.getTime();
-                    tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-                }
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
+            if (inicial) {
+                calendarSelecInicial.set(anualActual, month1, dayOfMonth);
+                mesSelecInicial = month1;
+                fechaSelecInicial = calendarSelecInicial.getTime();
+                tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+            } else {
+                calendarSelecFinal.set(anualActual, month1, dayOfMonth);
+                mesSelecFinal = month1;
+                fechaSelecFinal = calendarSelecFinal.getTime();
+                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
             }
         }, year, month, day);
         datePickerDialog.getDatePicker().setMaxDate(calendarMax.getTimeInMillis());
@@ -410,20 +370,17 @@ public class AgregarGastoFragment extends Fragment {
     private void crearDialogFechaFinal() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Seleccione")
-                .setItems(R.array.opciones_fin_periodo, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i) {
-                            case 0:
-                                calendarSelecFinal.set(anualActual, 11, 31);
-                                mesSelecFinal = 11;
-                                fechaSelecFinal = calendarSelecFinal.getTime();
-                                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-                                break;
-                            case 1:
-                                seleccionarFecha(false);
-                                break;
-                        }
+                .setItems(R.array.opciones_fin_periodo, (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            calendarSelecFinal.set(anualActual, 11, 31);
+                            mesSelecFinal = 11;
+                            fechaSelecFinal = calendarSelecFinal.getTime();
+                            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                            break;
+                        case 1:
+                            seleccionarFecha(false);
+                            break;
                     }
                 }).show();
     }
@@ -432,19 +389,13 @@ public class AgregarGastoFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                        actualizarCantidadItems();
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                    actualizarCantidadItems();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Delete", "Error deleting document", e);
-                        Toast.makeText(getContext(), "Error al borrar el item. Intente nuevamente.", Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    Log.w("Delete", "Error deleting document", e);
+                    Toast.makeText(getContext(), "Error al borrar el item. Intente nuevamente.", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -452,14 +403,11 @@ public class AgregarGastoFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.BD_LISTA_GASTOS).document(user.getUid()).collection(Constants.BD_TODAS_LISTAS).document(idLista)
                 .update(Constants.BD_CANTIDAD_ITEMS, (cantidadItems - 1))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        requireActivity().finish();
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
+                    Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    requireActivity().finish();
                 });
     }
 }
