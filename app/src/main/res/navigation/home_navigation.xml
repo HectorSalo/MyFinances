@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_navigation"
+    app:startDestination="@layout/fragment_container_view_page">
+
+    <fragment
+        android:id="@+id/containerViewPageFragment"
+        android:name="com.skysam.hchirinos.myfinances.homeModule.ui.ContainerViewPageFragment"
+        android:label="fragment_container_view_page"
+        tools:layout="@layout/fragment_container_view_page" />
+    <fragment
+        android:id="@+id/ahorrosFragment"
+        android:name="com.skysam.hchirinos.myfinances.ahorrosModule.ui.AhorrosFragment"
+        android:label="fragment_ahorros"
+        tools:layout="@layout/fragment_ahorros" />
+    <fragment
+        android:id="@+id/deudasFragment"
+        android:name="com.skysam.hchirinos.myfinances.deudasModule.ui.DeudasFragment"
+        android:label="fragment_deudas"
+        tools:layout="@layout/fragment_deudas" />
+    <fragment
+        android:id="@+id/gastosFragment"
+        android:name="com.skysam.hchirinos.myfinances.gastosModule.ui.GastosFragment"
+        android:label="fragment_gastos"
+        tools:layout="@layout/fragment_gastos" />
+    <fragment
+        android:id="@+id/ingresosFragment"
+        android:name="com.skysam.hchirinos.myfinances.ingresosModule.ui.IngresosFragment"
+        android:label="fragment_ingresos"
+        tools:layout="@layout/fragment_ingresos" />
+    <fragment
+        android:id="@+id/prestamosFragment"
+        android:name="com.skysam.hchirinos.myfinances.prestamosModule.ui.PrestamosFragment"
+        android:label="fragment_prestamos"
+        tools:layout="@layout/fragment_prestamos" />
+
+    <action android:id="@+id/action_global_containerViewPageFragment" app:destination="@id/containerViewPageFragment"/>
+    <action android:id="@+id/action_global_ahorrosFragment" app:destination="@id/ahorrosFragment"/>
+    <action android:id="@+id/action_global_deudasFragment" app:destination="@id/deudasFragment"/>
+    <action android:id="@+id/action_global_gastosFragment" app:destination="@id/gastosFragment"/>
+    <action android:id="@+id/action_global_ingresosFragment" app:destination="@id/ingresosFragment"/>
+    <action android:id="@+id/action_global_prestamosFragment" app:destination="@id/prestamosFragment"/>
+</navigation>

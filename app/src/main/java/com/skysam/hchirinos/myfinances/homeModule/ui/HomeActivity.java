@@ -18,7 +18,6 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.SearchView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -84,37 +83,34 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         agregar = 0;
 
         floatingActionButton = findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
-                switch (agregar) {
-                    case 0:
-                        escogerOpcionAgregar();
-                        break;
-                    case 1:
-                        intent.putExtra("agregar", 0);
-                        startActivity(intent);
-                        break;
-                    case 2:
-                        intent.putExtra("agregar", 1);
-                        startActivity(intent);
-                        break;
-                    case 3:
-                        intent.putExtra("agregar", 2);
-                        startActivity(intent);
-                        break;
-                    case 4:
-                        intent.putExtra("agregar", 3);
-                        startActivity(intent);
-                        break;
-                    case 5:
-                        intent.putExtra("agregar", 4);
-                        startActivity(intent);
-                        break;
-                    default:
-                        break;
-                }
+        floatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), AgregarActivity.class);
+            switch (agregar) {
+                case 0:
+                    escogerOpcionAgregar();
+                    break;
+                case 1:
+                    intent.putExtra("agregar", 0);
+                    startActivity(intent);
+                    break;
+                case 2:
+                    intent.putExtra("agregar", 1);
+                    startActivity(intent);
+                    break;
+                case 3:
+                    intent.putExtra("agregar", 2);
+                    startActivity(intent);
+                    break;
+                case 4:
+                    intent.putExtra("agregar", 3);
+                    startActivity(intent);
+                    break;
+                case 5:
+                    intent.putExtra("agregar", 4);
+                    startActivity(intent);
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -124,8 +120,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         prestamosFragment = new PrestamosFragment();
         gastosFragment = new GastosFragment();
         deudasFragment = new DeudasFragment();
-
-        getSupportFragmentManager().beginTransaction().add(R.id.container_fragments, containerViewPage, "home").commit();
     }
 
 
@@ -201,7 +195,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                         goHome();
                         break;
                     case R.id.menu_ingresos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ingresosFragment, "ingresos").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, ingresosFragment, "ingresos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_24);
                         itemBuscar.setVisible(true);
@@ -210,7 +204,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_ahorros:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, ahorrosFragment, "ahorros").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, ahorrosFragment, "ahorros").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_ahorro_24);
                         itemBuscar.setVisible(true);
@@ -219,7 +213,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_prestamos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, prestamosFragment, "prestamos").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, prestamosFragment, "prestamos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
                         itemBuscar.setVisible(true);
@@ -228,7 +222,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_egresos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, gastosFragment, "gastos").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, gastosFragment, "gastos").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_gasto_24);
                         itemBuscar.setVisible(true);
@@ -237,7 +231,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                         bottomSheetDialog.dismiss();
                         break;
                     case R.id.menu_deudas:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, deudasFragment, "deudas").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, deudasFragment, "deudas").commit();
                         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                         floatingActionButton.setImageResource(R.drawable.ic_add_deuda_24);
                         itemBuscar.setVisible(true);
@@ -286,7 +280,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     public void goHome() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragments, containerViewPage, "home").commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, containerViewPage, "home").commit();
         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
         itemBuscar.setVisible(false);
