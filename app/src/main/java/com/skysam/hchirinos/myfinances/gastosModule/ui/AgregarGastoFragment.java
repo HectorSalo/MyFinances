@@ -418,7 +418,7 @@ public class AgregarGastoFragment extends Fragment {
             int idIntent = (int) fechaSelecInicial.getTime();
             Intent intent = new Intent(requireContext(), NotificationReceiver.class);
             Bundle bundle = new Bundle();
-            bundle.putString("concepto", etConcepto.getText().toString());
+            bundle.putString(Constants.BD_CONCEPTO, etConcepto.getText().toString());
             intent.putExtras(bundle);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), idIntent, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);

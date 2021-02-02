@@ -40,7 +40,10 @@ public class Constants {
     public static final String PREFERENCE_TEMA_CLARO = "temaClaro";
     public static final String PREFERENCE_TEMA_SISTEMA = "temaSistema";
     public static final String PREFERENCE_NOTIFICATION_ACTIVE = "notificationActive";
-    public static final int CONTEXT_PREFERENCE = 0;
+    public static final String PREFERENCE_NOTIFICATION_CHANNEL_ID = "channel_01";
+    public static final String PREFERENCE_NOTIFICATION_CHANNEL_NAME = "channelNotification";
+    public static final String PREFERENCE_NOTIFICATION_CHANNEL_DESCRIPTION = "channelNotificationDescription";
+
 
     public static final String VALOR_COTIZACION = "valor_cotizacion";
     public static final String USER = "user";

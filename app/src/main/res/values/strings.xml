@@ -151,7 +151,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Estadísticas</string>
     <string name="nav_header_desc">Navigation header</string>
-
     <string name="label_nav_totales">Totales</string>
 
 
@@ -164,5 +163,7 @@
     <string name="swipe_ahorros_tuto_id">tutoSwAh01</string>
     <string name="swipe_gastos_tuto_id">tutoSwGa01</string>
 
+    <!-- Notification -->
+    <string name="notification_body">Pagar %1$s</string>
 
 </resources>
