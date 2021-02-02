@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
-import androidx.biometric.BiometricConstants
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -62,12 +61,12 @@ class HuellaFragment : Fragment() {
                                                        errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
                         when (errorCode) {
-                            BiometricConstants.ERROR_NEGATIVE_BUTTON -> {
+                            BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
                                 fragmentHuellaBinding.tvInfoHuella.visibility = View.GONE
                                 fragmentHuellaBinding.lottieAnimationView.visibility = View.GONE
                                 fragmentHuellaBinding.linearLayout.visibility = View.VISIBLE
                             }
-                            BiometricConstants.ERROR_LOCKOUT -> {
+                            BiometricPrompt.ERROR_LOCKOUT -> {
                                 fragmentHuellaBinding.tvInfoHuella.visibility = View.GONE
                                 fragmentHuellaBinding.lottieAnimationView.visibility = View.GONE
                                 fragmentHuellaBinding.linearLayout.visibility = View.VISIBLE

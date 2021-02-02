@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".common.MyFinancesApp"
@@ -71,6 +74,8 @@
             android:screenOrientation="sensorPortrait"/>
         <activity android:name=".homeModule.ui.HomeActivity"
             android:screenOrientation="sensorPortrait"/>
+        <receiver android:name=".common.NotificationReceiver"
+            android:enabled="true"/>
     </application>
 
 </manifest>

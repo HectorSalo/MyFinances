@@ -5,6 +5,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -52,6 +54,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     private DeudasFragment deudasFragment;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
+    private NavController navController;
     private int agregar;
     private MenuItem itemBuscar;
     private SearchView searchView;
@@ -79,6 +82,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
 
         bottomAppBar = findViewById(R.id.bottomAppBar);
         setSupportActionBar(bottomAppBar);
+
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
         agregar = 0;
 
@@ -109,8 +114,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     intent.putExtra("agregar", 4);
                     startActivity(intent);
                     break;
-                default:
-                    break;
             }
         });
 
@@ -138,12 +141,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         searchView.setOnCloseListener(this);
         searchView.setOnSearchClickListener(this);
 
-        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                View view = findViewById(R.id.menu_calculadora);
-                configTutorial(view);
-            }
+        new Handler(Looper.myLooper()).postDelayed(() -> {
+            View view = findViewById(R.id.menu_calculadora);
+            configTutorial(view);
         }, 2000);
         return true;
     }
@@ -186,62 +186,59 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         navigationView.setItemIconTintList(null);
 
         //This will handle the onClick Action for the menu item
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                switch (id){
-                    case R.id.menu_home:
-                        goHome();
-                        break;
-                    case R.id.menu_ingresos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, ingresosFragment, "ingresos").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_24);
-                        itemBuscar.setVisible(true);
-                        searchView.setIconified(true);
-                        agregar = 1;
-                        bottomSheetDialog.dismiss();
-                        break;
-                    case R.id.menu_ahorros:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, ahorrosFragment, "ahorros").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_ahorro_24);
-                        itemBuscar.setVisible(true);
-                        searchView.setIconified(true);
-                        agregar = 2;
-                        bottomSheetDialog.dismiss();
-                        break;
-                    case R.id.menu_prestamos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, prestamosFragment, "prestamos").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
-                        itemBuscar.setVisible(true);
-                        searchView.setIconified(true);
-                        agregar = 3;
-                        bottomSheetDialog.dismiss();
-                        break;
-                    case R.id.menu_egresos:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, gastosFragment, "gastos").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_gasto_24);
-                        itemBuscar.setVisible(true);
-                        searchView.setIconified(true);
-                        agregar = 4;
-                        bottomSheetDialog.dismiss();
-                        break;
-                    case R.id.menu_deudas:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, deudasFragment, "deudas").commit();
-                        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
-                        floatingActionButton.setImageResource(R.drawable.ic_add_deuda_24);
-                        itemBuscar.setVisible(true);
-                        searchView.setIconified(true);
-                        agregar = 5;
-                        bottomSheetDialog.dismiss();
-                        break;
-                }
-                return false;
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            switch (id){
+                case R.id.menu_home:
+                    goHome();
+                    break;
+                case R.id.menu_ingresos:
+                    navController.navigate(R.id.action_global_ingresosFragment);
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                    floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_24);
+                    itemBuscar.setVisible(true);
+                    searchView.setIconified(true);
+                    agregar = 1;
+                    bottomSheetDialog.dismiss();
+                    break;
+                case R.id.menu_ahorros:
+                    navController.navigate(R.id.action_global_ahorrosFragment);
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                    floatingActionButton.setImageResource(R.drawable.ic_add_ahorro_24);
+                    itemBuscar.setVisible(true);
+                    searchView.setIconified(true);
+                    agregar = 2;
+                    bottomSheetDialog.dismiss();
+                    break;
+                case R.id.menu_prestamos:
+                    navController.navigate(R.id.action_global_prestamosFragment);
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                    floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
+                    itemBuscar.setVisible(true);
+                    searchView.setIconified(true);
+                    agregar = 3;
+                    bottomSheetDialog.dismiss();
+                    break;
+                case R.id.menu_egresos:
+                    navController.navigate(R.id.action_global_gastosFragment);
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                    floatingActionButton.setImageResource(R.drawable.ic_add_gasto_24);
+                    itemBuscar.setVisible(true);
+                    searchView.setIconified(true);
+                    agregar = 4;
+                    bottomSheetDialog.dismiss();
+                    break;
+                case R.id.menu_deudas:
+                    navController.navigate(R.id.action_global_deudasFragment);
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                    floatingActionButton.setImageResource(R.drawable.ic_add_deuda_24);
+                    itemBuscar.setVisible(true);
+                    searchView.setIconified(true);
+                    agregar = 5;
+                    bottomSheetDialog.dismiss();
+                    break;
             }
+            return false;
         });
     }
 
@@ -280,7 +277,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     public void goHome() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, containerViewPage, "home").commit();
+        navController.navigate(R.id.action_global_containerViewPageFragment);
         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
         itemBuscar.setVisible(false);
