@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -20,6 +19,18 @@ class NotificationReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
         val concepto = intent!!.getStringExtra(Constants.BD_CONCEPTO)
+        val gasto = intent.getBooleanExtra(Constants.BD_GASTOS, true)
+
+        val icon : Int
+        val content: String
+
+        if (gasto) {
+            icon = R.drawable.ic_trending_down_24
+            content = context!!.getString(R.string.notification_gastos_body, concepto)
+        } else {
+            icon = R.drawable.ic_trending_up_24
+            content = context!!.getString(R.string.notification_ingresos_body, concepto)
+        }
 
         val myIntent = Intent(context, HomeActivity::class.java)
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -29,12 +40,12 @@ class NotificationReceiver: BroadcastReceiver() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         //
         //
-        val notificationBuilder = NotificationCompat.Builder(context!!, Constants.PREFERENCE_NOTIFICATION_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, Constants.PREFERENCE_NOTIFICATION_CHANNEL_ID)
         notificationBuilder
-                .setSmallIcon(R.drawable.ic_egresos_24dp)
+                .setSmallIcon(icon)
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(context.getString(R.string.notification_body, concepto))
+                .setContentText(content)
                 .setAutoCancel(true)
                 .setVibrate(longArrayOf(0, 1000, 500, 1000))
                 .setSound(defaultSoundUri)

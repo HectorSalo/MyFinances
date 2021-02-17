@@ -1,6 +1,5 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -46,7 +45,6 @@ import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
 
     private BottomSheetDialog bottomSheetDialog;
-    private ContainerViewPageFragment containerViewPage;
     private IngresosFragment ingresosFragment;
     private AhorrosFragment ahorrosFragment;
     private PrestamosFragment prestamosFragment;
@@ -117,7 +115,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         });
 
-        containerViewPage = new ContainerViewPageFragment();
         ingresosFragment = new IngresosFragment();
         ahorrosFragment = new AhorrosFragment();
         prestamosFragment = new PrestamosFragment();

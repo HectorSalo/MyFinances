@@ -164,6 +164,7 @@
     <string name="swipe_gastos_tuto_id">tutoSwGa01</string>
 
     <!-- Notification -->
-    <string name="notification_body">Pagar %1$s</string>
+    <string name="notification_gastos_body">Pagar %1$s</string>
+    <string name="notification_ingresos_body">Cobrar %1$s</string>
 
 </resources>
