@@ -28,4 +28,8 @@ object SharedPreferencesBD {
     fun getCotizacion(uid: String, context: Context): Float {
         return getInstance(uid, context).getFloat(Constants.VALOR_COTIZACION, 1f)
     }
+
+    fun getNotificationActive(uid: String, context: Context): Boolean {
+        return getInstance(uid, context).getBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
+    }
 }

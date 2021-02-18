@@ -1,8 +1,11 @@
 package com.skysam.hchirinos.myfinances.homeModule.interactor
 
+import com.skysam.hchirinos.myfinances.common.MyFinancesApp
+import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.CronologiaPresenter
 import java.util.*
@@ -86,6 +89,8 @@ class CronologiaInteractorClass(private val cronologiaPresenter: CronologiaPrese
                             if (activo == null || activo) {
                                 val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                                 if (tipoFrecuencia != null) {
+                                    var programNotification = SharedPreferencesBD.getNotificationActive(FirebaseAuthentication.getCurrentUser()!!.uid,
+                                            MyFinancesApp.appContext)
                                     val calendarPago = Calendar.getInstance()
                                     val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                     val duracionFrecuenciaInt = duracionFrecuencia.toInt()
@@ -102,6 +107,11 @@ class CronologiaInteractorClass(private val cronologiaPresenter: CronologiaPrese
                                             gasto.pasivo = true
                                             gasto.fecha = calendarPago.time
                                             listaCronologia.add(gasto)
+
+                                            if (programNotification) {
+                                                programNotification = programNotification(gasto.fecha!!,
+                                                        doc.getDate(Constants.BD_FECHA_INCIAL)!!, gasto.concepto!!)
+                                            }
                                         }
 
                                         when(tipoFrecuencia) {
@@ -135,5 +145,19 @@ class CronologiaInteractorClass(private val cronologiaPresenter: CronologiaPrese
                         cronologiaPresenter.listCronologia(listaCronologia)
                     }
                 }
+    }
+
+    private fun programNotification(fechaPago: Date, fechaIncial: Date, concepto: String): Boolean {
+        val calendarNotification = Calendar.getInstance()
+        val calendarRequestId = Calendar.getInstance()
+        calendarNotification.time = fechaPago
+        calendarNotification.set(Calendar.HOUR_OF_DAY, 10)
+        calendarNotification.set(Calendar.MINUTE, 0)
+        calendarNotification.add(Calendar.DAY_OF_YEAR, -7)
+
+        calendarRequestId.time  = fechaIncial
+        val requestId = calendarRequestId.timeInMillis.toInt()
+        ClassesCommon.createNotification(concepto, true, requestId, calendarNotification.timeInMillis)
+        return false
     }
 }

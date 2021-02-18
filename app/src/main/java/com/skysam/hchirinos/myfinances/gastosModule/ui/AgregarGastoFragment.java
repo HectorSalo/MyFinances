@@ -414,7 +414,7 @@ public class AgregarGastoFragment extends Fragment {
     }
 
     private void programarNotificacion(boolean notification) {
-        if (notification) {
+        /*if (notification) {
             int idIntent = (int) fechaSelecInicial.getTime();
             Intent intent = new Intent(requireContext(), NotificationReceiver.class);
             Bundle bundle = new Bundle();
@@ -424,7 +424,7 @@ public class AgregarGastoFragment extends Fragment {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), idIntent, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarSelecInicial.getTimeInMillis(), 1000 * 60 * 3, pendingIntent);
-        }
+        }*/
         Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.GONE);
         requireActivity().finish();
