@@ -39,6 +39,8 @@ public class Constants {
     public static final String PREFERENCE_TEMA_OSCURO = "temaOscuro";
     public static final String PREFERENCE_TEMA_CLARO = "temaClaro";
     public static final String PREFERENCE_TEMA_SISTEMA = "temaSistema";
+    public static final String PREFERENCE_NOTIFICATION_MAIN_TOPIC = "notificationActive";
+    public static final String SUBSCRIBE_FIRST_NOTIFICATION_MAIN_TOPIC = "subscribeNotification";
     public static final String PREFERENCE_NOTIFICATION_ACTIVE = "notificationActive";
     public static final String PREFERENCE_NOTIFICATION_CHANNEL_ID = "channel_01";
     public static final String PREFERENCE_NOTIFICATION_CHANNEL_NAME = "channelNotification";

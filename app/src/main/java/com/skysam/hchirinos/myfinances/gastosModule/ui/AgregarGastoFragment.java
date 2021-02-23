@@ -1,11 +1,7 @@
 package com.skysam.hchirinos.myfinances.gastosModule.ui;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,7 +29,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.common.NotificationReceiver;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
@@ -277,7 +272,7 @@ public class AgregarGastoFragment extends Fragment {
                             if (itemListGastos) {
                                 borrarItemListGastos(true);
                             } else {
-                                programarNotificacion(true);
+                                finalizarProceso();
                             }
                         }
                     })
@@ -395,7 +390,7 @@ public class AgregarGastoFragment extends Fragment {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                    actualizarCantidadItems(notification);
+                    actualizarCantidadItems();
                 })
                 .addOnFailureListener(e -> {
                     Log.w("Delete", "Error deleting document", e);
@@ -403,28 +398,17 @@ public class AgregarGastoFragment extends Fragment {
                 });
     }
 
-    private void actualizarCantidadItems (boolean notification) {
+    private void actualizarCantidadItems () {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.BD_LISTA_GASTOS).document(user.getUid()).collection(Constants.BD_TODAS_LISTAS).document(idLista)
                 .update(Constants.BD_CANTIDAD_ITEMS, (cantidadItems - 1))
                 .addOnSuccessListener(aVoid -> {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");
-                    programarNotificacion(notification);
+                    finalizarProceso();
                 });
     }
 
-    private void programarNotificacion(boolean notification) {
-        /*if (notification) {
-            int idIntent = (int) fechaSelecInicial.getTime();
-            Intent intent = new Intent(requireContext(), NotificationReceiver.class);
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.BD_CONCEPTO, etConcepto.getText().toString());
-            bundle.putBoolean(Constants.BD_GASTOS, true);
-            intent.putExtras(bundle);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), idIntent, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendarSelecInicial.getTimeInMillis(), 1000 * 60 * 3, pendingIntent);
-        }*/
+    private void finalizarProceso() {
         Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.GONE);
         requireActivity().finish();

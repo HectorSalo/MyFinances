@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.Constraints
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
@@ -23,6 +24,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
         get() = Dispatchers.Main + job
 
     override fun obtenerCotizacionWeb() {
+
+        getStatusNotification()
 
         launch {
             var valor: String? = null
@@ -57,6 +60,16 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
             }
         }
 
+    }
+
+    private fun getStatusNotification() {
+        val notificationStatus = SharedPreferencesBD.getFirstSubscribeMainTopic(FirebaseAuthentication.getCurrentUser()!!.uid, context)
+        if (!notificationStatus) {
+            FirebaseMessaging.getInstance().subscribeToTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
+                    .addOnSuccessListener {
+                        SharedPreferencesBD.subscribeFirstMainTopicNotification(FirebaseAuthentication.getCurrentUser()!!.uid, context)
+                    }
+        }
     }
 
     fun obtenerCotizacionShared() {

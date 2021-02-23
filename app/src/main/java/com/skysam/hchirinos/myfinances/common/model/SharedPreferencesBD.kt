@@ -29,7 +29,13 @@ object SharedPreferencesBD {
         return getInstance(uid, context).getFloat(Constants.VALOR_COTIZACION, 1f)
     }
 
-    fun getNotificationActive(uid: String, context: Context): Boolean {
-        return getInstance(uid, context).getBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
+    fun getFirstSubscribeMainTopic(uid: String, context: Context) : Boolean {
+        return getInstance(uid, context).getBoolean(Constants.SUBSCRIBE_FIRST_NOTIFICATION_MAIN_TOPIC,false)
+    }
+
+    fun subscribeFirstMainTopicNotification(uid: String, context: Context) {
+        val editor = getInstance(uid, context).edit()
+        editor.putBoolean(Constants.SUBSCRIBE_FIRST_NOTIFICATION_MAIN_TOPIC, true)
+        editor.apply()
     }
 }

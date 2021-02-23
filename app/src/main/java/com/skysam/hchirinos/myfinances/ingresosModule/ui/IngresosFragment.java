@@ -1,8 +1,6 @@
 package com.skysam.hchirinos.myfinances.ingresosModule.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -19,26 +17,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
-import com.skysam.hchirinos.myfinances.homeModule.ui.ContainerViewPageFragment;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
-import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenter;
 import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenterClass;
@@ -57,26 +56,20 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 public class IngresosFragment extends Fragment implements IngresosView {
 
-    private RecyclerView recyclerView;
     private IngresosAdapter ingresosAdapter;
     private ArrayList<IngresosGastosConstructor> listaIngresos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
     private CoordinatorLayout coordinatorLayout;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private IngresosPresenter ingresosPresenter;
 
 
     public IngresosFragment() {
         // Required empty public constructor
-    }
-
-    public static IngresosFragment newInstance(String param1, String param2) {
-        IngresosFragment fragment = new IngresosFragment();
-        return fragment;
     }
 
     @Override
@@ -89,6 +82,8 @@ public class IngresosFragment extends Fragment implements IngresosView {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
+        setHasOptionsMenu(true);
+        configurarToolbar(view);
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -107,9 +102,10 @@ public class IngresosFragment extends Fragment implements IngresosView {
         yearSelected = calendar.get(Calendar.YEAR);
         mesSelected = calendar.get(Calendar.MONTH);
 
-        recyclerView = view.findViewById(R.id.rv_ingresos);
+        RecyclerView recyclerView = view.findViewById(R.id.rv_ingresos);
 
         listaIngresos = new ArrayList<>();
+
         ingresosAdapter = new IngresosAdapter(listaIngresos, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
@@ -122,11 +118,11 @@ public class IngresosFragment extends Fragment implements IngresosView {
         Spinner spinnerYear = view.findViewById(R.id.spinner_ingreso_year);
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
+        ArrayAdapter<String> adapterMeses = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaMeses);
         spinnerMes.setAdapter(adapterMeses);
 
         List<String> listaYear = Arrays.asList(getResources().getStringArray(R.array.years));
-        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYear);
+        ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
         if (yearSelected == 2020) {
@@ -181,8 +177,30 @@ public class IngresosFragment extends Fragment implements IngresosView {
         return view;
     }
 
+    private void configurarToolbar(View view) {
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.top_bar_menu);
+        toolbar.setVisibility(View.VISIBLE);
+        Menu menu = toolbar.getMenu();
+        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        itemBuscar.setVisible(true);
+        SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-    private ItemTouchHelper.SimpleCallback itemSwipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                buscarItem(newText);
+                return false;
+            }
+        });
+    }
+
+
+    private final ItemTouchHelper.SimpleCallback itemSwipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -235,7 +253,6 @@ public class IngresosFragment extends Fragment implements IngresosView {
 
     private void cargarIngresos() {
         progressBar.setVisibility(View.VISIBLE);
-
         listaIngresos = new ArrayList<>();
         ingresosPresenter.getIngresos(yearSelected, mesSelected);
     }
@@ -243,25 +260,17 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private void crearDialog(final int position) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("¿Qué desea hacer?")
-                .setItems(R.array.opciones_borrar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i) {
-                            case 0:
-                                suspenderMes(position);
-                                break;
-                            case 1:
-                                eliminarDefinitivo(position);
-                                break;
-                        }
+                .setItems(R.array.opciones_borrar, (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            suspenderMes(position);
+                            break;
+                        case 1:
+                            eliminarDefinitivo(position);
+                            break;
                     }
                 })
-                .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        cargarIngresos();
-                    }
-                }).show();
+                .setNegativeButton(getString(R.string.btn_cancelar), (dialogInterface, i) -> cargarIngresos()).show();
     }
 
     private void suspenderMes(int position) {
@@ -275,22 +284,17 @@ public class IngresosFragment extends Fragment implements IngresosView {
         listaIngresos.remove(position);
         ingresosAdapter.updateList(listaIngresos);
 
-        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listaIngresos.add(position, itemSwipe);
-                ingresosAdapter.updateList(listaIngresos);
-            }
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                .setAction("Deshacer", view -> {
+            listaIngresos.add(position, itemSwipe);
+            ingresosAdapter.updateList(listaIngresos);
         });
         snackbar.show();
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!listaIngresos.contains(itemSwipe)) {
-                    deleteItemSwipe(itemSwipe.getIdIngreso(), itemSwipe.getFechaFinal());
-                }
+        handler.postDelayed(() -> {
+            if (!listaIngresos.contains(itemSwipe)) {
+                deleteItemSwipe(itemSwipe.getIdIngreso(), itemSwipe.getFechaFinal());
             }
         }, 4500);
     }
@@ -305,37 +309,19 @@ public class IngresosFragment extends Fragment implements IngresosView {
                 final int finalI = i;
                 db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                         .delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                                if (finalI == mesFinal) {
-                                    Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
-                                }
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                            if (finalI == mesFinal) {
+                                Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                             }
                         })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("Delete", "Error deleting document", e);
-                            }
-                        });
+                        .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));
             }
         } else {
             db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("Delete", "Error deleting document", e);
-                        }
-                    });
+                    .addOnSuccessListener(aVoid -> Log.d("Delete", "DocumentSnapshot successfully deleted!"))
+                    .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));
         }
 
     }
@@ -348,11 +334,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
         myBundle.putInt("mes", mesSelected);
         myBundle.putInt("year", yearSelected);
 
-        if (tipoFrecuencia != null) {
-            myBundle.putBoolean("mesUnico", false);
-        } else {
-            myBundle.putBoolean("mesUnico", true);
-        }
+        myBundle.putBoolean("mesUnico", tipoFrecuencia == null);
 
         myIntent.putExtras(myBundle);
         startActivity(myIntent);
@@ -372,9 +354,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
                     newList.add(name);
                 }
             }
-
             ingresosAdapter.updateList(newList);
-
         }
     }
 
@@ -382,6 +362,11 @@ public class IngresosFragment extends Fragment implements IngresosView {
     public void onResume() {
         super.onResume();
         cargarIngresos();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

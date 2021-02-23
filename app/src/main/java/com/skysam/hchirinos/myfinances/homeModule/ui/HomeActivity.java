@@ -6,6 +6,7 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -29,12 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
-import com.skysam.hchirinos.myfinances.deudasModule.ui.DeudasFragment;
-import com.skysam.hchirinos.myfinances.gastosModule.ui.GastosFragment;
-import com.skysam.hchirinos.myfinances.ahorrosModule.ui.AhorrosFragment;
 import com.skysam.hchirinos.myfinances.graficosModule.ui.GraphicsActivity;
-import com.skysam.hchirinos.myfinances.ingresosModule.ui.IngresosFragment;
-import com.skysam.hchirinos.myfinances.prestamosModule.ui.PrestamosFragment;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.CalculadoraActivity;
 import com.skysam.hchirinos.myfinances.ajustesModule.ui.SettingsActivity;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity;
@@ -42,20 +37,13 @@ import com.skysam.hchirinos.myfinances.listaGastosModule.ui.ListaPendientesListA
 
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
-public class HomeActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private BottomSheetDialog bottomSheetDialog;
-    private IngresosFragment ingresosFragment;
-    private AhorrosFragment ahorrosFragment;
-    private PrestamosFragment prestamosFragment;
-    private GastosFragment gastosFragment;
-    private DeudasFragment deudasFragment;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton floatingActionButton;
     private NavController navController;
     private int agregar;
-    private MenuItem itemBuscar;
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,12 +102,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     break;
             }
         });
-
-        ingresosFragment = new IngresosFragment();
-        ahorrosFragment = new AhorrosFragment();
-        prestamosFragment = new PrestamosFragment();
-        gastosFragment = new GastosFragment();
-        deudasFragment = new DeudasFragment();
     }
 
 
@@ -131,12 +113,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
             ((MenuBuilder) menu).setOptionalIconsVisible(true);
         }
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
-        itemBuscar = menu.findItem(R.id.menu_buscar);
+        /*itemBuscar = menu.findItem(R.id.menu_buscar);
         itemBuscar.setVisible(false);
         searchView = (SearchView) itemBuscar.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setOnCloseListener(this);
-        searchView.setOnSearchClickListener(this);
+        searchView.setOnSearchClickListener(this);*/
 
         new Handler(Looper.myLooper()).postDelayed(() -> {
             View view = findViewById(R.id.menu_calculadora);
@@ -193,8 +173,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     navController.navigate(R.id.action_global_ingresosFragment);
                     bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                     floatingActionButton.setImageResource(R.drawable.ic_add_ingreso_24);
-                    itemBuscar.setVisible(true);
-                    searchView.setIconified(true);
                     agregar = 1;
                     bottomSheetDialog.dismiss();
                     break;
@@ -202,8 +180,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     navController.navigate(R.id.action_global_ahorrosFragment);
                     bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                     floatingActionButton.setImageResource(R.drawable.ic_add_ahorro_24);
-                    itemBuscar.setVisible(true);
-                    searchView.setIconified(true);
                     agregar = 2;
                     bottomSheetDialog.dismiss();
                     break;
@@ -211,8 +187,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     navController.navigate(R.id.action_global_prestamosFragment);
                     bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                     floatingActionButton.setImageResource(R.drawable.ic_add_prestamo_24dp);
-                    itemBuscar.setVisible(true);
-                    searchView.setIconified(true);
                     agregar = 3;
                     bottomSheetDialog.dismiss();
                     break;
@@ -220,8 +194,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     navController.navigate(R.id.action_global_gastosFragment);
                     bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                     floatingActionButton.setImageResource(R.drawable.ic_add_gasto_24);
-                    itemBuscar.setVisible(true);
-                    searchView.setIconified(true);
                     agregar = 4;
                     bottomSheetDialog.dismiss();
                     break;
@@ -229,8 +201,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
                     navController.navigate(R.id.action_global_deudasFragment);
                     bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
                     floatingActionButton.setImageResource(R.drawable.ic_add_deuda_24);
-                    itemBuscar.setVisible(true);
-                    searchView.setIconified(true);
                     agregar = 5;
                     bottomSheetDialog.dismiss();
                     break;
@@ -277,42 +247,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnQuer
         navController.navigate(R.id.action_global_containerViewPageFragment);
         bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
         floatingActionButton.setImageResource(R.drawable.ic_add_36dp);
-        itemBuscar.setVisible(false);
         agregar = 0;
         bottomSheetDialog.dismiss();
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        switch (agregar) {
-            case 1:
-                ingresosFragment.buscarItem(newText);
-                break;
-            case 2:
-                ahorrosFragment.buscarItem(newText);
-                break;
-            case 3:
-                prestamosFragment.buscarItem(newText);
-                break;
-            case 4:
-                gastosFragment.buscarItem(newText);
-                break;
-            case 5:
-                deudasFragment.buscarItem(newText);
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onClose() {
-        floatingActionButton.setVisibility(View.VISIBLE);
-        return false;
     }
 
     @Override

@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".homeModule.ui.HomeActivity">
-
-    <item
-        android:id="@+id/menu_buscar"
-        android:title="@string/texto_vacio"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_search_24"/>
     <item
         android:id="@+id/menu_calculadora"
         android:icon="@drawable/ic_calculator_24"

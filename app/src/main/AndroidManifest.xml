@@ -74,8 +74,18 @@
             android:screenOrientation="sensorPortrait"/>
         <activity android:name=".homeModule.ui.HomeActivity"
             android:screenOrientation="sensorPortrait"/>
-        <receiver android:name=".common.NotificationReceiver"
-            android:enabled="true"/>
+        <service android:name=".common.NotificationReceiverFCM"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_trending_up_24" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
     </application>
 
 </manifest>

@@ -11,12 +11,11 @@
         android:icon="@drawable/ic_bloqueo_24"/>
 
     <SwitchPreferenceCompat
-        app:key="notificaciones"
+        app:key="notificationActive"
         app:summaryOff="@string/notificaiones_summary_off"
         app:summaryOn="@string/notificaciones_summary_on"
         app:title="@string/noitificaciones_title"
         app:defaultValue="true"
-        app:isPreferenceVisible="false"
         android:icon="@drawable/ic_notifications_active_24"/>
 
     <ListPreference

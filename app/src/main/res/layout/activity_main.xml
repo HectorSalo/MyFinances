@@ -6,18 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".homeModule.ui.HomeActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fondo_toolbar"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ToolBarAppBarOverlay"
+            app:popupTheme="@style/ToolBarStylePopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="56dp"
         app:defaultNavHost="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/home_navigation"/>
+        app:layout_constraintTop_toBottomOf="@+id/topAppBar"
+        app:navGraph="@navigation/home_navigation" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -50,7 +71,8 @@
             app:fabSize="normal"
             app:layout_anchor="@id/bottomAppBar"
             app:maxImageSize="48dp"
-            app:tint="#810942" />
+            app:tint="#810942"
+            android:contentDescription="@string/app_name" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

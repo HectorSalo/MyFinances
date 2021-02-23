@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
-import com.skysam.hchirinos.myfinances.common.NotificationReceiver
+import com.skysam.hchirinos.myfinances.common.NotificationReceiverFCM
 import java.io.FileNotFoundException
 import kotlin.math.ceil
 import kotlin.math.max
@@ -47,7 +47,7 @@ object ClassesCommon {
     }
 
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {
-        val intent = Intent(MyFinancesApp.appContext, NotificationReceiver::class.java)
+        val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val bundle = Bundle()
         bundle.putString(Constants.BD_CONCEPTO, concepto)
         bundle.putBoolean(Constants.BD_GASTOS, gasto)
@@ -58,7 +58,7 @@ object ClassesCommon {
     }
 
     fun cancelNotification(requestId: Int) {
-        val intent = Intent(MyFinancesApp.appContext, NotificationReceiver::class.java)
+        val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val alarmManager = MyFinancesApp.appContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val pendingIntent = PendingIntent.getService(MyFinancesApp.appContext, requestId, intent,
                         PendingIntent.FLAG_NO_CREATE)

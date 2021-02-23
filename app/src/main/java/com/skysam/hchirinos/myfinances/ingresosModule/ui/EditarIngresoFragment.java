@@ -19,10 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,7 +46,10 @@ public class EditarIngresoFragment extends Fragment {
 
     private String conceptoViejo, conceptoNuevo, idDoc;
     private double montoNuevo, montoViejo;
-    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected, mesFinal;
+    private int duracionFrecuenciaViejo;
+    private int yearSelected;
+    private int mesSelected;
+    private int mesFinal;
     private boolean mesUnico;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
@@ -60,7 +59,7 @@ public class EditarIngresoFragment extends Fragment {
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnEditar;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -96,7 +95,7 @@ public class EditarIngresoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia_editar);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         idDoc = getArguments().getString("idDoc");
@@ -105,12 +104,7 @@ public class EditarIngresoFragment extends Fragment {
         mesUnico = getArguments().getBoolean("mesUnico");
 
         btnEditar = view.findViewById(R.id.button_editar);
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validarDatos();
-            }
-        });
+        btnEditar.setOnClickListener(v -> validarDatos());
 
         if (mesUnico) {
             linearLayoutFecha.setVisibility(View.GONE);
@@ -132,72 +126,75 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
-                        etConcepto.setText(conceptoViejo);
+                            conceptoViejo = document.getString(Constants.BD_CONCEPTO);
+                            etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constants.BD_MONTO);
-                        String montoS = String.valueOf(montoViejo);
-                        etMonto.setText(montoS);
+                            montoViejo = document.getDouble(Constants.BD_MONTO);
+                            String montoS = String.valueOf(montoViejo);
+                            etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-                        if (dolar) {
-                            rbDolar.setChecked(true);
+                            boolean dolar = document.getBoolean(Constants.BD_DOLAR);
+                            if (dolar) {
+                                rbDolar.setChecked(true);
+                            } else {
+                                rbBs.setChecked(true);
+                            }
+
+                            double duracionFrecuenciaD = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
+                            duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
+                            spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
+
+                            String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
+                            switch (tipoFrecuencia) {
+                                case "Dias":
+                                    rbDias.setChecked(true);
+                                    break;
+                                case "Semanas":
+                                    rbSemanas.setChecked(true);
+                                    break;
+                                case "Meses":
+                                    rbMeses.setChecked(true);
+                                    break;
+                            }
+
+                            Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
+                            tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
+
+                            Date fechaFinal = document.getDate(Constants.BD_FECHA_FINAL);
+                            if (fechaFinal != null) {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(fechaFinal);
+                                mesFinal = calendar.get(Calendar.MONTH);
+                                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaFinal));
+                            } else {
+                                mesFinal = 11;
+                            }
+
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnEditar.setEnabled(true);
                         } else {
-                            rbBs.setChecked(true);
+                            Log.d(TAG, "No such document");
+                            Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
-
-                        double duracionFrecuenciaD = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                        duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
-                        spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
-
-                        String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
-                        if (tipoFrecuencia.equals("Dias")) {
-                            rbDias.setChecked(true);
-                        } else if (tipoFrecuencia.equals("Semanas")) {
-                            rbSemanas.setChecked(true);
-                        } else if (tipoFrecuencia.equals("Meses")) {
-                            rbMeses.setChecked(true);
-                        }
-
-                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
-                        tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
-
-                        Date fechaFinal = document.getDate(Constants.BD_FECHA_FINAL);
-                        if (fechaFinal != null) {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(fechaFinal);
-                            mesFinal = calendar.get(Calendar.MONTH);
-                            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaFinal));
-                        } else {
-                            mesFinal = 11;
-                        }
-
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "get failed with ", task.getException());
                         Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         requireActivity().finish();
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    requireActivity().finish();
-                }
-            }
-        });
+                });
     }
 
     private void cargarItemUnico() {
@@ -206,46 +203,45 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
-                        etConcepto.setText(conceptoViejo);
+                            conceptoViejo = document.getString(Constants.BD_CONCEPTO);
+                            etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constants.BD_MONTO);
-                        String montoS = String.valueOf(montoViejo);
-                        etMonto.setText(montoS);
+                            montoViejo = document.getDouble(Constants.BD_MONTO);
+                            String montoS = String.valueOf(montoViejo);
+                            etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-                        if (dolar) {
-                            rbDolar.setChecked(true);
+                            boolean dolar = document.getBoolean(Constants.BD_DOLAR);
+                            if (dolar) {
+                                rbDolar.setChecked(true);
+                            } else {
+                                rbBs.setChecked(true);
+                            }
+
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnEditar.setEnabled(true);
                         } else {
-                            rbBs.setChecked(true);
+                            Log.d(TAG, "No such document");
+                            Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
-
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "get failed with ", task.getException());
                         Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         requireActivity().finish();
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    requireActivity().finish();
-                }
-            }
-        });
+                });
     }
 
 
@@ -292,7 +288,7 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        duracionFrecuenciaNuevo = spFrecuencia.getSelectedItemPosition() + 1;
+        int duracionFrecuenciaNuevo = spFrecuencia.getSelectedItemPosition() + 1;
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(conceptoNuevo)) {
@@ -322,34 +318,29 @@ public class EditarIngresoFragment extends Fragment {
 
         for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
-            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+            db.collection(Constants.BD_INGRESOS).document(user.getUid())
+                    .collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            if (finalI == mesFinal) {
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        if (finalI == mesFinal) {
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            if (finalI > mesSelected) {
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            } else {
-                                Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                etConceptoLayout.setEnabled(true);
-                                etMontoLayout.setEnabled(true);
-                                btnEditar.setEnabled(true);
-                            }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        if (finalI > mesSelected) {
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnEditar.setEnabled(true);
                         }
                     });
         }
@@ -376,27 +367,22 @@ public class EditarIngresoFragment extends Fragment {
             item.put(Constants.BD_DOLAR, true);
         }
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+                .document(idDoc)
                 .update(item)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                        Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        requireActivity().finish();
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    requireActivity().finish();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                        Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
-                    }
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error updating document", e);
+                    Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    etConceptoLayout.setEnabled(true);
+                    etMontoLayout.setEnabled(true);
+                    btnEditar.setEnabled(true);
                 });
     }
 }
