@@ -21,6 +21,9 @@
     <string name="menu_historial_pagos">Historial de pagos</string>
     <string name="menu_historial_cobros">Historial de cobros</string>
 
+    <string name="searchview_hint_concepto">Buscar concepto</string>
+    <string name="searchview_hint_destinatario">Buscar destinatario</string>
+    <string name="searchview_hint_concepto_prestamista">Buscar prestamista o concepto</string>
 
     <string name="pie_ingresos">Ingresos</string>
     <string name="pie_ahorros">Ahorros</string>

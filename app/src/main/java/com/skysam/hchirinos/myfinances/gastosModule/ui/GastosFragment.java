@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,6 +60,7 @@ public class GastosFragment extends Fragment {
     private ArrayList<IngresosGastosConstructor> listaGastos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -103,6 +105,7 @@ public class GastosFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
         Spinner spinner = view.findViewById(R.id.spinner_gastos_mes);
         Spinner spinnerYear = view.findViewById(R.id.spinner_gastos_year);
@@ -235,6 +238,7 @@ public class GastosFragment extends Fragment {
         Menu menu = toolbar.getMenu();
         MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setQueryHint(getString(R.string.searchview_hint_concepto));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -246,6 +250,10 @@ public class GastosFragment extends Fragment {
                 buscarItem(newText);
                 return false;
             }
+        });
+        searchView.setOnCloseListener(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            return false;
         });
     }
 
@@ -439,10 +447,13 @@ public class GastosFragment extends Fragment {
             newList = new ArrayList<>();
 
             for (IngresosGastosConstructor name : listaGastos) {
-
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
+            }
+            if (newList.isEmpty()) {
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
             }
             gastosAdapter.updateList(newList);
         }
@@ -452,7 +463,8 @@ public class GastosFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0)
+                    .setDuration(500);
         }
         cargarGastos();
     }
@@ -460,7 +472,10 @@ public class GastosFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        toolbar.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(toolbar.getHeight())
+                    .setDuration(300);
+        }
     }
 
 }

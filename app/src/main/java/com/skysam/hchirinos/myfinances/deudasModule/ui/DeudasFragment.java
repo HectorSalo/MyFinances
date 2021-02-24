@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -49,6 +50,7 @@ public class DeudasFragment extends Fragment {
     private ArrayList<AhorrosConstructor> listaDeudas;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -86,6 +88,7 @@ public class DeudasFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
 
         Spinner spinner = view.findViewById(R.id.spinner_mes);
         Spinner spinnerYear = view.findViewById(R.id.spinner_year);
@@ -155,6 +158,7 @@ public class DeudasFragment extends Fragment {
         Menu menu = toolbar.getMenu();
         MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setQueryHint(getString(R.string.searchview_hint_concepto_prestamista));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -166,6 +170,10 @@ public class DeudasFragment extends Fragment {
                 buscarItem(newText);
                 return false;
             }
+        });
+        searchView.setOnCloseListener(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            return false;
         });
     }
 
@@ -219,12 +227,14 @@ public class DeudasFragment extends Fragment {
             final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
             for (AhorrosConstructor name : listaDeudas) {
-
                 if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
             }
-
+            if (newList.isEmpty()) {
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
+            }
             deudasAdapter.updateList(newList);
 
         }
@@ -234,7 +244,8 @@ public class DeudasFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0)
+                    .setDuration(500);
         }
         cargarDeudas();
     }
@@ -242,7 +253,10 @@ public class DeudasFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        toolbar.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(toolbar.getHeight())
+                    .setDuration(300);
+        }
     }
 
 }

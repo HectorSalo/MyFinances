@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ahorrosModule.ui.AhorrosFragment">
 
-
-
     <Spinner
         android:id="@+id/spinner_ahorro_year"
         android:layout_width="0dp"
@@ -38,6 +36,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/guide_line"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinner_ahorro_mes"
+        app:lottie_fileName="not_found.json"
+        app:lottie_loop="false" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_ahorros"

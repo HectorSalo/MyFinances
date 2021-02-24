@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,6 +61,7 @@ public class AhorrosFragment extends Fragment {
     private ArrayList<AhorrosConstructor> listaAhorros, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -100,6 +102,7 @@ public class AhorrosFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar_ahorros);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
 
         listaAhorros = new ArrayList<>();
 
@@ -253,6 +256,7 @@ public class AhorrosFragment extends Fragment {
         Menu menu = toolbar.getMenu();
         MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setQueryHint(getString(R.string.searchview_hint_concepto));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -264,6 +268,10 @@ public class AhorrosFragment extends Fragment {
                 buscarItem(newText);
                 return false;
             }
+        });
+        searchView.setOnCloseListener(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            return false;
         });
     }
 
@@ -403,6 +411,10 @@ public class AhorrosFragment extends Fragment {
                     newList.add(name);
                 }
             }
+            if (newList.isEmpty()) {
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
+            }
             ahorrosAdapter.updateList(newList);
         }
     }
@@ -411,7 +423,8 @@ public class AhorrosFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0)
+                    .setDuration(500);
         }
         cargarAhorros();
     }
@@ -419,6 +432,9 @@ public class AhorrosFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        toolbar.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(toolbar.getHeight())
+                    .setDuration(300);
+        }
     }
 }

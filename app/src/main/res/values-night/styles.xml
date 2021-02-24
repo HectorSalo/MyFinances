@@ -3,6 +3,7 @@
 
     <style name="TextAppearance.Convertidor" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">@color/color_message_tutorial</item>
+        <item name="hintTextColor">@color/color_message_tutorial</item>
     </style>
 
 </resources>

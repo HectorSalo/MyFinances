@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +49,7 @@ public class PrestamosFragment extends Fragment {
     private ArrayList<AhorrosConstructor> listaPrestamos;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -90,6 +92,7 @@ public class PrestamosFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_prestamos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
 
         Spinner spinner = view.findViewById(R.id.spinner_prestamo_mes);
         Spinner spinnerYear = view.findViewById(R.id.spinner_prestamo_year);
@@ -203,6 +206,7 @@ public class PrestamosFragment extends Fragment {
         Menu menu = toolbar.getMenu();
         MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setQueryHint(getString(R.string.searchview_hint_destinatario));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -215,6 +219,10 @@ public class PrestamosFragment extends Fragment {
                 return false;
             }
         });
+        searchView.setOnCloseListener(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            return false;
+        });
     }
 
     public void buscarItem(String text) {
@@ -225,14 +233,15 @@ public class PrestamosFragment extends Fragment {
             final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
             for (AhorrosConstructor name : listaPrestamos) {
-
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
             }
-
+            if (newList.isEmpty()) {
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
+            }
             prestamosAdapter.updateList(newList);
-
         }
     }
 
@@ -241,6 +250,8 @@ public class PrestamosFragment extends Fragment {
         super.onResume();
         if (toolbar != null) {
             toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0)
+                    .setDuration(500);
         }
         cargarPrestamos();
     }
@@ -248,7 +259,10 @@ public class PrestamosFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        toolbar.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(toolbar.getHeight())
+                    .setDuration(300);
+        }
     }
 
 }

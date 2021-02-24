@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,12 +60,14 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private ArrayList<IngresosGastosConstructor> listaIngresos, newList;
     private ProgressBar progressBar;
     private TextView tvSinLista;
+    private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
+    private MenuItem itemBuscar;
     private IngresosPresenter ingresosPresenter;
 
 
@@ -115,6 +117,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
 
         progressBar = view.findViewById(R.id.progressBar_ingresos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
+        lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
         coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
         Spinner spinnerMes = view.findViewById(R.id.spinner_ingreso_mes);
         Spinner spinnerYear = view.findViewById(R.id.spinner_ingreso_year);
@@ -185,8 +188,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
         toolbar.inflateMenu(R.menu.top_bar_menu);
         toolbar.setVisibility(View.VISIBLE);
         Menu menu = toolbar.getMenu();
-        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setQueryHint(getString(R.string.searchview_hint_concepto));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -198,6 +202,10 @@ public class IngresosFragment extends Fragment implements IngresosView {
                 buscarItem(newText);
                 return false;
             }
+        });
+        searchView.setOnCloseListener(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            return false;
         });
     }
 
@@ -351,10 +359,13 @@ public class IngresosFragment extends Fragment implements IngresosView {
             newList = new ArrayList<>();
 
             for (IngresosGastosConstructor name : listaIngresos) {
-
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
+            }
+            if (newList.isEmpty()) {
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
             }
             ingresosAdapter.updateList(newList);
         }
@@ -364,7 +375,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0)
+                    .setDuration(500);
+            itemBuscar.setVisible(true);
         }
         cargarIngresos();
     }
@@ -402,6 +415,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
     @Override
     public void onPause() {
         super.onPause();
-        toolbar.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(toolbar.getHeight())
+                    .setDuration(300);
+        }
     }
 }

@@ -63,16 +63,18 @@ class CronologiaFragment : Fragment(), CronologiaView {
     }
 
     override fun listCronologia(list: ArrayList<ItemCronologiaConstructor>) {
-        if (list.isEmpty()) {
-            binding.tvSinCronologia.visibility = View.VISIBLE
-            binding.rvCronologia.visibility = View.GONE
-        } else {
-            lista = list
-            lista.sortWith { t, t2 -> t.fecha!!.compareTo(t2.fecha) }
-            adapter = CronologiaListAdapter(lista)
-            binding.rvCronologia.adapter = adapter
-            binding.tvSinCronologia.visibility = View.GONE
-            binding.rvCronologia.visibility = View.VISIBLE
+        if (_binding != null) {
+            if (list.isEmpty()) {
+                binding.tvSinCronologia.visibility = View.VISIBLE
+                binding.rvCronologia.visibility = View.GONE
+            } else {
+                lista = list
+                lista.sortWith { t, t2 -> t.fecha!!.compareTo(t2.fecha) }
+                adapter = CronologiaListAdapter(lista)
+                binding.rvCronologia.adapter = adapter
+                binding.tvSinCronologia.visibility = View.GONE
+                binding.rvCronologia.visibility = View.VISIBLE
+            }
         }
     }
 }

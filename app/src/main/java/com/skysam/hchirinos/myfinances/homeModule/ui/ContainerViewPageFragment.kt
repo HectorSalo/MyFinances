@@ -1,7 +1,10 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -23,6 +26,9 @@ class ContainerViewPageFragment : Fragment(), HomeView {
     private val binding get() = _binding!!
     private lateinit var moveToNextYearDialog: MoveToNextYearDialog
     private lateinit var homePresenter: HomePresenter
+    private lateinit var title: String
+    private lateinit var toolbar: Toolbar
+    private lateinit var itemBuscar: MenuItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -64,6 +70,8 @@ class ContainerViewPageFragment : Fragment(), HomeView {
             11 -> "Diciembre"
             else -> null
         }
+        title = "$mesString, $yearSelected"
+        configToolbar()
         binding.tvYear.text = "$yearSelected"
         binding.tvMes.text = mesString
 
@@ -100,9 +108,26 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         }
     }
 
+    private fun configToolbar() {
+        toolbar = requireActivity().findViewById(R.id.toolbar)
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.top_bar_menu)
+        val menu = toolbar.menu
+        itemBuscar = menu.findItem(R.id.menu_buscar)
+        toolbar.title = title
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Handler(Looper.myLooper()!!).postDelayed({
+            toolbar.animate().translationY(0f).duration = 500
+            itemBuscar.isVisible = false
+        }, 600)
     }
 
     override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {
