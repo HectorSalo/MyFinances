@@ -48,28 +48,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-
-        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
-
-        switch (tema){
-            case Constants.PREFERENCE_TEMA_SISTEMA:
-                setTheme(R.style.AppTheme);
-                break;
-            case Constants.PREFERENCE_TEMA_OSCURO:
-                setTheme(R.style.AppThemeNight);
-                break;
-            case Constants.PREFERENCE_TEMA_CLARO:
-                setTheme(R.style.AppThemeDay);
-                break;
-        }
         setContentView(R.layout.activity_main);
 
         bottomAppBar = findViewById(R.id.bottomAppBar);
         setSupportActionBar(bottomAppBar);
 
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+        }
 
         agregar = 0;
 

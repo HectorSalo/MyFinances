@@ -7,17 +7,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -60,6 +64,7 @@ public class GastosFragment extends Fragment {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
+    private Toolbar toolbar;
 
 
     public GastosFragment() {
@@ -76,7 +81,8 @@ public class GastosFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
+        configurarToolbar();
         return inflater.inflate(R.layout.fragment_gastos, container, false);
     }
 
@@ -210,9 +216,9 @@ public class GastosFragment extends Fragment {
 
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addSwipeRightActionIcon(R.drawable.ic_delete_item)
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_A700))
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_red_A700))
                     .addSwipeLeftActionIcon(R.drawable.ic_edit_item_24dp)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_orange_A700))
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_orange_A700))
                     .create()
                     .decorate();
 
@@ -220,6 +226,28 @@ public class GastosFragment extends Fragment {
 
         }
     };
+
+    private void configurarToolbar() {
+        toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.getMenu().clear();
+        toolbar.inflateMenu(R.menu.top_bar_menu);
+        toolbar.setVisibility(View.VISIBLE);
+        Menu menu = toolbar.getMenu();
+        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                buscarItem(newText);
+                return false;
+            }
+        });
+    }
 
 
     private void cargarGastos() {
@@ -423,7 +451,16 @@ public class GastosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
         cargarGastos();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        toolbar.setVisibility(View.GONE);
     }
 
 }

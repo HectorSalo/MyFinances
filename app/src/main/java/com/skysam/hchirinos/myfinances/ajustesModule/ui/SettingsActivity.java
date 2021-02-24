@@ -2,7 +2,6 @@ package com.skysam.hchirinos.myfinances.ajustesModule.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,12 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.Fragment;
@@ -25,7 +24,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -34,7 +32,6 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.databinding.DialogHuellaSettingsBinding;
 import com.skysam.hchirinos.myfinances.databinding.DialogPinSettingsBinding;
-import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,46 +40,17 @@ public class SettingsActivity extends AppCompatActivity implements
 
 
     private static final String TITLE_TAG = "settingsActivityTitle";
-    private HeaderFragment headerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-
-        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
-
-        switch (tema){
-            case Constants.PREFERENCE_TEMA_SISTEMA:
-                setTheme(R.style.AppTheme);
-                break;
-            case Constants.PREFERENCE_TEMA_OSCURO:
-                setTheme(R.style.AppThemeNight);
-                break;
-            case Constants.PREFERENCE_TEMA_CLARO:
-                setTheme(R.style.AppThemeDay);
-                break;
-        }
         setContentView(R.layout.settings_activity);
 
-        headerFragment = new HeaderFragment();
-
-        Bundle bundle = this.getIntent().getExtras();
         if (savedInstanceState == null) {
-            if (bundle == null) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.settings, headerFragment)
-                        .commit();
-            } else {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.settings, new PreferenciasFragment())
-                        .commit();
-                setTitle(R.string.preferencias_header);
-            }
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.settings,new HeaderFragment())
+                    .commit();
         } else {
             setTitle(savedInstanceState.getCharSequence(TITLE_TAG));
         }
@@ -122,17 +90,7 @@ public class SettingsActivity extends AppCompatActivity implements
         if (getSupportFragmentManager().popBackStackImmediate()) {
             return true;
         } else {
-            if (!headerFragment.isAdded()) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.settings, headerFragment)
-                        .commit();
-                setTitle(R.string.title_activity_settings);
-            } else {
-                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                finish();
-            }
-
+            finish();
         }
         return super.onSupportNavigateUp();
     }
@@ -184,20 +142,24 @@ public class SettingsActivity extends AppCompatActivity implements
                 }
             }
 
-            preferenceActualizarPass.setVisible(!providerId.equals("google.com"));
+            if (preferenceActualizarPass != null) {
+                preferenceActualizarPass.setVisible(!providerId.equals("google.com"));
 
 
-            preferenceActualizarPass.setOnPreferenceClickListener(preference -> {
-                ActualizarPassDialog actualizarPassDialog = new ActualizarPassDialog();
-                actualizarPassDialog.show(requireActivity().getSupportFragmentManager(), getTag());
-                return true;
-            });
+                preferenceActualizarPass.setOnPreferenceClickListener(preference -> {
+                    ActualizarPassDialog actualizarPassDialog = new ActualizarPassDialog();
+                    actualizarPassDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+                    return true;
+                });
+            }
 
-            preferenceCerrarSesion.setOnPreferenceClickListener(preference -> {
-                CerrarSesionDialog cerrarSesionDialog = new CerrarSesionDialog();
-                cerrarSesionDialog.show(requireActivity().getSupportFragmentManager(), getTag());
-                return true;
-            });
+            if (preferenceCerrarSesion != null) {
+                preferenceCerrarSesion.setOnPreferenceClickListener(preference -> {
+                    CerrarSesionDialog cerrarSesionDialog = new CerrarSesionDialog();
+                    cerrarSesionDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+                    return true;
+                });
+            }
         }
     }
 
@@ -239,18 +201,22 @@ public class SettingsActivity extends AppCompatActivity implements
                     break;
             }
 
-            notificacionesSwitch.setChecked(notificationActive);
+            if (notificacionesSwitch != null) {
+                notificacionesSwitch.setChecked(notificationActive);
+            }
 
-            switch (temaInicial) {
-                case Constants.PREFERENCE_TEMA_SISTEMA:
-                    listaTema.setValue(Constants.PREFERENCE_TEMA_SISTEMA);
-                    break;
-                case Constants.PREFERENCE_TEMA_OSCURO:
-                    listaTema.setValue(Constants.PREFERENCE_TEMA_OSCURO);
-                    break;
-                case Constants.PREFERENCE_TEMA_CLARO:
-                    listaTema.setValue(Constants.PREFERENCE_TEMA_CLARO);
-                    break;
+            if (listaTema != null) {
+                switch (temaInicial) {
+                    case Constants.PREFERENCE_TEMA_SISTEMA:
+                        listaTema.setValue(Constants.PREFERENCE_TEMA_SISTEMA);
+                        break;
+                    case Constants.PREFERENCE_TEMA_OSCURO:
+                        listaTema.setValue(Constants.PREFERENCE_TEMA_OSCURO);
+                        break;
+                    case Constants.PREFERENCE_TEMA_CLARO:
+                        listaTema.setValue(Constants.PREFERENCE_TEMA_CLARO);
+                        break;
+                }
             }
 
 
@@ -305,58 +271,65 @@ public class SettingsActivity extends AppCompatActivity implements
             });
 
 
-            notificacionesSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-                boolean switchOn = (boolean) newValue;
-                if (switchOn) {
-                    FirebaseMessaging.getInstance().subscribeToTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
-                            .addOnSuccessListener(aVoid -> {
-                                editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true);
+            if (notificacionesSwitch != null) {
+                notificacionesSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean switchOn = (boolean) newValue;
+                    if (switchOn) {
+                        FirebaseMessaging.getInstance().subscribeToTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
+                                .addOnSuccessListener(aVoid -> {
+                                    editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true);
+                                    editor.apply();
+                                });
+                    } else {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
+                                .addOnSuccessListener(aVoid -> {
+                                    editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, false);
+                                    editor.apply();
+                                });
+                    }
+                    return true;
+                });
+            }
+
+
+            if (listaTema != null) {
+                listaTema.setOnPreferenceChangeListener((preference, newValue) -> {
+                    temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
+                    temaEscogido = (String) newValue;
+
+                    switch (temaEscogido) {
+                        case Constants.PREFERENCE_TEMA_SISTEMA:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
                                 editor.apply();
-                            });
-                } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
-                            .addOnSuccessListener(aVoid -> {
-                                editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, false);
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
+                            break;
+                        case Constants.PREFERENCE_TEMA_CLARO:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_CLARO);
                                 editor.apply();
-                            });
-                }
-                return true;
-            });
-
-
-            listaTema.setOnPreferenceChangeListener((preference, newValue) -> {
-                temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
-                temaEscogido = (String) newValue;
-
-                switch (temaEscogido) {
-                    case Constants.PREFERENCE_TEMA_SISTEMA:
-                        if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                            editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
-                            editor.apply();
-                        }
-                        break;
-                    case Constants.PREFERENCE_TEMA_CLARO:
-                        if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                            editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_CLARO);
-                            editor.apply();
-                        }
-                        break;
-                    case Constants.PREFERENCE_TEMA_OSCURO:
-                        if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
-                            editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_OSCURO);
-                            editor.apply();
-                        }
-                        break;
-                }
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Constants.PREFERENCE_TEMA, true);
-                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                intent.putExtras(bundle);
-                getActivity().finish();
-                getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                return true;
-            });
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                            }
+                            break;
+                        case Constants.PREFERENCE_TEMA_OSCURO:
+                            if (!temaEscogido.equalsIgnoreCase(temaInicial)) {
+                                editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_OSCURO);
+                                editor.apply();
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                            }
+                            break;
+                    }
+                   /* Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constants.PREFERENCE_TEMA, true);
+                    Intent intent = new Intent(getContext(), SettingsActivity.class);
+                    intent.putExtras(bundle);
+                    getActivity().finish();
+                    getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);*/
+                    return true;
+                });
+            }
         }
 
         private void crearDialogSinBloqueo() {
@@ -523,12 +496,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
                         dialogPinSettingsBinding.lottieAnimationView.setAnimation("pin_check.json");
                         dialogPinSettingsBinding.lottieAnimationView.playAnimation();
-                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();
-                            }
-                        }, 2500);
+                        new Handler(Looper.myLooper()).postDelayed(dialog::dismiss, 2500);
                     } else {
                         dialogPinSettingsBinding.inputRepetirPin.setError(getString(R.string.error_pin_match));
                     }

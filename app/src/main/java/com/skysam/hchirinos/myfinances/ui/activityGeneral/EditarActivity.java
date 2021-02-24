@@ -24,22 +24,6 @@ public class EditarActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        SharedPreferences sharedPreferences = getSharedPreferences(user.getUid(), Context.MODE_PRIVATE);
-
-        String tema = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
-
-        switch (tema){
-            case Constants.PREFERENCE_TEMA_SISTEMA:
-                setTheme(R.style.AppTheme);
-                break;
-            case Constants.PREFERENCE_TEMA_OSCURO:
-                setTheme(R.style.AppThemeNight);
-                break;
-            case Constants.PREFERENCE_TEMA_CLARO:
-                setTheme(R.style.AppThemeDay);
-                break;
-        }
         setContentView(R.layout.activity_editar);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

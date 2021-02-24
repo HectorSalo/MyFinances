@@ -9,14 +9,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_ingreso"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/TextAppearance.Convertidor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:hint="@string/calculadora_bolivares"
-        android:textColorHint="@color/colorPrimary"
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,20 +32,18 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_resultado"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/TextAppearance.Convertidor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:hint="@string/calculadora_dolares"
-        android:textColorHint="@color/colorPrimary"
         app:boxBackgroundMode="outline"
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton_convertir"
-        app:passwordToggleTint="@color/colorPrimary">
+        app:layout_constraintTop_toBottomOf="@+id/imageButton_convertir">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_resultado"
@@ -54,24 +51,29 @@
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:focusable="false"
-            android:text="@string/text_calculadora_cero"
-            />
+            android:text="@string/text_calculadora_cero"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/imageButton_convertir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/texto_vacio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/outlined_ingreso"
-        app:srcCompat="@drawable/ic_convertir_24" />
+        app:icon="@drawable/ic_convertir_24"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyFinances.Button.Rounded"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:iconPadding="0dp"
+        app:iconGravity="end"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

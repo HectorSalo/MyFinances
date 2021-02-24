@@ -4,13 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.icu.text.DecimalFormat;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.ImageButton;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,13 +58,8 @@ public class CalculadoraActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton imageButton = findViewById(R.id.imageButton_convertir);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cambiarMoneda();
-            }
-        });
+        MaterialButton button = findViewById(R.id.imageButton_convertir);
+        button.setOnClickListener(v -> cambiarMoneda());
     }
 
     private void cambiarMoneda() {

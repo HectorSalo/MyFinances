@@ -1,6 +1,5 @@
 package com.skysam.hchirinos.myfinances.ahorrosModule.ui;
 
-import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
@@ -17,20 +16,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,12 +37,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
-import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,9 +62,10 @@ public class AhorrosFragment extends Fragment {
     private TextView tvSinLista;
     private boolean fragmentCreado;
     private CoordinatorLayout coordinatorLayout;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
+    private Toolbar toolbar;
 
 
     @Override
@@ -78,7 +76,8 @@ public class AhorrosFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
+        configurarToolbar();
         return inflater.inflate(R.layout.fragment_ahorros, container, false);
     }
 
@@ -115,11 +114,11 @@ public class AhorrosFragment extends Fragment {
         Spinner spinnerYear = view.findViewById(R.id.spinner_ahorro_year);
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
+        ArrayAdapter<String> adapterMeses = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaMeses);
         spinnerMes.setAdapter(adapterMeses);
 
         List<String> listaYear = Arrays.asList(getResources().getStringArray(R.array.years));
-        ArrayAdapter<String> adapterYear = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYear);
+        ArrayAdapter<String> adapterYear = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYear);
 
         fragmentCreado = true;
@@ -174,7 +173,7 @@ public class AhorrosFragment extends Fragment {
     }
 
 
-    private ItemTouchHelper.SimpleCallback itemSwipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+    private final ItemTouchHelper.SimpleCallback itemSwipe = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -192,37 +191,34 @@ public class AhorrosFragment extends Fragment {
 
                 final AhorrosConstructor finalItemSwipe = itemSwipe;
 
-                final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listaAhorros.add(position, finalItemSwipe);
-                        ahorrosAdapter.updateList(listaAhorros);
-                    }
+                final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                        .setAction("Deshacer", view -> {
+                    listaAhorros.add(position, finalItemSwipe);
+                    ahorrosAdapter.updateList(listaAhorros);
                 });
                 snackbar.show();
                     Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!listaAhorros.contains(finalItemSwipe)) {
-                                deleteItemSwipe(finalItemSwipe.getIdAhorro());
-                            }
+                    handler.postDelayed(() -> {
+                        if (!listaAhorros.contains(finalItemSwipe)) {
+                            deleteItemSwipe(finalItemSwipe.getIdAhorro());
                         }
                     }, 4500);
                 break;
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
+                        String monto;
+                        final String idDoc;
+                        final boolean dolar;
                         if (newList.isEmpty()) {
-                            String monto = String.valueOf(listaAhorros.get(position).getMonto());
-                            final String idDoc = listaAhorros.get(position).getIdAhorro();
-                            final boolean dolar = listaAhorros.get(position).isDolar();
-                            editarItem(monto, idDoc, dolar);
+                            monto = String.valueOf(listaAhorros.get(position).getMonto());
+                            idDoc = listaAhorros.get(position).getIdAhorro();
+                            dolar = listaAhorros.get(position).isDolar();
                         } else {
-                            String monto = String.valueOf(newList.get(position).getMonto());
-                            final String idDoc = newList.get(position).getIdAhorro();
-                            final boolean dolar = newList.get(position).isDolar();
-                            editarItem(monto, idDoc, dolar);
+                            monto = String.valueOf(newList.get(position).getMonto());
+                            idDoc = newList.get(position).getIdAhorro();
+                            dolar = newList.get(position).isDolar();
                         }
+                        editarItem(monto, idDoc, dolar);
                     } else {
                         String monto = String.valueOf(listaAhorros.get(position).getMonto());
                         final String idDoc = listaAhorros.get(position).getIdAhorro();
@@ -238,9 +234,9 @@ public class AhorrosFragment extends Fragment {
 
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addSwipeRightActionIcon(R.drawable.ic_delete_item)
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_A700))
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_red_A700))
                     .addSwipeLeftActionIcon(R.drawable.ic_edit_item_24dp)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_orange_A700))
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_orange_A700))
                     .create()
                     .decorate();
 
@@ -248,6 +244,28 @@ public class AhorrosFragment extends Fragment {
 
         }
     };
+
+    private void configurarToolbar() {
+        toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.getMenu().clear();
+        toolbar.inflateMenu(R.menu.top_bar_menu);
+        toolbar.setVisibility(View.VISIBLE);
+        Menu menu = toolbar.getMenu();
+        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                buscarItem(newText);
+                return false;
+            }
+        });
+    }
 
     private void cargarAhorros() {
         progressBar.setVisibility(View.VISIBLE);
@@ -260,36 +278,33 @@ public class AhorrosFragment extends Fragment {
 
         CollectionReference reference = db.collection(Constants.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        AhorrosConstructor ahorro = new AhorrosConstructor();
+        reference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                    AhorrosConstructor ahorro = new AhorrosConstructor();
 
-                        ahorro.setIdAhorro(doc.getId());
-                        ahorro.setConcepto(doc.getString(Constants.BD_CONCEPTO));
-                        ahorro.setOrigen(doc.getString(Constants.BD_ORIGEN));
-                        ahorro.setDolar(doc.getBoolean(Constants.BD_DOLAR));
-                        ahorro.setMonto(doc.getDouble(Constants.BD_MONTO));
-                        ahorro.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
+                    ahorro.setIdAhorro(doc.getId());
+                    ahorro.setConcepto(doc.getString(Constants.BD_CONCEPTO));
+                    ahorro.setOrigen(doc.getString(Constants.BD_ORIGEN));
+                    ahorro.setDolar(doc.getBoolean(Constants.BD_DOLAR));
+                    ahorro.setMonto(doc.getDouble(Constants.BD_MONTO));
+                    ahorro.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
-                        listaAhorros.add(ahorro);
+                    listaAhorros.add(ahorro);
 
-                    }
-                    ahorrosAdapter.updateList(listaAhorros);
-                    if (listaAhorros.isEmpty()) {
-                        tvSinLista.setVisibility(View.VISIBLE);
-                    } else {
-                        tvSinLista.setVisibility(View.GONE);
-                    }
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
-                fragmentCreado = false;
+                ahorrosAdapter.updateList(listaAhorros);
+                if (listaAhorros.isEmpty()) {
+                    tvSinLista.setVisibility(View.VISIBLE);
+                } else {
+                    tvSinLista.setVisibility(View.GONE);
+                }
+                progressBar.setVisibility(View.GONE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
             }
+            fragmentCreado = false;
         });
     }
 
@@ -311,36 +326,24 @@ public class AhorrosFragment extends Fragment {
         dialog.setTitle("Ingrese el nuevo monto")
                 .setView(v)
                 .setCancelable(false)
-                .setPositiveButton("Actualizar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!textInputEditText.getText().toString().isEmpty()) {
-                            double valor = Double.parseDouble(textInputEditText.getText().toString());
-                            if (valor > 0) {
-                                boolean dolarEnviar;
-                                if (radioButtonDolar.isChecked()) {
-                                    dolarEnviar = true;
-                                } else {
-                                    dolarEnviar = false;
-                                }
-                                guardarItem(dolarEnviar, valor, idDoc);
-                                Toast.makeText(getContext(), "Actualizando...", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
-                                cargarAhorros();
-                            }
+                .setPositiveButton("Actualizar", (dialog1, which) -> {
+                    if (!textInputEditText.getText().toString().isEmpty()) {
+                        double valor = Double.parseDouble(textInputEditText.getText().toString());
+                        if (valor > 0) {
+                            boolean dolarEnviar;
+                            dolarEnviar = radioButtonDolar.isChecked();
+                            guardarItem(dolarEnviar, valor, idDoc);
+                            Toast.makeText(getContext(), "Actualizando...", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getContext(), "El campo no puede estar vacío", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
                             cargarAhorros();
                         }
-                    }
-                })
-                .setNegativeButton(getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    } else {
+                        Toast.makeText(getContext(), "El campo no puede estar vacío", Toast.LENGTH_SHORT).show();
                         cargarAhorros();
                     }
-                }).show();
+                })
+                .setNegativeButton(getString(R.string.btn_cancelar), (dialog12, which) -> cargarAhorros()).show();
     }
 
 
@@ -350,29 +353,23 @@ public class AhorrosFragment extends Fragment {
             final int finalI = i;
             db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
                     .update(Constants.BD_DOLAR, dolar, Constants.BD_MONTO, monto)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            if (finalI == 11) {
-                                cargarAhorros();
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        if (finalI == 11) {
+                            cargarAhorros();
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            if (finalI > mesSelected) {
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                            }
-                            progressBar.setVisibility(View.GONE);
-                            cargarAhorros();
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        if (finalI > mesSelected) {
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         }
+                        progressBar.setVisibility(View.GONE);
+                        cargarAhorros();
                     });
         }
     }
@@ -382,21 +379,13 @@ public class AhorrosFragment extends Fragment {
             final int finalI = i;
             db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
                     .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Delete", "DocumentSnapshot successfully deleted!");
-                            if (finalI == 11) {
-                                Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Delete", "DocumentSnapshot successfully deleted!");
+                        if (finalI == 11) {
+                            Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("Delete", "Error deleting document", e);
-                        }
-                    });
+                    .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));
         }
 
     }
@@ -410,20 +399,26 @@ public class AhorrosFragment extends Fragment {
             newList = new ArrayList<>();
 
             for (AhorrosConstructor name : listaAhorros) {
-
                 if (name.getConcepto().toLowerCase().contains(userInput)) {
                     newList.add(name);
                 }
             }
-
             ahorrosAdapter.updateList(newList);
-
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
         cargarAhorros();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        toolbar.setVisibility(View.GONE);
     }
 }

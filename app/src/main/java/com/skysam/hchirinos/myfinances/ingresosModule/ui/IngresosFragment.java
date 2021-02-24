@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -18,7 +19,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +29,7 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -65,6 +65,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
+    private Toolbar toolbar;
     private IngresosPresenter ingresosPresenter;
 
 
@@ -82,8 +83,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ingresos, container, false);
+
         setHasOptionsMenu(true);
-        configurarToolbar(view);
+        configurarToolbar();
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -177,13 +179,13 @@ public class IngresosFragment extends Fragment implements IngresosView {
         return view;
     }
 
-    private void configurarToolbar(View view) {
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+    private void configurarToolbar() {
+        toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.top_bar_menu);
         toolbar.setVisibility(View.VISIBLE);
         Menu menu = toolbar.getMenu();
         MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
-        itemBuscar.setVisible(true);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -240,9 +242,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
 
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addSwipeRightActionIcon(R.drawable.ic_delete_item)
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_A700))
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_red_A700))
                     .addSwipeLeftActionIcon(R.drawable.ic_edit_item_24dp)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_orange_A700))
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_orange_A700))
                     .create()
                     .decorate();
 
@@ -361,12 +363,10 @@ public class IngresosFragment extends Fragment implements IngresosView {
     @Override
     public void onResume() {
         super.onResume();
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
         cargarIngresos();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -397,5 +397,11 @@ public class IngresosFragment extends Fragment implements IngresosView {
         } else {
             Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        toolbar.setVisibility(View.GONE);
     }
 }

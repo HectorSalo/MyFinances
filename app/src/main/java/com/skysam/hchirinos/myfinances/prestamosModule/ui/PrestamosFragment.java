@@ -4,17 +4,20 @@ import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +33,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
-import com.skysam.hchirinos.myfinances.homeModule.ui.HomeFragment;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
 import java.util.ArrayList;
@@ -47,10 +49,10 @@ public class PrestamosFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView tvSinLista;
     private boolean fragmentCreado;
-    private CoordinatorLayout coordinatorLayout;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
+    private Toolbar toolbar;
 
 
     public PrestamosFragment() {
@@ -65,12 +67,14 @@ public class PrestamosFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
+        configurarToolbar();
         return inflater.inflate(R.layout.fragment_prestamos, container, false);
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -86,7 +90,6 @@ public class PrestamosFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar_prestamos);
         tvSinLista = view.findViewById(R.id.textView_sin_lista);
-        coordinatorLayout = view.findViewById(R.id.coordinator_snackbar);
 
         Spinner spinner = view.findViewById(R.id.spinner_prestamo_mes);
         Spinner spinnerYear = view.findViewById(R.id.spinner_prestamo_year);
@@ -94,11 +97,11 @@ public class PrestamosFragment extends Fragment {
         fragmentCreado = true;
 
         List<String> listaMeses = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterMeses = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaMeses);
+        ArrayAdapter<String> adapterMeses = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaMeses);
         spinner.setAdapter(adapterMeses);
 
         List<String> listaYear = Arrays.asList(getResources().getStringArray(R.array.years));
-        ArrayAdapter<String> adapterYears = new ArrayAdapter<String>(getContext(), R.layout.layout_spinner, listaYear);
+        ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
         if (yearSelected == 2020) {
@@ -192,6 +195,28 @@ public class PrestamosFragment extends Fragment {
         });
     }
 
+    private void configurarToolbar() {
+        toolbar = requireActivity().findViewById(R.id.toolbar);
+        toolbar.getMenu().clear();
+        toolbar.inflateMenu(R.menu.top_bar_menu);
+        toolbar.setVisibility(View.VISIBLE);
+        Menu menu = toolbar.getMenu();
+        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        SearchView searchView = (SearchView) itemBuscar.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                buscarItem(newText);
+                return false;
+            }
+        });
+    }
+
     public void buscarItem(String text) {
         if (listaPrestamos.isEmpty()) {
             Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
@@ -214,7 +239,16 @@ public class PrestamosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
         cargarPrestamos();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        toolbar.setVisibility(View.GONE);
     }
 
 }
