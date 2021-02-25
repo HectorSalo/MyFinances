@@ -3,14 +3,17 @@ package com.skysam.hchirinos.myfinances.homeModule.ui
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import androidx.viewpager2.widget.ViewPager2
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
@@ -40,10 +43,10 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
         homePresenter = HomePresenterClass(this, requireContext())
 
-        val sectionPageAdapter = SectionPageAdapter(childFragmentManager)
+        val sectionPageAdapter = SectionPageAdapter(requireActivity())
         binding.viewPager.adapter = sectionPageAdapter
         iniciarPuntosSlide(0)
-        binding.viewPager.addOnPageChangeListener(viewListener)
+        binding.viewPager.registerOnPageChangeCallback(callback)
 
         val calendar = Calendar.getInstance()
         val mesSelected = calendar[Calendar.MONTH]
@@ -53,21 +56,7 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         if (mesSelected == 11 && currentDay > 14) {
             binding.ibTransfer.visibility = View.VISIBLE
         }
-        val mesString = when (mesSelected) {
-            0 -> "Enero"
-            1 -> "Febrero"
-            2 -> "Marzo"
-            3 -> "Abril"
-            4 -> "Mayo"
-            5 -> "Junio"
-            6 -> "Julio"
-            7 -> "Agosto"
-            8 -> "Septiembre"
-            9 -> "Octubre"
-            10 -> "Noviembre"
-            11 -> "Diciembre"
-            else -> null
-        }
+        val mesString = listOf(*resources.getStringArray(R.array.meses))[mesSelected]
         title = "$mesString, $yearSelected"
         configToolbar()
 
@@ -79,15 +68,12 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
     }
 
-    private val viewListener: OnPageChangeListener = object : OnPageChangeListener {
-        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+    private val callback: ViewPager2.OnPageChangeCallback = object: ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
             iniciarPuntosSlide(position)
         }
-
-        override fun onPageScrollStateChanged(state: Int) {}
     }
-
 
     private fun iniciarPuntosSlide(pos: Int) {
         val puntosSlide = arrayOfNulls<TextView>(2)

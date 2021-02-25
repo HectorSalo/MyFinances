@@ -16,23 +16,23 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.MyFinances"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".graficosModule.ui.GraphicsActivity"
             android:label="@string/title_activity_graphics"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.MyFinances.NoActionBar"
             android:screenOrientation="sensorPortrait"/>
         <activity
             android:name=".listaGastosModule.ui.ListaPendientesListActivity"
             android:label="@string/title_activity_lista_gastos"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.MyFinances.NoActionBar"
             android:screenOrientation="sensorPortrait"/>
         <activity
             android:name=".listaGastosModule.ui.ListaPendientesDetailActivity"
             android:label="@string/title_listapendientes_detail"
             android:parentActivityName=".listaGastosModule.ui.ListaPendientesListActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.MyFinances.NoActionBar"
             android:screenOrientation="sensorPortrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -40,7 +40,9 @@
         </activity>
         <activity android:name=".inicioSesionModule.ui.BloqueoActivity"
             android:screenOrientation="sensorPortrait"/>
-        <activity android:name=".inicioSesionModule.ui.LaunchActivity"
+        <activity
+            android:name=".inicioSesionModule.ui.LaunchActivity"
+            android:theme="@style/Splash"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,7 +57,7 @@
         <activity
             android:name=".ui.activityGeneral.CalculadoraActivity"
             android:label="@string/title_activity_calculadora"
-            android:theme="@style/AppTheme.Convertidor"
+            android:theme="@style/Theme.MyFinancesConvertidor"
             android:screenOrientation="sensorPortrait"/>
         <activity android:name=".ui.activityGeneral.AcercaActivity"
             android:screenOrientation="sensorPortrait"/>
@@ -65,12 +67,13 @@
             android:screenOrientation="sensorPortrait"/>
         <activity android:name=".inicioSesionModule.ui.RegistrarActivity"
             android:screenOrientation="sensorPortrait"/>
-        <activity android:name=".inicioSesionModule.ui.InicSesionActivity"
-            android:screenOrientation="sensorPortrait"/>
+        <activity
+            android:name=".inicioSesionModule.ui.InicSesionActivity"
+            android:screenOrientation="sensorPortrait" />
         <activity
             android:name=".ui.activityGeneral.AgregarActivity"
             android:label="@string/title_activity_agregar"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.MyFinances.NoActionBar"
             android:screenOrientation="sensorPortrait"/>
         <activity android:name=".homeModule.ui.HomeActivity"
             android:screenOrientation="sensorPortrait"/>

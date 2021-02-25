@@ -3,9 +3,6 @@ package com.skysam.hchirinos.myfinances.homeModule.interactor
 import android.content.Context
 import android.util.Log
 import androidx.constraintlayout.widget.Constraints
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
@@ -72,7 +69,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
         }
     }
 
-    fun obtenerCotizacionShared() {
+    private fun obtenerCotizacionShared() {
         homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context))
     }
 
@@ -151,7 +148,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
         val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
         FirebaseFirestore.getAhorrosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         for (document in task.result!!) {
@@ -168,16 +165,16 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         }
                         homePresenter.statusValorAhorros(true, montototal.toFloat(), montototal.toString())
                     }
-                }).addOnFailureListener(OnFailureListener {
+                }.addOnFailureListener {
                     homePresenter.statusValorAhorros(false, 0f, "Error al obtener ahorros")
-                })
+                }
     }
 
     override fun getDeudas(year: Int, month: Int) {
         val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
         FirebaseFirestore.getDeudasReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         for (document in task.result!!) {
@@ -192,16 +189,16 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         }
                         homePresenter.statusValorDeudas(true, montototal.toFloat(), montototal.toString())
                     }
-                }).addOnFailureListener(OnFailureListener {
+                }.addOnFailureListener {
                     homePresenter.statusValorDeudas(false, 0f, "Error al obtener deudas")
-                })
+                }
     }
 
     override fun getPrestamos(year: Int, month: Int) {
         val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
         FirebaseFirestore.getPrestamosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         for (document in task.result!!) {
@@ -216,16 +213,16 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         }
                         homePresenter.statusValorPrestamos(true, montototal.toFloat(), montototal.toString())
                     }
-                }).addOnFailureListener(OnFailureListener {
+                }.addOnFailureListener {
                     homePresenter.statusValorPrestamos(false, 0f, "Error al obtener préstamos")
-                })
+                }
     }
 
     override fun getGastos(year: Int, month: Int) {
         val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
         FirebaseFirestore.getGastosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         var mesPago: Int
@@ -281,9 +278,9 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                     } else {
                         homePresenter.statusValorGastos(false, 0f, "Error al obtener los Gastos")
                     }
-                }).addOnFailureListener(OnFailureListener {
+                }.addOnFailureListener {
                     homePresenter.statusValorGastos(false, 0f, "Error al obtener los Gastos")
-                })
+                }
     }
 
     override fun moveDataNextYear(year: Int) {
@@ -297,8 +294,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                             if (activo == null || activo) {
                                 if (tipoFrecuencia != null) {
-                                    var mesC: Int = 0
-                                    var dayC: Int = 0
+                                    var mesC = 0
+                                    var dayC = 0
                                     val calendar = Calendar.getInstance()
                                     val fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
                                     if (fechaFinal != null) {
@@ -312,8 +309,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         calendarFinal.set(year+1, 11, 31)
                                         var fechaInicial: Date? = null
 
-                                        var mesInicial = 0
-                                        var yearInicial = 0
+                                        var mesInicial: Int
+                                        var yearInicial: Int
                                         val calendarInicial = Calendar.getInstance()
                                         calendarInicial.time = doc.getDate(Constants.BD_FECHA_INCIAL)!!
                                         val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
@@ -449,8 +446,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                             val tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                             if (activo == null || activo) {
                                 if (tipoFrecuencia != null) {
-                                    var mesC: Int = 0
-                                    var dayC: Int = 0
+                                    var mesC = 0
+                                    var dayC = 0
                                     val calendar = Calendar.getInstance()
                                     val fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
                                     if (fechaFinal != null) {

@@ -19,7 +19,7 @@ class MyFinancesApp: Application() {
             val sharedPreferences = getSharedPreferences(FirebaseAuthentication.getCurrentUser()!!.uid, MODE_PRIVATE)
 
             when (sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)) {
-                Constants.PREFERENCE_TEMA_SISTEMA -> setTheme(R.style.AppTheme)
+                Constants.PREFERENCE_TEMA_SISTEMA -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 Constants.PREFERENCE_TEMA_OSCURO -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 Constants.PREFERENCE_TEMA_CLARO -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }

@@ -17,4 +17,8 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="Splash" parent="Theme.MyFinances">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
 </resources>
