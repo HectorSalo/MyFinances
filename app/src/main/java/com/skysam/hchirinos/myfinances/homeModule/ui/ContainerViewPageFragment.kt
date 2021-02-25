@@ -3,10 +3,8 @@ package com.skysam.hchirinos.myfinances.homeModule.ui
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -72,8 +70,6 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         }
         title = "$mesString, $yearSelected"
         configToolbar()
-        binding.tvYear.text = "$yearSelected"
-        binding.tvMes.text = mesString
 
         binding.ibTransfer.setOnClickListener {
             moveToNextYearDialog = MoveToNextYearDialog(yearSelected, homePresenter)
@@ -97,10 +93,14 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         val puntosSlide = arrayOfNulls<TextView>(2)
         binding.linearPuntos.removeAllViews()
         for (i in puntosSlide.indices) {
+            val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            params.setMargins(0, (-80), 0, 0)
+
             puntosSlide[i] = TextView(context)
             puntosSlide[i]!!.text = "."
-            puntosSlide[i]!!.textSize = 35f
+            puntosSlide[i]!!.textSize = 36f
             puntosSlide[i]!!.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorAccent))
+            puntosSlide[i]!!.layoutParams = params
             binding.linearPuntos.addView(puntosSlide[i])
         }
         if (puntosSlide.isNotEmpty()) {
@@ -114,7 +114,6 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         toolbar.inflateMenu(R.menu.top_bar_menu)
         val menu = toolbar.menu
         itemBuscar = menu.findItem(R.id.menu_buscar)
-        toolbar.title = title
     }
 
     override fun onDestroyView() {
@@ -127,7 +126,13 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         Handler(Looper.myLooper()!!).postDelayed({
             toolbar.animate().translationY(0f).duration = 500
             itemBuscar.isVisible = false
-        }, 600)
+            toolbar.title = title
+        }, 300)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        toolbar.animate().translationY(toolbar.height.toFloat()).duration = 300
     }
 
     override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {

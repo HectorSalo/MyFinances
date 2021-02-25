@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -186,7 +187,6 @@ public class IngresosFragment extends Fragment implements IngresosView {
         toolbar = requireActivity().findViewById(R.id.toolbar);
         toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.top_bar_menu);
-        toolbar.setVisibility(View.VISIBLE);
         Menu menu = toolbar.getMenu();
         itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
@@ -375,9 +375,13 @@ public class IngresosFragment extends Fragment implements IngresosView {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.animate().translationY(0)
-                    .setDuration(500);
-            itemBuscar.setVisible(true);
+            itemBuscar.setVisible(false);
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                toolbar.animate().translationY(0)
+                        .setDuration(500);
+                toolbar.setTitle(getString(R.string.pie_ingresos));
+                itemBuscar.setVisible(true);
+            }, 300);
         }
         cargarIngresos();
     }
@@ -415,7 +419,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     @Override
     public void onPause() {
         super.onPause();
-        if (toolbar.getVisibility() == View.VISIBLE) {
+        if (toolbar != null) {
             toolbar.animate().translationY(toolbar.getHeight())
                     .setDuration(300);
         }

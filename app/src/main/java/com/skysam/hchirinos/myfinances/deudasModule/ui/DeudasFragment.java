@@ -1,6 +1,8 @@
 package com.skysam.hchirinos.myfinances.deudasModule.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +58,7 @@ public class DeudasFragment extends Fragment {
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
+    private MenuItem itemBuscar;
 
 
     @Override
@@ -154,9 +157,8 @@ public class DeudasFragment extends Fragment {
         toolbar = requireActivity().findViewById(R.id.toolbar);
         toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.top_bar_menu);
-        toolbar.setVisibility(View.VISIBLE);
         Menu menu = toolbar.getMenu();
-        MenuItem itemBuscar = menu.findItem(R.id.menu_buscar);
+        itemBuscar = menu.findItem(R.id.menu_buscar);
         SearchView searchView = (SearchView) itemBuscar.getActionView();
         searchView.setQueryHint(getString(R.string.searchview_hint_concepto_prestamista));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -244,8 +246,13 @@ public class DeudasFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (toolbar != null) {
-            toolbar.animate().translationY(0)
-                    .setDuration(500);
+            itemBuscar.setVisible(false);
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                toolbar.animate().translationY(0)
+                        .setDuration(500);
+                toolbar.setTitle(getString(R.string.pie_deudas));
+                itemBuscar.setVisible(true);
+            }, 300);
         }
         cargarDeudas();
     }
@@ -253,7 +260,7 @@ public class DeudasFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (toolbar.getVisibility() == View.VISIBLE) {
+        if (toolbar != null) {
             toolbar.animate().translationY(toolbar.getHeight())
                     .setDuration(300);
         }
