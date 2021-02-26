@@ -19,6 +19,7 @@
 
     <style name="Splash" parent="Theme.MyFinances">
         <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="android:statusBarColor">?attr/colorOnPrimary</item>
     </style>
 
 </resources>

@@ -1,14 +1,10 @@
 package com.skysam.hchirinos.myfinances.inicioSesionModule.ui;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,16 +18,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -49,12 +39,12 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
     private Button buttonIniciarSesion, buttonRegistrar, buttonRestablecimientoPass;
     private ImageButton buttonGoogle;
     private GoogleSignInClient mGoogleSignInClient;
-    private int RC_SIGN_IN = 101;
-    private String TAG = "MsjSesion";
+    private final int RC_SIGN_IN = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_MyFinances);
         setContentView(R.layout.activity_inic_sesion);
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -87,34 +77,16 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        buttonIniciarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validarInciarSesion();
-            }
+        buttonIniciarSesion.setOnClickListener(v -> validarInciarSesion());
+
+        buttonRegistrar.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), RegistrarActivity.class)));
+
+        buttonGoogle.setOnClickListener(v -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
         });
 
-        buttonRegistrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), RegistrarActivity.class));
-            }
-        });
-
-        buttonGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
-
-        buttonRestablecimientoPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enviarEmailRestablecimiento();
-            }
-        });
+        buttonRestablecimientoPass.setOnClickListener(v -> enviarEmailRestablecimiento());
     }
 
     @Override
@@ -188,6 +160,7 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        String TAG = "MsjSesion";
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {

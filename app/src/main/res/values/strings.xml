@@ -43,6 +43,7 @@
     <string name="error_cargar_data">Error al cargar. Intente nuevamente</string>
     <string name="error_guardar_data">Error al guardar. Intente nuevamente</string>
     <string name="error_eliminar_data">Error al eliminar. Intente nuevamente</string>
+    <string name="txt_error_permiso_lectura">Error de permisos de lectura</string>
     <string name="process_succes">Proceso exitoso</string>
 
     <!-- Strings used for fragments -->
@@ -70,6 +71,7 @@
     <string name="escoger_mes">Escoja mes</string>
     <string name="sin_lista">No hay ítems guardados en esta lista</string>
     <string name="text_total_balance_mensual">Suma: %1$f - %2$f</string>
+    <string name="text_cargando_cotizacion">Cargando cotización&#8230;</string>
 
     <string name="menu_editar">Editar</string>
     <string name="menu_eliminar">Eliminar</string>
@@ -169,5 +171,6 @@
     <!-- Notification -->
     <string name="notification_gastos_body">Pagar %1$s</string>
     <string name="notification_ingresos_body">Cobrar %1$s</string>
+
 
 </resources>

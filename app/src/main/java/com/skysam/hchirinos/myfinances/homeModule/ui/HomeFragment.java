@@ -102,7 +102,6 @@ public class HomeFragment extends Fragment implements HomeView {
     }
 
     private void cargarIngresos() {
-        progressBar.setVisibility(View.VISIBLE);
         homePresenter.getIngresos(yearSelected, mesSelected);
     }
 
@@ -169,6 +168,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
 
     private void actualizarCotizacion() {
+        progressBar.setVisibility(View.VISIBLE);
         homePresenter.obtenerCotizacionWeb();
     }
 

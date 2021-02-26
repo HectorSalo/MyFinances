@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,12 +13,12 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.Constraints
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
@@ -30,7 +29,6 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenter
 import com.skysam.hchirinos.myfinances.listaGastosModule.presenter.CrearEditarListaPresenterClass
-import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -48,6 +46,21 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private var imagen: String? = null
     private var imagenVieja: String? = null
     private var uriLocal: String? = null
+
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            goGallery()
+        } else {
+            Toast.makeText(context, getString(R.string.txt_error_permiso_lectura), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val requestIntentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            showImage(result.data!!)
+        }
+    }
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -87,7 +100,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
             }
         }
 
-        binding.ibGaleria.setOnClickListener { checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Constants.RP_STORAGE) }
+        binding.ibGaleria.setOnClickListener { requestPermission() }
 
         return dialog as AlertDialog
     }
@@ -246,37 +259,33 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         imagen = imagenesListas[position].photoUrl
     }
 
-    private fun checkPermission(permissionStr: String, requestPermission: Int) {
+    private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permissionStr) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(permissionStr), requestPermission)
+            if (checkPermission()) {
+                goGallery()
                 return
             }
-        }
-        when (requestPermission) {
-            Constants.RP_STORAGE -> fromGallery()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Constants.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
-            data?.let { showImage(it) }
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        } else {
+            requestPermissionOld()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            when (requestCode) {
-                Constants.RP_STORAGE -> fromGallery()
-            }
+    private fun checkPermission(): Boolean {
+        val result = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissionOld() {
+        if (checkPermission()) {
+            goGallery()
+        } else {
+            Toast.makeText(context, getString(R.string.txt_error_permiso_lectura), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showImage(it: Intent) {
         uriLocal = it.dataString
-
         previewImage(uriLocal)
     }
 
@@ -290,9 +299,9 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     }
 
 
-    private fun fromGallery() {
+    private fun goGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, Constants.RC_PHOTO_PICKER)
+        requestIntentLauncher.launch(intent)
     }
 
 
