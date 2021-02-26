@@ -61,8 +61,8 @@
     </string-array>
 
     <string-array name="opciones_list_gasto">
-    <item>Editar lista</item>
-    <item>Eliminar lista</item>
+        <item>Editar lista</item>
+        <item>Eliminar lista</item>
     </string-array>
 
     <string-array name="opciones_item_list_gasto">
@@ -98,6 +98,16 @@
         <item>temaSistema</item>
         <item>temaOscuro</item>
         <item>temaClaro</item>
+    </string-array>
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
     </string-array>
 
 </resources>

@@ -4,13 +4,13 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.inicioSesionModule.ui.InicSesionActivity
@@ -30,6 +30,7 @@ class CerrarSesionDialog : DialogFragment() {
     }
 
     private fun cerrarSesion() {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
         FirebaseAuth.getInstance().signOut()
         val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -38,7 +39,7 @@ class CerrarSesionDialog : DialogFragment() {
         editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
         editor.putBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
         editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
-        editor.commit()
+        editor.apply()
 
         var providerId = ""
         user.let {
