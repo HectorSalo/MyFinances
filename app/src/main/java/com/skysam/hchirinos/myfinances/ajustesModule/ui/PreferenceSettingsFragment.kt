@@ -11,6 +11,7 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 
 class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespaldo {
 
+    private lateinit var bloqueo: String
     private lateinit var listaBloqueo: ListPreference
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -18,9 +19,8 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
 
         val user = FirebaseAuth.getInstance().currentUser
         val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
 
-        val bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)
+        bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)!!
         val temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
         val notificationActive = sharedPreferences.getBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
 
@@ -29,9 +29,9 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
         val listaTema = findPreference<ListPreference>(Constants.PREFERENCE_TEMA)
 
         when (bloqueo) {
-            Constants.PREFERENCE_SIN_BLOQUEO -> listaBloqueo!!.value = Constants.PREFERENCE_SIN_BLOQUEO
-            Constants.PREFERENCE_BLOQUEO_HUELLA -> listaBloqueo!!.value = Constants.PREFERENCE_BLOQUEO_HUELLA
-            Constants.PREFERENCE_BLOQUEO_PIN -> listaBloqueo!!.value = Constants.PREFERENCE_BLOQUEO_PIN
+            Constants.PREFERENCE_SIN_BLOQUEO -> listaBloqueo.value = Constants.PREFERENCE_SIN_BLOQUEO
+            Constants.PREFERENCE_BLOQUEO_HUELLA -> listaBloqueo.value = Constants.PREFERENCE_BLOQUEO_HUELLA
+            Constants.PREFERENCE_BLOQUEO_PIN -> listaBloqueo.value = Constants.PREFERENCE_BLOQUEO_PIN
         }
 
         notificacionesSwitch!!.isChecked = notificationActive
@@ -42,16 +42,42 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
             Constants.PREFERENCE_TEMA_CLARO -> listaTema!!.value = Constants.PREFERENCE_TEMA_CLARO
         }
 
-        listaBloqueo!!.setOnPreferenceClickListener {
-            val pinDialog = PinDialog(this)
-            pinDialog.show(requireActivity().supportFragmentManager, tag)
+        listaBloqueo.setOnPreferenceChangeListener { _, newValue ->
+            bloqueo = listaBloqueo.value
+            when (val bloqueoEscogido = newValue as String) {
+                Constants.PREFERENCE_SIN_BLOQUEO -> {
+                    if (bloqueo != bloqueoEscogido) {
+                        val pinDialog = PinDialog(this, bloqueo, false)
+                        pinDialog.show(requireActivity().supportFragmentManager, tag)
+                    }
+                }
+                Constants.PREFERENCE_BLOQUEO_HUELLA -> {
+                    if (bloqueo != bloqueoEscogido) {
+                        if (bloqueo == Constants.PREFERENCE_BLOQUEO_PIN) {
+                            val huellaDialog = HuellaDialog(true)
+                            huellaDialog.show(requireActivity().supportFragmentManager, tag)
+                        } else {
+                            val huellaDialog = HuellaDialog(false)
+                            huellaDialog.show(requireActivity().supportFragmentManager, tag)
+                        }
+                    }
+                }
+                Constants.PREFERENCE_BLOQUEO_PIN -> {
+                    if (bloqueo != bloqueoEscogido) {
+                        val pinDialog = PinDialog(this, bloqueo, true)
+                        pinDialog.show(requireActivity().supportFragmentManager, tag)
+                    }
+                }
+            }
             true
-        }
+         }
     }
 
-    override fun validarPinRespaldo(pinOk: Boolean) {
-        if (!pinOk) {
+    override fun changeTipoBloqueo(newBloqueo: String) {
+        listaBloqueo.value = newBloqueo
+    }
 
-        }
+    override fun cancelDialog() {
+        listaBloqueo.value = bloqueo
     }
 }
