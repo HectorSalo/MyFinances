@@ -96,6 +96,9 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
     }
 
     private void validarInciarSesion() {
+        etEmailLayout.setError("");
+        etPassLayout.setError("");
+        etPassLayout.setErrorIconDrawable(null);
         String email = etEmail.getText().toString();
         String password = etPass.getText().toString();
         boolean emailValido;
@@ -123,6 +126,8 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
 
         if (passwordValido && emailValido) {
             progressBar.setVisibility(View.VISIBLE);
+            etEmailLayout.setEnabled(false);
+            etPassLayout.setEnabled(false);
             buttonIniciarSesion.setEnabled(false);
             buttonRegistrar.setEnabled(false);
             buttonGoogle.setEnabled(false);
@@ -221,18 +226,32 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
     }
 
     @Override
-    public void authWithEmailStatus(boolean ok) {
+    public void authWithEmailStatus(boolean ok, String msg) {
         if (ok) {
             progressBar.setVisibility(View.GONE);
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
         } else {
             progressBar.setVisibility(View.GONE);
+            etEmailLayout.setEnabled(true);
+            etPassLayout.setEnabled(true);
             buttonIniciarSesion.setEnabled(true);
             buttonRegistrar.setEnabled(true);
             buttonGoogle.setEnabled(true);
             buttonRestablecimientoPass.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
-                    Toast.LENGTH_LONG).show();
+            switch (msg) {
+                case "There is no user record corresponding to this identifier. The user may have been deleted.":
+                    Toast.makeText(getApplicationContext(), "No existe el usuario, debe Registrarlo",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case "The password is invalid or the user does not have a password.":
+                    Toast.makeText(getApplicationContext(), "Contraseña inválida",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
+                            Toast.LENGTH_LONG).show();
+                    break;
+            }
         }
     }
 }

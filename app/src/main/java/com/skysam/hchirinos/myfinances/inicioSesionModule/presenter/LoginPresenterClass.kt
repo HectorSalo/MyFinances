@@ -45,7 +45,7 @@ class LoginPresenterClass(val initSessionView: InitSessionView, val context: Con
         initSessionView.tipoBloqueo(bloqueo)
     }
 
-    override fun authWithEmailStatus(ok: Boolean) {
-        initSessionView.authWithEmailStatus(ok)
+    override fun authWithEmailStatus(ok: Boolean, msg: String) {
+        initSessionView.authWithEmailStatus(ok, msg)
     }
 }

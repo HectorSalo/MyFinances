@@ -2,6 +2,7 @@ package com.skysam.hchirinos.myfinances.ajustesModule.ui
 
 import android.content.Context
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -21,7 +22,7 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
         val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
 
         bloqueo = sharedPreferences.getString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)!!
-        val temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
+        var temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
         val notificationActive = sharedPreferences.getBoolean(Constants.PREFERENCE_NOTIFICATION_ACTIVE, true)
 
         listaBloqueo = findPreference(Constants.PREFERENCE_TIPO_BLOQUEO)!!
@@ -54,10 +55,10 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
                 Constants.PREFERENCE_BLOQUEO_HUELLA -> {
                     if (bloqueo != bloqueoEscogido) {
                         if (bloqueo == Constants.PREFERENCE_BLOQUEO_PIN) {
-                            val huellaDialog = HuellaDialog(true)
+                            val huellaDialog = HuellaDialog(this, true)
                             huellaDialog.show(requireActivity().supportFragmentManager, tag)
                         } else {
-                            val huellaDialog = HuellaDialog(false)
+                            val huellaDialog = HuellaDialog(this, false)
                             huellaDialog.show(requireActivity().supportFragmentManager, tag)
                         }
                     }
@@ -71,6 +72,30 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
             }
             true
          }
+
+        listaTema?.setOnPreferenceChangeListener { _, newValue ->
+            val editor = sharedPreferences.edit()
+            temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
+
+            when (val temaEscogido = newValue as String) {
+                Constants.PREFERENCE_TEMA_SISTEMA -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
+                    editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
+                    editor.apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+                Constants.PREFERENCE_TEMA_CLARO -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
+                    editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_CLARO)
+                    editor.apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+                Constants.PREFERENCE_TEMA_OSCURO -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
+                    editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_OSCURO)
+                    editor.apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            }
+            true
+        }
     }
 
     override fun changeTipoBloqueo(newBloqueo: String) {

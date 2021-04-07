@@ -14,5 +14,5 @@ interface LoginPresenter {
     fun emailRecoverySuccesfully()
     fun authWithGoogleStatus(ok: Boolean)
     fun tipoBloqueo(bloqueo: String)
-    fun authWithEmailStatus(ok: Boolean)
+    fun authWithEmailStatus(ok: Boolean, msg: String)
 }

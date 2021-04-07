@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +28,7 @@ class HuellaFragment : Fragment() {
     private val fragmentHuellaBinding get() = _fragmentHuellaBinding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         _fragmentHuellaBinding = FragmentHuellaBinding.inflate(inflater, container, false)
         return fragmentHuellaBinding.root
     }
@@ -78,7 +80,10 @@ class HuellaFragment : Fragment() {
                             result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
                         fragmentHuellaBinding.tvInfoHuella.visibility = View.GONE
-                        startActivity(Intent(requireContext(), HomeActivity::class.java))
+                        fragmentHuellaBinding.lottieAnimationView.setAnimation("huella_check.json")
+                        fragmentHuellaBinding.lottieAnimationView.playAnimation()
+                        Handler(Looper.myLooper()!!).postDelayed({
+                            startActivity(Intent(requireContext(), HomeActivity::class.java)) }, 3500)
                     }
 
                     override fun onAuthenticationFailed() {

@@ -25,6 +25,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +39,7 @@ import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -49,7 +56,12 @@ public class AgregarIngresoFragment extends Fragment {
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia, spinnerEscogerMes;
-    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbIngresoFijo, rbIngresoMes;
+    private RadioButton rbBs;
+    private RadioButton rbDolar;
+    private RadioButton rbDias;
+    private RadioButton rbSemanas;
+    private RadioButton rbMeses;
+    private RadioButton rbIngresoMes;
     private TextView tvFechaInicio, tvFechaFinal;
     private Date fechaSelecInicial, fechaSelecFinal;
     private FirebaseUser user;
@@ -90,7 +102,7 @@ public class AgregarIngresoFragment extends Fragment {
         rbMeses = view.findViewById(R.id.radioButton_meses);
         tvFechaInicio = view.findViewById(R.id.tv_fecha_inicial);
         tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
-        rbIngresoFijo = view.findViewById(R.id.radioButton_ingreso_fijo);
+        RadioButton rbIngresoFijo = view.findViewById(R.id.radioButton_ingreso_fijo);
         rbIngresoMes = view.findViewById(R.id.radioButton_ingreso_mes);
         RadioGroup radioIngreso = view.findViewById(R.id.radioGroup2);
         final LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout_frecuencia);
@@ -107,35 +119,32 @@ public class AgregarIngresoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         spinnerEscogerMes = view.findViewById(R.id.spinner_escoger_mes);
 
         List<String> listaEscogerMes = Arrays.asList(getResources().getStringArray(R.array.meses));
-        ArrayAdapter<String> adapterEscogerMes = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaEscogerMes);
+        ArrayAdapter<String> adapterEscogerMes = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaEscogerMes);
         spinnerEscogerMes.setAdapter(adapterEscogerMes);
         spinnerEscogerMes.setSelection(mesActual);
 
-        radioIngreso.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radioButton_ingreso_fijo:
-                        linearLayoutEscogerMes.setVisibility(View.GONE);
-                        linearLayoutFecha.setVisibility(View.VISIBLE);
-                        linearLayoutFrecuencia.setVisibility(View.VISIBLE);
-                        radioGroupFrecuencia.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.radioButton_ingreso_mes:
-                        linearLayoutEscogerMes.setVisibility(View.VISIBLE);
-                        linearLayoutFecha.setVisibility(View.GONE);
-                        linearLayoutFrecuencia.setVisibility(View.GONE);
-                        radioGroupFrecuencia.setVisibility(View.GONE);
-                        break;
-                    default:
-                        break;
-                }
+        radioIngreso.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radioButton_ingreso_fijo:
+                    linearLayoutEscogerMes.setVisibility(View.GONE);
+                    linearLayoutFecha.setVisibility(View.VISIBLE);
+                    linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+                    radioGroupFrecuencia.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.radioButton_ingreso_mes:
+                    linearLayoutEscogerMes.setVisibility(View.VISIBLE);
+                    linearLayoutFecha.setVisibility(View.GONE);
+                    linearLayoutFrecuencia.setVisibility(View.GONE);
+                    radioGroupFrecuencia.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -145,28 +154,13 @@ public class AgregarIngresoFragment extends Fragment {
         fechaSelecFinal = null;
 
         btnGuardar = view.findViewById(R.id.button_first);
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validarDatos();
-            }
-        });
+        btnGuardar.setOnClickListener(view1 -> validarDatos());
 
         ibFEchaInicial = view.findViewById(R.id.imageButton_inicial);
-        ibFEchaInicial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                seleccionarFecha(true);
-            }
-        });
+        ibFEchaInicial.setOnClickListener(v -> seleccionarFecha(true));
 
         ibFechaFinal = view.findViewById(R.id.imageButton_final);
-        ibFechaFinal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                crearDialogFechaFinal();
-            }
-        });
+        ibFechaFinal.setOnClickListener(view12 -> crearDialogFechaFinal());
     }
 
 
@@ -254,28 +248,22 @@ public class AgregarIngresoFragment extends Fragment {
             final int finalJ = j;
             db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (finalJ == mesSelecFinal) {
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot written succesfully");
+                        if (finalJ == mesSelecFinal) {
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                            Toast.makeText(getContext(), "Error al guardar en el mes " + (finalJ + 1) + ". Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etConceptoLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnGuardar.setEnabled(true);
-                            ibFEchaInicial.setEnabled(true);
-                            ibFechaFinal.setEnabled(true);
-                        }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar en el mes " + (finalJ + 1) + ". Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
+                        ibFEchaInicial.setEnabled(true);
+                        ibFechaFinal.setEnabled(true);
                     });
         }
     }
@@ -284,11 +272,7 @@ public class AgregarIngresoFragment extends Fragment {
         boolean dolar;
         int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
 
-        if (rbBs.isChecked()) {
-            dolar = false;
-        } else {
-            dolar = true;
-        }
+        dolar = !rbBs.isChecked();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -304,26 +288,20 @@ public class AgregarIngresoFragment extends Fragment {
 
         db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
                 .set(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot written succesfully");
-                        progressBar.setVisibility(View.GONE);
-                        requireActivity().finish();
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "DocumentSnapshot written succesfully");
+                    progressBar.setVisibility(View.GONE);
+                    requireActivity().finish();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnGuardar.setEnabled(true);
-                        ibFEchaInicial.setEnabled(true);
-                        ibFechaFinal.setEnabled(true);
-                    }
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error adding document", e);
+                    Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    etConceptoLayout.setEnabled(true);
+                    etMontoLayout.setEnabled(true);
+                    btnGuardar.setEnabled(true);
+                    ibFEchaInicial.setEnabled(true);
+                    ibFechaFinal.setEnabled(true);
                 });
     }
 
@@ -333,51 +311,52 @@ public class AgregarIngresoFragment extends Fragment {
         calendarMax.set(anualActual, 11, 31);
         Calendar calendarMin = Calendar.getInstance();
         calendarMin.set(anualActual, 0, 1);
-        calendarSelecInicial = Calendar.getInstance();
-        calendarSelecFinal = Calendar.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar calendarCurrent = Calendar.getInstance();
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                if (inicial) {
-                    calendarSelecInicial.set(anualActual, month, dayOfMonth);
-                    mesSelecInicial = month;
-                    fechaSelecInicial = calendarSelecInicial.getTime();
-                    tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
-                } else {
-                    calendarSelecFinal.set(anualActual, month, dayOfMonth);
-                    mesSelecFinal = month;
-                    fechaSelecFinal = calendarSelecFinal.getTime();
-                    tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-                }
+        CalendarConstraints.Builder constraints = new CalendarConstraints.Builder();
+        ArrayList<CalendarConstraints.DateValidator> validators = new ArrayList<>();
+        validators.add(DateValidatorPointForward.from(calendarMin.getTimeInMillis()));
+        validators.add(DateValidatorPointBackward.before(calendarMax.getTimeInMillis()));
+        constraints.setValidator(CompositeDateValidator.allOf(validators));
+        builder.setCalendarConstraints(constraints.build());
+
+        MaterialDatePicker<Long> picker = builder.build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            calendar.setTimeInMillis(selection);
+            TimeZone timeZone = TimeZone.getDefault();
+            int offset = timeZone.getOffset(new Date().getTime()) * -1;
+            calendar.set(Calendar.HOUR_OF_DAY, calendarCurrent.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendarCurrent.get(Calendar.MINUTE));
+            calendar.setTimeInMillis(calendar.getTimeInMillis() + offset);
+            if (inicial) {
+                fechaSelecInicial = calendar.getTime();
+                mesSelecInicial = calendar.get(Calendar.MONTH);
+                tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+            } else {
+                fechaSelecFinal = calendar.getTime();
+                mesSelecFinal = calendar.get(Calendar.MONTH);
+                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
             }
-        }, year, month, day);
-        datePickerDialog.getDatePicker().setMaxDate(calendarMax.getTimeInMillis());
-        datePickerDialog.getDatePicker().setMinDate(calendarMin.getTimeInMillis());
-        datePickerDialog.show();
+        });
+        picker.show(requireActivity().getSupportFragmentManager(), picker.toString());
     }
 
     private void crearDialogFechaFinal() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Seleccione")
-                .setItems(R.array.opciones_fin_periodo, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i) {
-                            case 0:
-                                calendarSelecFinal.set(anualActual, 11, 31);
-                                mesSelecFinal = 11;
-                                fechaSelecFinal = calendarSelecFinal.getTime();
-                                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-                                break;
-                            case 1:
-                                seleccionarFecha(false);
-                                break;
-                        }
+                .setItems(R.array.opciones_fin_periodo, (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            calendarSelecFinal.set(anualActual, 11, 31);
+                            mesSelecFinal = 11;
+                            fechaSelecFinal = calendarSelecFinal.getTime();
+                            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+                            break;
+                        case 1:
+                            seleccionarFecha(false);
+                            break;
                     }
                 }).show();
     }

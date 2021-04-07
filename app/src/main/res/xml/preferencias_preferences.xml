@@ -16,7 +16,8 @@
         app:summaryOn="@string/notificaciones_summary_on"
         app:title="@string/noitificaciones_title"
         app:defaultValue="true"
-        android:icon="@drawable/ic_notifications_active_24"/>
+        android:icon="@drawable/ic_notifications_active_24"
+        app:isPreferenceVisible="false"/>
 
     <ListPreference
         app:key="tema"

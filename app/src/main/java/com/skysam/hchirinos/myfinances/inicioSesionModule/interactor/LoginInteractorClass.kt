@@ -40,12 +40,12 @@ class LoginInteractorClass(private val loginPresenter: LoginPresenter, val conte
     }
 
     override fun authWithEmail(email: String, password: String) {
-        FirebaseAuthentication.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                loginPresenter.authWithEmailStatus(true)
-            } else {
-                loginPresenter.authWithEmailStatus(false)
-            }
+        FirebaseAuthentication.getInstance().signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+            loginPresenter.authWithEmailStatus(true, "")
         }
+                .addOnFailureListener {e ->
+                    loginPresenter.authWithEmailStatus(false, e.message!!)
+                }
     }
 }
