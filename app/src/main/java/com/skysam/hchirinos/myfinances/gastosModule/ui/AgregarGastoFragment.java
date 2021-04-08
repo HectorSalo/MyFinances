@@ -232,6 +232,12 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         }
 
         if (montovalido && conceptoValido && fechaValida) {
+            progressBar.setVisibility(View.VISIBLE);
+            etConceptoLayout.setEnabled(false);
+            etMontoLayout.setEnabled(false);
+            btnGuardar.setEnabled(false);
+            ibFechaInicial.setEnabled(false);
+            ibFechaFinal.setEnabled(false);
             if (rbGastoFijo.isChecked()) {
                 guardarDatosFijos(concepto);
             } else {
@@ -242,7 +248,6 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
 
 
     private void guardarDatosFijos(String concepto) {
-        progressBar.setVisibility(View.VISIBLE);
         boolean dolar;
         String tipoFrecuencia = null;
         int duracionFrecuencia = spFrecuencia.getSelectedItemPosition() + 1;
@@ -298,7 +303,6 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
 
 
     private void guardarDatosMes(String concepto) {
-        progressBar.setVisibility(View.VISIBLE);
         boolean dolar;
         int mesSelec = spinnerEscogerMes.getSelectedItemPosition();
 

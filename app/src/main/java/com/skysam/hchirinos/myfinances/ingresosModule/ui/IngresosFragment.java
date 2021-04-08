@@ -64,6 +64,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private TextView tvSinLista;
     private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
+    private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -299,29 +300,59 @@ public class IngresosFragment extends Fragment implements IngresosView {
     }
 
     private void suspenderMes(int position) {
-        String idIngreso = listaIngresos.get(position).getIdIngreso();
-        ingresosPresenter.suspenderMes(yearSelected, mesSelected, idIngreso);
+        String id;
+        if (newList == null || newList.isEmpty()) {
+            id = listaIngresos.get(position).getIdIngreso();
+        } else {
+            id = newList.get(position).getIdIngreso();
+        }
+        ingresosPresenter.suspenderMes(yearSelected, mesSelected, id);
     }
 
     private void eliminarDefinitivo(final int position) {
-        final IngresosGastosConstructor itemSwipe = listaIngresos.get(position);
+        final IngresosGastosConstructor itemSwipe;
+        ArrayList<IngresosGastosConstructor> itemToResored;
+        if (newList == null || newList.isEmpty()) {
+            fromSearch = false;
+            itemSwipe = listaIngresos.get(position);
 
-        listaIngresos.remove(position);
-        ingresosAdapter.updateList(listaIngresos);
+            itemToResored = new ArrayList<>();
+            itemToResored.add(itemSwipe);
 
-        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
-                .setAction("Deshacer", view -> {
-            listaIngresos.add(position, itemSwipe);
+            listaIngresos.remove(position);
             ingresosAdapter.updateList(listaIngresos);
-        });
-        snackbar.show();
 
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            if (!listaIngresos.contains(itemSwipe)) {
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                    .setAction("Deshacer", view -> {
+                listaIngresos.add(position, itemSwipe);
+                ingresosAdapter.updateList(listaIngresos);
+                itemToResored.clear();
+            });
+            snackbar.show();
+        } else {
+            fromSearch = true;
+            itemSwipe = newList.get(position);
+
+            itemToResored = new ArrayList<>();
+            itemToResored.add(itemSwipe);
+
+            newList.remove(position);
+            ingresosAdapter.updateList(newList);
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                    .setAction("Deshacer", view -> {
+                        newList.add(position, itemSwipe);
+                        ingresosAdapter.updateList(newList);
+                        itemToResored.clear();
+                    });
+            snackbar.show();
+        }
+
+        new Handler(Looper.myLooper()).postDelayed(() -> {
+            if (!itemToResored.isEmpty()) {
                 deleteItemSwipe(itemSwipe.getIdIngreso(), itemSwipe.getFechaFinal());
             }
-        }, 4500);
+        }, 3500);
     }
 
 
@@ -337,6 +368,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
                         .addOnSuccessListener(aVoid -> {
                             Log.d("Delete", "DocumentSnapshot successfully deleted!");
                             if (finalI == mesFinal) {
+                                if (fromSearch) {
+                                    cargarIngresos();
+                                }
                                 Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                             }
                         })

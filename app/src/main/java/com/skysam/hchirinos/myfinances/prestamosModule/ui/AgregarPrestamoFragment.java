@@ -14,8 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +35,8 @@ public class AgregarPrestamoFragment extends Fragment {
     private TextInputLayout etDestinatarioLayout, etMontoLayout;
     private String destinatario;
     private double monto;
-    private RadioButton rbBs, rbDolar;
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private RadioButton rbDolar;
+    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ProgressBar progressBar;
     private Button btnGuardar;
 
@@ -65,7 +63,6 @@ public class AgregarPrestamoFragment extends Fragment {
         etDestinatarioLayout = view.findViewById(R.id.outlined_destinatario);
         etMonto = view.findViewById(R.id.et_monto);
         etMontoLayout = view.findViewById(R.id.outlined_monto);
-        rbBs = view.findViewById(R.id.radioButton_bolivares);
         rbDolar = view.findViewById(R.id.radioButton_dolares);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_prestamo);
@@ -74,12 +71,7 @@ public class AgregarPrestamoFragment extends Fragment {
 
 
         btnGuardar = view.findViewById(R.id.button_guardar);
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validarDatos();
-            }
-        });
+        btnGuardar.setOnClickListener(view1 -> validarDatos());
     }
 
     private void validarDatos() {
@@ -88,7 +80,7 @@ public class AgregarPrestamoFragment extends Fragment {
         destinatario = etDestinatario.getText().toString();
         String montoS = etMonto.getText().toString();
         boolean destinatarioValido;
-        boolean montovalido = false;
+        boolean montovalido;
 
         if (!destinatario.isEmpty()) {
             destinatarioValido = true;
@@ -125,13 +117,9 @@ public class AgregarPrestamoFragment extends Fragment {
         int mes = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
         Date fechaIngreso = calendar.getTime();
-        boolean dolar = false;
+        boolean dolar;
 
-        if (rbDolar.isChecked()) {
-            dolar = true;
-        } else if (rbBs.isChecked()) {
-            dolar = false;
-        }
+        dolar = rbDolar.isChecked();
 
         Map<String, Object> docData = new HashMap<>();
         docData.put(Constants.BD_CONCEPTO, destinatario);
@@ -145,26 +133,20 @@ public class AgregarPrestamoFragment extends Fragment {
             final int finalJ = j;
             db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot written succesfully");
-                            if (finalJ == 11) {
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot written succesfully");
+                        if (finalJ == 11) {
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                            Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etDestinatarioLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnGuardar.setEnabled(true);
-                        }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "Error al guardar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etDestinatarioLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnGuardar.setEnabled(true);
                     });
         }
     }

@@ -65,6 +65,7 @@ public class AhorrosFragment extends Fragment {
     private TextView tvSinLista;
     private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
+    private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -201,27 +202,52 @@ public class AhorrosFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             final int position = viewHolder.getAdapterPosition();
-            AhorrosConstructor itemSwipe = listaAhorros.get(position);
 
             switch (direction) {
                 case ItemTouchHelper.RIGHT:
-                listaAhorros.remove(position);
-                ahorrosAdapter.updateList(listaAhorros);
+                    ArrayList<AhorrosConstructor> itemToRestored;
+                    final AhorrosConstructor finalItemSwipe;
+                    if (newList == null || newList.isEmpty()) {
+                        fromSearch = false;
+                        AhorrosConstructor itemSwipe = listaAhorros.get(position);
+                        listaAhorros.remove(position);
+                        ahorrosAdapter.updateList(listaAhorros);
+                        itemToRestored = new ArrayList<>();
+                        itemToRestored.add(itemSwipe);
 
-                final AhorrosConstructor finalItemSwipe = itemSwipe;
+                        finalItemSwipe = itemSwipe;
 
-                final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
-                        .setAction("Deshacer", view -> {
-                    listaAhorros.add(position, finalItemSwipe);
-                    ahorrosAdapter.updateList(listaAhorros);
-                });
-                snackbar.show();
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        if (!listaAhorros.contains(finalItemSwipe)) {
+                        final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                                .setAction("Deshacer", view -> {
+                            listaAhorros.add(position, finalItemSwipe);
+                            ahorrosAdapter.updateList(listaAhorros);
+                            itemToRestored.clear();
+                        });
+                        snackbar.show();
+                    } else {
+                        fromSearch = true;
+                        AhorrosConstructor itemSwipe = newList.get(position);
+                        newList.remove(position);
+                        ahorrosAdapter.updateList(newList);
+                        itemToRestored = new ArrayList<>();
+                        itemToRestored.add(itemSwipe);
+
+                        finalItemSwipe = itemSwipe;
+
+                        final Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                                .setAction("Deshacer", view -> {
+                                    newList.add(position, finalItemSwipe);
+                                    ahorrosAdapter.updateList(newList);
+                                    itemToRestored.clear();
+                                });
+                        snackbar.show();
+                    }
+
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        if (!itemToRestored.isEmpty()) {
                             deleteItemSwipe(finalItemSwipe.getIdAhorro());
                         }
-                    }, 4500);
+                    }, 3500);
                 break;
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
@@ -405,6 +431,9 @@ public class AhorrosFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> {
                         Log.d("Delete", "DocumentSnapshot successfully deleted!");
                         if (finalI == 11) {
+                            if (fromSearch) {
+                                cargarAhorros();
+                            }
                             Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                         }
                     })

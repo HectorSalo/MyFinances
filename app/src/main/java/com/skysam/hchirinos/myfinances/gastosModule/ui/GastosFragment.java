@@ -64,6 +64,7 @@ public class GastosFragment extends Fragment {
     private TextView tvSinLista;
     private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
+    private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -387,31 +388,62 @@ public class GastosFragment extends Fragment {
 
 
     private void suspenderMes(int position) {
+        String id;
+        if (newList == null || newList.isEmpty()) {
+            id = listaGastos.get(position).getIdIngreso();
+        } else {
+            id = newList.get(position).getIdIngreso();
+        }
         db.collection(Constants.BD_GASTOS).document(user.getUid())
-                .collection(yearSelected + "-" + mesSelected).document(listaGastos.get(position).getIdIngreso())
+                .collection(yearSelected + "-" + mesSelected).document(id)
                 .update(Constants.BD_MES_ACTIVO, false)
                 .addOnSuccessListener(aVoid -> cargarGastos())
                 .addOnFailureListener(e -> Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show());
     }
 
     private void eliminarDefinitivo(final int position) {
-        final IngresosGastosConstructor itemSwipe = listaGastos.get(position);
-        listaGastos.remove(position);
-        gastosAdapter.updateList(listaGastos);
+        final IngresosGastosConstructor itemSwipe;
+        ArrayList<IngresosGastosConstructor> itemToResored;
+        if (newList == null || newList.isEmpty()) {
+            fromSearch = false;
+            itemSwipe = listaGastos.get(position);
+            listaGastos.remove(position);
+            gastosAdapter.updateList(listaGastos);
 
-        Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
-                .setAction("Deshacer", view -> {
-                    listaGastos.add(position, itemSwipe);
-                    gastosAdapter.updateList(listaGastos);
-                });
-        snackbar.show();
+            itemToResored = new ArrayList<>();
+            itemToResored.add(itemSwipe);
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                    .setAction("Deshacer", view -> {
+                        listaGastos.add(position, itemSwipe);
+                        gastosAdapter.updateList(listaGastos);
+                        itemToResored.clear();
+                    });
+            snackbar.show();
+        } else {
+            fromSearch = true;
+            itemSwipe = newList.get(position);
+            newList.remove(position);
+            gastosAdapter.updateList(newList);
+
+            itemToResored = new ArrayList<>();
+            itemToResored.add(itemSwipe);
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, itemSwipe.getConcepto() + " borrado", Snackbar.LENGTH_LONG)
+                    .setAction("Deshacer", view -> {
+                        newList.add(position, itemSwipe);
+                        gastosAdapter.updateList(newList);
+                        itemToResored.clear();
+                    });
+            snackbar.show();
+        }
 
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-            if (!listaGastos.contains(itemSwipe)) {
+            if (!itemToResored.isEmpty()) {
                 deleteItemSwipe(itemSwipe.getIdGasto(), itemSwipe.getFechaFinal());
             }
-        }, 4500);
+        }, 3500);
     }
 
 
@@ -427,6 +459,9 @@ public class GastosFragment extends Fragment {
                         .addOnSuccessListener(aVoid -> {
                             Log.d("Delete", "DocumentSnapshot successfully deleted!");
                             if (finalI == mesFinal) {
+                                if (fromSearch) {
+                                    cargarGastos();
+                                }
                                 Log.d("Delete", "DocumentSnapshot successfully deleted, all them!");
                             }
                         })
