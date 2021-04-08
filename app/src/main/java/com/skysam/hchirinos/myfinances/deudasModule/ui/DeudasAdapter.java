@@ -34,19 +34,21 @@ import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstru
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder> {
 
     private ArrayList<AhorrosConstructor> listaDeudas;
-    private Context context;
-    private int year, mes;
-
-    public DeudasAdapter() {
-    }
+    private final Context context;
+    private final int year;
+    private final int mes;
 
     public DeudasAdapter(ArrayList<AhorrosConstructor> listaDeudas, Context context, int year, int mes) {
         this.listaDeudas = listaDeudas;
@@ -59,7 +61,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
     @Override
     public DeudasAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, null, false);
-        return new DeudasAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -71,33 +73,30 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
         holder.fechaIngreso.setText("Agregado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaDeudas.get(i).getFechaIngreso()));
 
-
-        if (listaDeudas.get(i).isDolar()) {
-            holder.monto.setText("$" + listaDeudas.get(i).getMonto());
+        if (listaDeudas.get(i).getMonto() > 0) {
+            if (listaDeudas.get(i).isDolar()) {
+                holder.monto.setText("$" + listaDeudas.get(i).getMonto());
+            } else {
+                holder.monto.setText("Bs. " + listaDeudas.get(i).getMonto());
+            }
         } else {
-            holder.monto.setText("Bs. " + listaDeudas.get(i).getMonto());
+            holder.monto.setText("Deuda pagada por completo");
         }
 
-        holder.tvMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
-                popupMenu.inflate(R.menu.deudas_popmenu);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.menu_abono) {
-                            ingresarAbono(i);
-                        } else if (item.getItemId() == R.id.menu_aumento) {
-                            ingresarAumento(i);
-                        } else if (item.getItemId() == R.id.menu_historial_pagos) {
-                            verPagos(i);
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.show();
-            }
+        holder.tvMenu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
+            popupMenu.inflate(R.menu.deudas_popmenu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_abono) {
+                    ingresarAbono(i);
+                } else if (item.getItemId() == R.id.menu_aumento) {
+                    ingresarAumento(i);
+                } else if (item.getItemId() == R.id.menu_historial_pagos) {
+                    verPagos(i);
+                }
+                return false;
+            });
+            popupMenu.show();
         });
 
     }
@@ -107,7 +106,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         return listaDeudas.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView concepto, prestamista, monto, fechaIngreso, tvMenu;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -144,26 +143,23 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto a abonar")
                 .setView(v)
-                .setPositiveButton("Abonar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!editText.getText().toString().isEmpty()) {
-                            double valor = Double.parseDouble(editText.getText().toString());
-                            if (valor > 0) {
-                                double total = montoOriginal - valor;
-                                if (total >= 0) {
-                                    Toast.makeText(context, "Actualizando deuda...", Toast.LENGTH_LONG).show();
-                                    if (total == 0) {
-                                        eliminarDeuda(position);
-                                    } else {
-                                        actualizarMonto(position, total, true);
-                                    }
+                .setPositiveButton("Abonar", (dialog1, which) -> {
+                    if (!editText.getText().toString().isEmpty()) {
+                        double valor = Double.parseDouble(editText.getText().toString());
+                        if (valor > 0) {
+                            double total = montoOriginal - valor;
+                            if (total >= 0) {
+                                Toast.makeText(context, "Actualizando deuda...", Toast.LENGTH_LONG).show();
+                                if (total == 0) {
+                                    eliminarDeuda(position, valor);
                                 } else {
-                                    Toast.makeText(context, "No puede abonar un monto mayor a la deuda", Toast.LENGTH_SHORT).show();
+                                    actualizarMonto(position, total, true);
                                 }
                             } else {
-                                Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "No puede abonar un monto mayor a la deuda", Toast.LENGTH_SHORT).show();
                             }
+                        } else {
+                            Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
@@ -186,67 +182,85 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
             final int finalJ = j;
             db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
                     .update(Constants.BD_MONTO, montoNuevo, Constants.BD_FECHA_HISTORIAL, FieldValue.arrayUnion(fecha))
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            if (finalJ == 11) {
-                                Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
-                                listaDeudas.get(position).setMonto(montoNuevo);
-                                updateList(listaDeudas);
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        if (finalJ == 11) {
+                            Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
+                            listaDeudas.get(position).setMonto(montoNuevo);
+                            updateList(listaDeudas);
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            if (finalJ > mes) {
-                                Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
-                                listaDeudas.get(position).setMonto(montoNuevo);
-                                updateList(listaDeudas);
-                            } else {
-                                Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                            }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        if (finalJ > mes) {
+                            Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
+                            listaDeudas.get(position).setMonto(montoNuevo);
+                            updateList(listaDeudas);
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
 
-    private void eliminarDeuda(final int position) {
+    private void eliminarDeuda(final int position, double monto) {
         String idDoc = listaDeudas.get(position).getIdDeuda();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        for (int j = mes; j < 12; j++) {
+        int month;
+        if (mes == 11) {
+            month = mes;
+        } else {
+            month = mes + 1;
+        }
+        for (int j = month; j < 12; j++) {
             final int finalJ = j;
             db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
                     .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                            if (finalJ == 11) {
-                                Toast.makeText(context, "Deuda pagada por completo", Toast.LENGTH_SHORT).show();
-                                listaDeudas.remove(position);
-                                updateList(listaDeudas);
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        if (finalJ == 11) {
+                            agregarUltPago(position, monto);
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            if (finalJ > mes) {
-                                Toast.makeText(context, "Deuda pagada por completo", Toast.LENGTH_SHORT).show();
-                                listaDeudas.remove(position);
-                                updateList(listaDeudas);
-                            } else {
-                                Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                            }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        if (finalJ > mes) {
+                            agregarUltPago(position, monto);
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
+    }
+
+    private void agregarUltPago(int position, double monto) {
+        Calendar calendar = Calendar.getInstance();
+
+        Map<String,Object> updates = new HashMap<>();
+        updates.put(Constants.BD_MONTO, 0);
+        updates.put(Constants.BD_FECHA_HISTORIAL, FieldValue.arrayUnion(calendar.getTime()));
+        updates.put(Constants.BD_MONTO_ULT_PAGO, monto);
+
+        String idDoc = listaDeudas.get(position).getIdDeuda();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + mes).document(idDoc)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
+                    listaDeudas.get(position).setMonto(0);
+                    updateList(listaDeudas);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error updating document", e);
+                    Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
+                    listaDeudas.get(position).setMonto(0);
+                    updateList(listaDeudas);
+                });
     }
 
 
@@ -267,17 +281,14 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Ingrese el monto de aumento")
                 .setView(v)
-                .setPositiveButton("Aumentar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!editText.getText().toString().isEmpty()) {
-                            double valor = Double.parseDouble(editText.getText().toString());
-                            if (valor > 0) {
-                                double total = montoOriginal + valor;
-                                actualizarMonto(position, total, false);
-                            } else {
-                                Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
-                            }
+                .setPositiveButton("Aumentar", (dialog1, which) -> {
+                    if (!editText.getText().toString().isEmpty()) {
+                        double valor = Double.parseDouble(editText.getText().toString());
+                        if (valor > 0) {
+                            double total = montoOriginal + valor;
+                            actualizarMonto(position, total, false);
+                        } else {
+                            Toast.makeText(context, "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
@@ -291,30 +302,34 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
         db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + mes).document(idDoc)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if (documentSnapshot.exists()) {
-                                ArrayList<Timestamp> fechas = ((ArrayList<Timestamp>) documentSnapshot.get(Constants.BD_FECHA_HISTORIAL));
-                                if (fechas != null && fechas.size() > 0) {
-                                    for (int j = 0; j < fechas.size(); j++) {
-                                        if (fechas.get(j) == null) {
-                                            fechas.remove(j);
-                                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if (documentSnapshot.exists()) {
+                            double ultPago = 0;
+                            if (documentSnapshot.getDouble(Constants.BD_MONTO) == 0) {
+                                ultPago = documentSnapshot.getDouble(Constants.BD_MONTO_ULT_PAGO);
+                            }
+                            ArrayList<Timestamp> fechas = ((ArrayList<Timestamp>) documentSnapshot.get(Constants.BD_FECHA_HISTORIAL));
+                            if (fechas != null && fechas.size() > 0) {
+                                for (int j = 0; j < fechas.size(); j++) {
+                                    if (fechas.get(j) == null) {
+                                        fechas.remove(j);
                                     }
-                                    cargarLayout(fechas);
-                                } else {
-                                    cargarLayout(null);
                                 }
+                                if (fechas.size() > 1) {
+                                    Collections.sort(fechas, (o1, o2) -> o2.compareTo(o1));
+                                }
+                                cargarLayout(fechas, ultPago);
+                            } else {
+                                cargarLayout(null, ultPago);
                             }
                         }
                     }
                 });
     }
 
-    private void cargarLayout(ArrayList<Timestamp> fechas) {
+    private void cargarLayout(ArrayList<Timestamp> fechas, double ultPago) {
         SimpleDateFormat tf = new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault());
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -343,7 +358,11 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
             textView1.setText("No tiene historial guardado");
         } else {
             if (fechas.size() > 0) {
-                textView1.setText(tf.format(fechas.get(0).toDate()));
+                if (ultPago > 0) {
+                    textView1.setText(tf.format(fechas.get(0).toDate()) + " ($" + ultPago + ")");
+                } else {
+                    textView1.setText(tf.format(fechas.get(0).toDate()));
+                }
             }
             if (fechas.size() > 1) {
                 textView2.setText(tf.format(fechas.get(1).toDate()));
@@ -368,12 +387,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle("Fechas")
                 .setView(layout)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .setPositiveButton("OK", (dialog1, which) -> dialog1.dismiss()).show();
     }
 
 }

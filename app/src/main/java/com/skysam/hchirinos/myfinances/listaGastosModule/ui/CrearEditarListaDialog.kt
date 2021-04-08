@@ -40,7 +40,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private var dialog : AlertDialog? = null
-    private lateinit var imagenesListas: ArrayList<ImagenesListasConstructor>
+    private var imagenesListas: MutableList<ImagenesListasConstructor> = mutableListOf()
     private lateinit var imagenesListasAdapter: ImagenesListasAdapter
     private var crearEditarListaPresenter: CrearEditarListaPresenter = CrearEditarListaPresenterClass(this)
     private var imagen: String? = null
@@ -215,20 +215,27 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         adapter.updateList(lista)
     }
 
-    override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
-        imagenesListas = ArrayList()
-        imagenesListas = imagenes
+    override fun cargarImagenes(imagenes: MutableList<ImagenesListasConstructor>) {
+        imagenesListas.clear()
+        imagenesListas.addAll(imagenes)
 
         if (!guardar) {
+            var isImgFromServer = false
             imagenVieja = lista[position!!].imagen
             imagen = lista[position].imagen
             if (lista[position].imagen != null) {
                 for (j in 0 until imagenesListas.size) {
-                    imagenesListas[j].imageSelected = imagenesListas[j].photoUrl.equals(lista[position].imagen)
+                    imagenesListas[j].isImageSelected = imagenesListas[j].photoUrl.equals(lista[position].imagen)
+                    if (imagenesListas[j].photoUrl.equals(lista[position].imagen)) {
+                        isImgFromServer = true
+                    }
                 }
-                Glide.with(requireContext()).load(imagen)
-                        .error(R.drawable.ic_add_photo_96)
-                        .into(binding.ibGaleria)
+                if (!isImgFromServer) {
+                    Glide.with(requireContext()).load(imagen)
+                            .error(R.drawable.ic_add_photo_96)
+                            .into(binding.ibGaleria)
+                    binding.rbGaleria.isChecked = true
+                }
             }
         }
 

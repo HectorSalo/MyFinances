@@ -18,10 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,17 +47,20 @@ public class EditarGastoFragment extends Fragment {
 
     private String conceptoViejo, conceptoNuevo, idDoc;
     private double montoNuevo, montoViejo;
-    private int duracionFrecuenciaViejo, duracionFrecuenciaNuevo, yearSelected, mesSelected, mesFinal;
+    private int duracionFrecuenciaViejo;
+    private int yearSelected;
+    private int mesSelected;
+    private int mesFinal;
     private boolean mesUnico;
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia;
-    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses;
+    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbEditAllMonth;
     private TextView tvFechaInicial, tvFechaFinal;
     private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnEditar;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -92,11 +91,13 @@ public class EditarGastoFragment extends Fragment {
         rbDias = view.findViewById(R.id.radioButton_dias);
         rbSemanas = view.findViewById(R.id.radioButton_semanas);
         rbMeses = view.findViewById(R.id.radioButton_meses);
+        rbEditAllMonth = view.findViewById(R.id.rb_todos_meses);
         tvFechaInicial = view.findViewById(R.id.tv_fecha_inicial);
         tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
         LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout2);
         LinearLayout linearLayoutFecha = view.findViewById(R.id.linear_periodo);
         RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup3);
+        RadioGroup radioGroupEditarMes = view.findViewById(R.id.radioGroup2);
 
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -108,16 +109,11 @@ public class EditarGastoFragment extends Fragment {
         spFrecuencia = view.findViewById(R.id.spinner_frecuencia);
 
         List<String> listaFrecuencia = Arrays.asList(getResources().getStringArray(R.array.numero_frecuencia));
-        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<String>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
+        ArrayAdapter<String> adapterFrecuencia = new ArrayAdapter<>(requireContext(), R.layout.layout_spinner, listaFrecuencia);
         spFrecuencia.setAdapter(adapterFrecuencia);
 
         btnEditar = view.findViewById(R.id.button_editar);
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validarDatos();
-            }
-        });
+        btnEditar.setOnClickListener(v -> validarDatos());
 
         if (mesUnico) {
             linearLayoutFecha.setVisibility(View.GONE);
@@ -131,8 +127,17 @@ public class EditarGastoFragment extends Fragment {
             cargarItemPeriodico();
         }
 
-
-
+        radioGroupEditarMes.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_mes) {
+                linearLayoutFecha.setVisibility(View.GONE);
+                linearLayoutFrecuencia.setVisibility(View.GONE);
+                radioGroupFrecuencia.setVisibility(View.GONE);
+            } else if (checkedId == R.id.rb_todos_meses) {
+                linearLayoutFecha.setVisibility(View.VISIBLE);
+                linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+                radioGroupFrecuencia.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -142,72 +147,69 @@ public class EditarGastoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
-                        etConcepto.setText(conceptoViejo);
+                    conceptoViejo = document.getString(Constants.BD_CONCEPTO);
+                    etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constants.BD_MONTO);
-                        String montoS = String.valueOf(montoViejo);
-                        etMonto.setText(montoS);
+                    montoViejo = document.getDouble(Constants.BD_MONTO);
+                    String montoS = String.valueOf(montoViejo);
+                    etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-                        if (dolar) {
-                            rbDolar.setChecked(true);
-                        } else {
-                            rbBs.setChecked(true);
-                        }
-
-                        double duracionFrecuenciaD = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                        duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
-                        spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
-
-                        String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
-                        if (tipoFrecuencia.equals("Dias")) {
-                            rbDias.setChecked(true);
-                        } else if (tipoFrecuencia.equals("Semanas")) {
-                            rbSemanas.setChecked(true);
-                        } else if (tipoFrecuencia.equals("Meses")) {
-                            rbMeses.setChecked(true);
-                        }
-
-                        Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
-                        tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
-
-                        Date fechaFinal = document.getDate(Constants.BD_FECHA_FINAL);
-                        if (fechaFinal != null) {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(fechaFinal);
-                            mesFinal = calendar.get(Calendar.MONTH);
-                            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaFinal));
-                        } else {
-                            mesFinal = 11;
-                        }
-
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
+                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
+                    if (dolar) {
+                        rbDolar.setChecked(true);
                     } else {
-                        Log.d(TAG, "No such document");
-                        Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
+                        rbBs.setChecked(true);
                     }
+
+                    double duracionFrecuenciaD = document.getDouble(Constants.BD_DURACION_FRECUENCIA);
+                    duracionFrecuenciaViejo = (int) duracionFrecuenciaD;
+                    spFrecuencia.setSelection(duracionFrecuenciaViejo - 1);
+
+                    String tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA);
+                    switch (tipoFrecuencia) {
+                        case "Dias":
+                            rbDias.setChecked(true);
+                            break;
+                        case "Semanas":
+                            rbSemanas.setChecked(true);
+                            break;
+                        case "Meses":
+                            rbMeses.setChecked(true);
+                            break;
+                    }
+
+                    Date fechaInicial = document.getDate(Constants.BD_FECHA_INCIAL);
+                    tvFechaInicial.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaInicial));
+
+                    Date fechaFinal = document.getDate(Constants.BD_FECHA_FINAL);
+                    if (fechaFinal != null) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(fechaFinal);
+                        mesFinal = calendar.get(Calendar.MONTH);
+                        tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaFinal));
+                    } else {
+                        mesFinal = 11;
+                    }
+
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    requireActivity().finish();
+                    Log.d(TAG, "No such document");
+                    Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                progressBar.setVisibility(View.GONE);
+                etConceptoLayout.setEnabled(true);
+                etMontoLayout.setEnabled(true);
+                btnEditar.setEnabled(true);
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+                Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                requireActivity().finish();
             }
         });
     }
@@ -218,46 +220,39 @@ public class EditarGastoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        conceptoViejo = document.getString(Constants.BD_CONCEPTO);
-                        etConcepto.setText(conceptoViejo);
+                    conceptoViejo = document.getString(Constants.BD_CONCEPTO);
+                    etConcepto.setText(conceptoViejo);
 
-                        montoViejo = document.getDouble(Constants.BD_MONTO);
-                        String montoS = String.valueOf(montoViejo);
-                        etMonto.setText(montoS);
+                    montoViejo = document.getDouble(Constants.BD_MONTO);
+                    String montoS = String.valueOf(montoViejo);
+                    etMonto.setText(montoS);
 
-                        boolean dolar = document.getBoolean(Constants.BD_DOLAR);
-                        if (dolar) {
-                            rbDolar.setChecked(true);
-                        } else {
-                            rbBs.setChecked(true);
-                        }
-
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
+                    boolean dolar = document.getBoolean(Constants.BD_DOLAR);
+                    if (dolar) {
+                        rbDolar.setChecked(true);
                     } else {
-                        Log.d(TAG, "No such document");
-                        Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        etConceptoLayout.setEnabled(true);
-                        etMontoLayout.setEnabled(true);
-                        btnEditar.setEnabled(true);
+                        rbBs.setChecked(true);
                     }
+
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    requireActivity().finish();
+                    Log.d(TAG, "No such document");
+                    Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
+                progressBar.setVisibility(View.GONE);
+                etConceptoLayout.setEnabled(true);
+                etMontoLayout.setEnabled(true);
+                btnEditar.setEnabled(true);
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+                Toast.makeText(getContext(), getContext().getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                requireActivity().finish();
             }
         });
     }
@@ -294,20 +289,68 @@ public class EditarGastoFragment extends Fragment {
             if (mesUnico) {
                 actualizarItemUnico();
             } else {
-                actualizarItemPeriodico();
+                if (rbEditAllMonth.isChecked()) {
+                    actualizarItemPeriodicoAllMonth();
+                } else {
+                    actualizarItemPeriodicoJustMonth();
+                }
             }
         }
 
     }
 
-
-    private void actualizarItemPeriodico() {
+    private void actualizarItemPeriodicoJustMonth() {
         progressBar.setVisibility(View.VISIBLE);
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        duracionFrecuenciaNuevo = spFrecuencia.getSelectedItemPosition() + 1;
+
+        Map<String, Object> item = new HashMap<>();
+        item.put(Constants.BD_DURACION_FRECUENCIA, duracionFrecuenciaViejo);
+
+        if (!conceptoViejo.equals(conceptoNuevo)) {
+            item.put(Constants.BD_CONCEPTO, conceptoNuevo);
+        }
+        if (montoNuevo != montoViejo) {
+            item.put(Constants.BD_MONTO, montoNuevo);
+        }
+        item.put(Constants.BD_DOLAR, rbDolar.isChecked());
+        if (rbDias.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Dias");
+        }
+        if (rbSemanas.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Semanas");
+        }
+        if (rbMeses.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
+        }
+
+        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+                .update(item)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    requireActivity().finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error updating document", e);
+                    Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    etConceptoLayout.setEnabled(true);
+                    etMontoLayout.setEnabled(true);
+                    btnEditar.setEnabled(true);
+                });
+    }
+
+
+    private void actualizarItemPeriodicoAllMonth() {
+        progressBar.setVisibility(View.VISIBLE);
+        etConceptoLayout.setEnabled(false);
+        etMontoLayout.setEnabled(false);
+        btnEditar.setEnabled(false);
+
+        int duracionFrecuenciaNuevo = spFrecuencia.getSelectedItemPosition() + 1;
         Map<String, Object> item = new HashMap<>();
 
         if (!conceptoViejo.equals(conceptoNuevo)) {
@@ -339,32 +382,26 @@ public class EditarGastoFragment extends Fragment {
             final int finalI = i;
             db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            if (finalI == mesFinal) {
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        if (finalI == mesFinal) {
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            if (finalI > mesSelected) {
-                                Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                requireActivity().finish();
-                            } else {
-                                Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
-                                etConceptoLayout.setEnabled(true);
-                                etMontoLayout.setEnabled(true);
-                                btnEditar.setEnabled(true);
-                            }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        if (finalI > mesSelected) {
+                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            requireActivity().finish();
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            etConceptoLayout.setEnabled(true);
+                            etMontoLayout.setEnabled(true);
+                            btnEditar.setEnabled(true);
                         }
                     });
         }
@@ -393,25 +430,19 @@ public class EditarGastoFragment extends Fragment {
 
             db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
                     .update(item)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                            Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            requireActivity().finish();
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        requireActivity().finish();
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                            Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                            etConceptoLayout.setEnabled(true);
-                            etMontoLayout.setEnabled(true);
-                            btnEditar.setEnabled(true);
-                        }
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "Error updating document", e);
+                        Toast.makeText(getContext(), "Error al modificar. Intente nuevamente", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        etConceptoLayout.setEnabled(true);
+                        etMontoLayout.setEnabled(true);
+                        btnEditar.setEnabled(true);
                     });
 
     }

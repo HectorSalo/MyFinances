@@ -114,6 +114,7 @@ public class RegistrarActivity extends AppCompatActivity implements RegistrarVie
     public void registerSuccess(boolean success) {
         if (success) {
             progressBar.setVisibility(View.GONE);
+            finish();
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
         } else {
             progressBar.setVisibility(View.GONE);

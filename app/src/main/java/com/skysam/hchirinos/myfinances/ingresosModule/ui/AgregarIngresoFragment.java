@@ -1,8 +1,6 @@
 package com.skysam.hchirinos.myfinances.ingresosModule.ui;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -23,23 +20,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.CompositeDateValidator;
-import com.google.android.material.datepicker.DateValidatorPointBackward;
-import com.google.android.material.datepicker.DateValidatorPointForward;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,11 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class AgregarIngresoFragment extends Fragment {
+public class AgregarIngresoFragment extends Fragment implements OnClickDatePicker {
 
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
@@ -69,7 +61,8 @@ public class AgregarIngresoFragment extends Fragment {
     private Button btnGuardar;
     private ImageButton ibFEchaInicial, ibFechaFinal;
     private int mesSelecInicial, mesSelecFinal, anualActual;
-    private Calendar calendarSelecInicial, calendarSelecFinal, calendarActual;
+    private boolean fechaIncial;
+    private Calendar calendarActual;
 
     public AgregarIngresoFragment() {}
 
@@ -157,8 +150,10 @@ public class AgregarIngresoFragment extends Fragment {
         btnGuardar.setOnClickListener(view1 -> validarDatos());
 
         ibFEchaInicial = view.findViewById(R.id.imageButton_inicial);
-        ibFEchaInicial.setOnClickListener(v -> seleccionarFecha(true));
-
+        ibFEchaInicial.setOnClickListener(v -> {
+            fechaIncial = true;
+            ClassesCommon.INSTANCE.selectDate(requireActivity().getSupportFragmentManager(), this);
+        });
         ibFechaFinal = view.findViewById(R.id.imageButton_final);
         ibFechaFinal.setOnClickListener(view12 -> crearDialogFechaFinal());
     }
@@ -305,59 +300,36 @@ public class AgregarIngresoFragment extends Fragment {
                 });
     }
 
-
-    private void seleccionarFecha(final boolean inicial) {
-        Calendar calendarMax = Calendar.getInstance();
-        calendarMax.set(anualActual, 11, 31);
-        Calendar calendarMin = Calendar.getInstance();
-        calendarMin.set(anualActual, 0, 1);
-        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Calendar calendarCurrent = Calendar.getInstance();
-
-        CalendarConstraints.Builder constraints = new CalendarConstraints.Builder();
-        ArrayList<CalendarConstraints.DateValidator> validators = new ArrayList<>();
-        validators.add(DateValidatorPointForward.from(calendarMin.getTimeInMillis()));
-        validators.add(DateValidatorPointBackward.before(calendarMax.getTimeInMillis()));
-        constraints.setValidator(CompositeDateValidator.allOf(validators));
-        builder.setCalendarConstraints(constraints.build());
-
-        MaterialDatePicker<Long> picker = builder.build();
-        picker.addOnPositiveButtonClickListener(selection -> {
-            calendar.setTimeInMillis(selection);
-            TimeZone timeZone = TimeZone.getDefault();
-            int offset = timeZone.getOffset(new Date().getTime()) * -1;
-            calendar.set(Calendar.HOUR_OF_DAY, calendarCurrent.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, calendarCurrent.get(Calendar.MINUTE));
-            calendar.setTimeInMillis(calendar.getTimeInMillis() + offset);
-            if (inicial) {
-                fechaSelecInicial = calendar.getTime();
-                mesSelecInicial = calendar.get(Calendar.MONTH);
-                tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
-            } else {
-                fechaSelecFinal = calendar.getTime();
-                mesSelecFinal = calendar.get(Calendar.MONTH);
-                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-            }
-        });
-        picker.show(requireActivity().getSupportFragmentManager(), picker.toString());
-    }
-
     private void crearDialogFechaFinal() {
+        Calendar calendar = Calendar.getInstance();
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Seleccione")
                 .setItems(R.array.opciones_fin_periodo, (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
-                            calendarSelecFinal.set(anualActual, 11, 31);
+                            calendar.set(anualActual, 11, 31);
                             mesSelecFinal = 11;
-                            fechaSelecFinal = calendarSelecFinal.getTime();
+                            fechaSelecFinal = calendar.getTime();
                             tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
                             break;
                         case 1:
-                            seleccionarFecha(false);
+                            fechaIncial = false;
+                            ClassesCommon.INSTANCE.selectDate(requireActivity().getSupportFragmentManager(), this);
                             break;
                     }
                 }).show();
+    }
+
+    @Override
+    public void date(@NotNull Calendar calendar) {
+        if (fechaIncial) {
+            fechaSelecInicial = calendar.getTime();
+            mesSelecInicial = calendar.get(Calendar.MONTH);
+            tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+        } else {
+            fechaSelecFinal = calendar.getTime();
+            mesSelecFinal = calendar.get(Calendar.MONTH);
+            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+        }
     }
 }

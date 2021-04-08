@@ -51,6 +51,8 @@
     <string name="monto">Monto:</string>
     <string name="moneda_bolivar">Bs.</string>
     <string name="moneda_dolar">$</string>
+    <string name="rb_solo_mes">Editar sólo este mes</string>
+    <string name="rb_resto_meses">Editar resto de programación</string>
     <string name="frecuencia">Frecuencia:</string>
     <string name="dias">Días</string>
     <string name="semanas">Semanas</string>
@@ -138,6 +140,7 @@
     <string name="actualizar_pass_ok">Constraseña actualizada</string>
 
     <string name="title_listapendientes_detail">ListaPendientes Detail</string>
+    <string name="transition_name_image">transitionImage</string>
 
 
     <!-- Dialog Move Next Year -->

@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -98,6 +99,8 @@ public class IngresosFragment extends Fragment implements IngresosView {
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
 
         ingresosPresenter = new IngresosPresenterClass(this);
 
@@ -173,6 +176,18 @@ public class IngresosFragment extends Fragment implements IngresosView {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
             }
         });
 
@@ -352,22 +367,24 @@ public class IngresosFragment extends Fragment implements IngresosView {
 
 
     public void buscarItem(String text) {
-        if (listaIngresos.isEmpty()) {
-            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
-        } else {
-            String userInput = text.toLowerCase();
-            newList = new ArrayList<>();
+        if (listaIngresos != null) {
+            if (listaIngresos.isEmpty()) {
+                Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+            } else {
+                String userInput = text.toLowerCase();
+                newList = new ArrayList<>();
 
-            for (IngresosGastosConstructor name : listaIngresos) {
-                if (name.getConcepto().toLowerCase().contains(userInput)) {
-                    newList.add(name);
+                for (IngresosGastosConstructor name : listaIngresos) {
+                    if (name.getConcepto().toLowerCase().contains(userInput)) {
+                        newList.add(name);
+                    }
                 }
+                if (newList.isEmpty()) {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                }
+                ingresosAdapter.updateList(newList);
             }
-            if (newList.isEmpty()) {
-                lottieAnimationView.setVisibility(View.VISIBLE);
-                lottieAnimationView.playAnimation();
-            }
-            ingresosAdapter.updateList(newList);
         }
     }
 

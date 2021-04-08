@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -84,6 +85,8 @@ public class DeudasFragment extends Fragment {
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
 
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
@@ -151,6 +154,18 @@ public class DeudasFragment extends Fragment {
         });
 
         recyclerView = view.findViewById(R.id.rv_deudas);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     private void configurarToolbar() {
@@ -222,23 +237,25 @@ public class DeudasFragment extends Fragment {
     }
 
     public void buscarItem(String text) {
-        if (listaDeudas.isEmpty()) {
-            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
-        } else {
-            String userInput = text.toLowerCase();
-            final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
+        if (listaDeudas != null) {
+            if (listaDeudas.isEmpty()) {
+                Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+            } else {
+                String userInput = text.toLowerCase();
+                final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
-            for (AhorrosConstructor name : listaDeudas) {
-                if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
-                    newList.add(name);
+                for (AhorrosConstructor name : listaDeudas) {
+                    if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
+                        newList.add(name);
+                    }
                 }
-            }
-            if (newList.isEmpty()) {
-                lottieAnimationView.setVisibility(View.VISIBLE);
-                lottieAnimationView.playAnimation();
-            }
-            deudasAdapter.updateList(newList);
+                if (newList.isEmpty()) {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                }
+                deudasAdapter.updateList(newList);
 
+            }
         }
     }
 

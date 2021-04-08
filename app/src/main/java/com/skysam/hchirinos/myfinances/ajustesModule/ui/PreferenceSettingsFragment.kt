@@ -1,8 +1,8 @@
 package com.skysam.hchirinos.myfinances.ajustesModule.ui
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -80,20 +80,22 @@ class PreferenceSettingsFragment : PreferenceFragmentCompat(), ValidarPinRespald
             when (val temaEscogido = newValue as String) {
                 Constants.PREFERENCE_TEMA_SISTEMA -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
                     editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)
-                    editor.apply()
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
                 Constants.PREFERENCE_TEMA_CLARO -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
                     editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_CLARO)
-                    editor.apply()
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
                 Constants.PREFERENCE_TEMA_OSCURO -> if (!temaEscogido.equals(temaInicial, ignoreCase = true)) {
                     editor.putString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_OSCURO)
-                    editor.apply()
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
             }
+            editor.apply()
+            val bundle = Bundle()
+            bundle.putBoolean("actualizarTema", true)
+            val intent = Intent(context, SettingsActivity::class.java)
+            intent.putExtras(bundle)
+            requireActivity().finish()
+            requireActivity().startActivity(intent)
+            requireActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             true
         }
     }

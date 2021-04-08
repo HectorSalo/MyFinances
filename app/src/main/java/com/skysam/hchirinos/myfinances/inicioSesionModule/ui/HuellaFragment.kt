@@ -83,7 +83,8 @@ class HuellaFragment : Fragment() {
                         fragmentHuellaBinding.lottieAnimationView.setAnimation("huella_check.json")
                         fragmentHuellaBinding.lottieAnimationView.playAnimation()
                         Handler(Looper.myLooper()!!).postDelayed({
-                            startActivity(Intent(requireContext(), HomeActivity::class.java)) }, 3500)
+                            startActivity(Intent(requireContext(), HomeActivity::class.java))
+                            requireActivity().finish()}, 3500)
                     }
 
                     override fun onAuthenticationFailed() {

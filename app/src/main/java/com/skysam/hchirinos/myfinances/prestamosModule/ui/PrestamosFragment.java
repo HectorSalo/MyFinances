@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -88,6 +89,7 @@ public class PrestamosFragment extends Fragment {
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
 
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
@@ -155,6 +157,18 @@ public class PrestamosFragment extends Fragment {
         });
 
         recyclerView = view.findViewById(R.id.rv_prestamos);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
 
@@ -228,22 +242,24 @@ public class PrestamosFragment extends Fragment {
     }
 
     public void buscarItem(String text) {
-        if (listaPrestamos.isEmpty()) {
-            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
-        } else {
-            String userInput = text.toLowerCase();
-            final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
+        if (listaPrestamos != null) {
+            if (listaPrestamos.isEmpty()) {
+                Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+            } else {
+                String userInput = text.toLowerCase();
+                final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
-            for (AhorrosConstructor name : listaPrestamos) {
-                if (name.getConcepto().toLowerCase().contains(userInput)) {
-                    newList.add(name);
+                for (AhorrosConstructor name : listaPrestamos) {
+                    if (name.getConcepto().toLowerCase().contains(userInput)) {
+                        newList.add(name);
+                    }
                 }
+                if (newList.isEmpty()) {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                }
+                prestamosAdapter.updateList(newList);
             }
-            if (newList.isEmpty()) {
-                lottieAnimationView.setVisibility(View.VISIBLE);
-                lottieAnimationView.playAnimation();
-            }
-            prestamosAdapter.updateList(newList);
         }
     }
 

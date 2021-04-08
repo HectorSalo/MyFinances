@@ -17,6 +17,7 @@ public class Constants {
     public static final String BD_FECHA_INCIAL = "fechaIncial";
     public static final String BD_FECHA_FINAL = "fechaFinal";
     public static final String BD_MES_ACTIVO = "mesActivo";
+    public static final String BD_MONTO_ULT_PAGO = "montoUltPago";
 
     public static final String BD_ORIGEN = "origen";
     public static final String BD_PRESTAMISTA = "prestamista";

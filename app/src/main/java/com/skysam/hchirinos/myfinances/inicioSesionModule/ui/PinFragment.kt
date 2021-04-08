@@ -47,6 +47,7 @@ class PinFragment : Fragment() {
                 Handler(Looper.getMainLooper())
                         .postDelayed({
                     context?.startActivity(Intent(context, HomeActivity::class.java))
+                    requireActivity().finish()
                 }, 2500)
             } else {
                 binding.inputPin.error = getString(R.string.error_pass_code)

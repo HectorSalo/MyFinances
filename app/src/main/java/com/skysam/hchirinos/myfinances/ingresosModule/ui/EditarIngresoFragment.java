@@ -54,7 +54,7 @@ public class EditarIngresoFragment extends Fragment {
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
     private Spinner spFrecuencia;
-    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses;
+    private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbEditAllMonth;
     private TextView tvFechaInicial, tvFechaFinal;
     private FirebaseUser user;
     private ProgressBar progressBar;
@@ -83,12 +83,14 @@ public class EditarIngresoFragment extends Fragment {
         rbDolar = view.findViewById(R.id.radioButton_dolares_editar);
         rbDias = view.findViewById(R.id.radioButton_dias_editar);
         rbSemanas = view.findViewById(R.id.radioButton_semanas_editar);
+        rbEditAllMonth = view.findViewById(R.id.rb_todos_meses);
         rbMeses = view.findViewById(R.id.radioButton_meses_editar);
         tvFechaInicial = view.findViewById(R.id.tv_fecha_inicial);
         tvFechaFinal = view.findViewById(R.id.tv_fecha_final);
         LinearLayout linearLayoutFrecuencia = view.findViewById(R.id.linearLayout2);
         LinearLayout linearLayoutFecha = view.findViewById(R.id.linear_periodo);
         RadioGroup radioGroupFrecuencia = view.findViewById(R.id.radioGroup3);
+        RadioGroup radioGroupEditarMes = view.findViewById(R.id.radioGroup2);
 
         progressBar = view.findViewById(R.id.progressBar_editar_ingreso);
 
@@ -117,6 +119,18 @@ public class EditarIngresoFragment extends Fragment {
             radioGroupFrecuencia.setVisibility(View.VISIBLE);
             cargarItemPeriodico();
         }
+
+        radioGroupEditarMes.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_mes) {
+                linearLayoutFecha.setVisibility(View.GONE);
+                linearLayoutFrecuencia.setVisibility(View.GONE);
+                radioGroupFrecuencia.setVisibility(View.GONE);
+            } else if (checkedId == R.id.rb_todos_meses) {
+                linearLayoutFecha.setVisibility(View.VISIBLE);
+                linearLayoutFrecuencia.setVisibility(View.VISIBLE);
+                radioGroupFrecuencia.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -276,13 +290,62 @@ public class EditarIngresoFragment extends Fragment {
             if (mesUnico) {
                 actualizarItemUnico();
             } else {
-                actualizarItemPeriodico();
+                if (rbEditAllMonth.isChecked()) {
+                    actualizarItemPeriodicoAllMonth();
+                } else {
+                    actualizarItemPeriodicoJustMonth();
+                }
             }
         }
 
     }
 
-    private void actualizarItemPeriodico() {
+    private void actualizarItemPeriodicoJustMonth() {
+        progressBar.setVisibility(View.VISIBLE);
+        etConceptoLayout.setEnabled(false);
+        etMontoLayout.setEnabled(false);
+        btnEditar.setEnabled(false);
+
+        Map<String, Object> item = new HashMap<>();
+        item.put(Constants.BD_DURACION_FRECUENCIA, duracionFrecuenciaViejo);
+
+        if (!conceptoViejo.equals(conceptoNuevo)) {
+            item.put(Constants.BD_CONCEPTO, conceptoNuevo);
+        }
+        if (montoNuevo != montoViejo) {
+            item.put(Constants.BD_MONTO, montoNuevo);
+        }
+        item.put(Constants.BD_DOLAR, !rbBs.isChecked());
+        if (rbDias.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Dias");
+        }
+        if (rbSemanas.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Semanas");
+        }
+        if (rbMeses.isChecked()) {
+            item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
+        }
+
+        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc)
+                .update(item)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    requireActivity().finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error updating document", e);
+                    Toast.makeText(getContext(), getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    etConceptoLayout.setEnabled(true);
+                    etMontoLayout.setEnabled(true);
+                    btnEditar.setEnabled(true);
+                });
+    }
+
+    private void actualizarItemPeriodicoAllMonth() {
         progressBar.setVisibility(View.VISIBLE);
         etConceptoLayout.setEnabled(false);
         etMontoLayout.setEnabled(false);

@@ -5,7 +5,9 @@
     android:layout_height="wrap_content"
     android:id="@+id/cardview"
     android:layout_margin="4dp"
-    app:strokeWidth="4dp">
+    android:clickable="true"
+    android:checkable="true"
+    android:focusable="true">
 
 
     <RelativeLayout
@@ -17,7 +19,8 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             app:srcCompat="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/texto_vacio" />
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

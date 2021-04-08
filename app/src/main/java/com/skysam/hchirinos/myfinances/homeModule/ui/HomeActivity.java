@@ -100,10 +100,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ((MenuBuilder) menu).setOptionalIconsVisible(true);
         }
         getMenuInflater().inflate(R.menu.home_options_menu, menu);
-        /*itemBuscar = menu.findItem(R.id.menu_buscar);
-        itemBuscar.setVisible(false);
-        searchView = (SearchView) itemBuscar.getActionView();
-        searchView.setOnSearchClickListener(this);*/
 
         new Handler(Looper.myLooper()).postDelayed(() -> {
             View view = findViewById(R.id.menu_calculadora);
@@ -261,5 +257,4 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 .setDismissOnTouch(false)
                 .show();
     }
-
 }

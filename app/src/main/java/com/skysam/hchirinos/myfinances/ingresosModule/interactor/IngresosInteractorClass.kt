@@ -11,7 +11,7 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenter
 import java.util.*
 
-class IngresosInteractorClass(val ingresosPresenter: IngresosPresenter): IngresosInteractor {
+class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter): IngresosInteractor {
     override fun getIngresos(year: Int, month: Int) {
         val listaIngresos = ArrayList<IngresosGastosConstructor>()
         val reference = FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)

@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.gastosModule.ui;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,7 +28,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -43,7 +46,7 @@ import java.util.Map;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
-public class AgregarGastoFragment extends Fragment {
+public class AgregarGastoFragment extends Fragment implements OnClickDatePicker {
 
     private TextInputEditText etConcepto, etMonto;
     private TextInputLayout etConceptoLayout, etMontoLayout;
@@ -61,10 +64,11 @@ public class AgregarGastoFragment extends Fragment {
     private Button btnGuardar;
     private ImageButton ibFechaInicial, ibFechaFinal;
     private int anualActual, mesSelecInicial, mesSelecFinal, cantidadItems;
-    private Calendar calendarSelecInicial, calendarSelecFinal, calendarActual;
+    private Calendar calendarActual;
     private double monto;
     private String idLista, idItem;
     private boolean itemListGastos;
+    private boolean fechaIncial;
 
     public AgregarGastoFragment() {
         // Required empty public constructor
@@ -157,7 +161,10 @@ public class AgregarGastoFragment extends Fragment {
         btnGuardar.setOnClickListener(view1 -> validarDatos());
 
         ibFechaInicial = view.findViewById(R.id.imageButton_inicial);
-        ibFechaInicial.setOnClickListener(v -> seleccionarFecha(true));
+        ibFechaInicial.setOnClickListener(v -> {
+            fechaIncial = true;
+            ClassesCommon.INSTANCE.selectDate(requireActivity().getSupportFragmentManager(), this);
+        });
 
         ibFechaFinal = view.findViewById(R.id.imageButton_final);
         ibFechaFinal.setOnClickListener(view12 -> crearDialogFechaFinal());
@@ -335,50 +342,21 @@ public class AgregarGastoFragment extends Fragment {
 
     }
 
-
-    private void seleccionarFecha(final boolean inicial) {
-        Calendar calendarMax = Calendar.getInstance();
-        calendarMax.set(anualActual, 11, 31);
-        Calendar calendarMin = Calendar.getInstance();
-        calendarMin.set(anualActual, 0, 1);
-        calendarSelecInicial = Calendar.getInstance();
-        calendarSelecFinal = Calendar.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, month1, dayOfMonth) -> {
-            if (inicial) {
-                calendarSelecInicial.set(anualActual, month1, dayOfMonth);
-                mesSelecInicial = month1;
-                fechaSelecInicial = calendarSelecInicial.getTime();
-                tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
-            } else {
-                calendarSelecFinal.set(anualActual, month1, dayOfMonth);
-                mesSelecFinal = month1;
-                fechaSelecFinal = calendarSelecFinal.getTime();
-                tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
-            }
-        }, year, month, day);
-        datePickerDialog.getDatePicker().setMaxDate(calendarMax.getTimeInMillis());
-        datePickerDialog.getDatePicker().setMinDate(calendarMin.getTimeInMillis());
-        datePickerDialog.show();
-    }
-
     private void crearDialogFechaFinal() {
+        Calendar calendar = Calendar.getInstance();
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Seleccione")
                 .setItems(R.array.opciones_fin_periodo, (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
-                            calendarSelecFinal.set(anualActual, 11, 31);
+                            calendar.set(anualActual, 11, 31);
                             mesSelecFinal = 11;
-                            fechaSelecFinal = calendarSelecFinal.getTime();
+                            fechaSelecFinal = calendar.getTime();
                             tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
                             break;
                         case 1:
-                            seleccionarFecha(false);
+                            fechaIncial = false;
+                            ClassesCommon.INSTANCE.selectDate(requireActivity().getSupportFragmentManager(), this);
                             break;
                     }
                 }).show();
@@ -412,5 +390,18 @@ public class AgregarGastoFragment extends Fragment {
         Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.GONE);
         requireActivity().finish();
+    }
+
+    @Override
+    public void date(@NotNull Calendar calendar) {
+        if (fechaIncial) {
+            fechaSelecInicial = calendar.getTime();
+            mesSelecInicial = calendar.get(Calendar.MONTH);
+            tvFechaInicio.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecInicial));
+        } else {
+            fechaSelecFinal = calendar.getTime();
+            mesSelecFinal = calendar.get(Calendar.MONTH);
+            tvFechaFinal.setText(new SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelecFinal));
+        }
     }
 }

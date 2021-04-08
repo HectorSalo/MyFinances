@@ -32,6 +32,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,6 +97,7 @@ public class AhorrosFragment extends Fragment {
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
 
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
@@ -169,6 +171,18 @@ public class AhorrosFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
             }
         });
 
@@ -401,22 +415,24 @@ public class AhorrosFragment extends Fragment {
 
 
     public void buscarItem(String text) {
-        if (listaAhorros.isEmpty()) {
-            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
-        } else {
-            String userInput = text.toLowerCase();
-            newList = new ArrayList<>();
+        if (listaAhorros != null) {
+            if (listaAhorros.isEmpty()) {
+                Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+            } else {
+                String userInput = text.toLowerCase();
+                newList = new ArrayList<>();
 
-            for (AhorrosConstructor name : listaAhorros) {
-                if (name.getConcepto().toLowerCase().contains(userInput)) {
-                    newList.add(name);
+                for (AhorrosConstructor name : listaAhorros) {
+                    if (name.getConcepto().toLowerCase().contains(userInput)) {
+                        newList.add(name);
+                    }
                 }
+                if (newList.isEmpty()) {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                }
+                ahorrosAdapter.updateList(newList);
             }
-            if (newList.isEmpty()) {
-                lottieAnimationView.setVisibility(View.VISIBLE);
-                lottieAnimationView.playAnimation();
-            }
-            ahorrosAdapter.updateList(newList);
         }
     }
 

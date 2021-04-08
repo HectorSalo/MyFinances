@@ -8,7 +8,7 @@ interface CrearEditarListaPresenter {
     fun uploadImage(uri: Uri)
     fun deleteOldImage(image: String?)
 
-    fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>)
+    fun cargarImagenes(imagenes: MutableList<ImagenesListasConstructor>)
     fun progressUploadImage(progress: Double)
     fun resultUploadImage(statusOk: Boolean, data: String)
 }

@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.common.utils
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -9,10 +10,15 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.datepicker.*
+import com.google.android.material.datepicker.CalendarConstraints.DateValidator
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.NotificationReceiverFCM
 import java.io.FileNotFoundException
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -46,6 +52,35 @@ object ClassesCommon {
         }
     }
 
+    fun selectDate(fragmentManager: FragmentManager, onClickDatePicker: OnClickDatePicker) {
+        val calendarCurrent = Calendar.getInstance()
+        val calendarMax = Calendar.getInstance()
+        calendarMax.set(calendarCurrent[Calendar.YEAR], 11, 31)
+        val calendarMin = Calendar.getInstance()
+        calendarMin.set(calendarCurrent[Calendar.YEAR], 0, 1)
+        val builder = MaterialDatePicker.Builder.datePicker()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+
+        val constraints = CalendarConstraints.Builder()
+        val validators = ArrayList<DateValidator>()
+        validators.add(DateValidatorPointForward.from(calendarMin.timeInMillis))
+        validators.add(DateValidatorPointBackward.before(calendarMax.timeInMillis))
+        constraints.setValidator(CompositeDateValidator.allOf(validators))
+        builder.setCalendarConstraints(constraints.build())
+
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { selection: Long? ->
+            calendar.timeInMillis = selection!!
+            val timeZone = TimeZone.getDefault()
+            val offset = timeZone.getOffset(Date().time) * -1
+            calendar[Calendar.HOUR_OF_DAY] = calendarCurrent[Calendar.HOUR_OF_DAY]
+            calendar[Calendar.MINUTE] = calendarCurrent[Calendar.MINUTE]
+            calendar.timeInMillis = calendar.timeInMillis + offset
+            onClickDatePicker.date(calendar)
+        }
+        picker.show(fragmentManager, picker.toString())
+    }
+
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val bundle = Bundle()
@@ -61,7 +96,7 @@ object ClassesCommon {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val alarmManager = MyFinancesApp.appContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val pendingIntent = PendingIntent.getService(MyFinancesApp.appContext, requestId, intent,
-                        PendingIntent.FLAG_NO_CREATE)
+                PendingIntent.FLAG_NO_CREATE)
         if (pendingIntent != null && alarmManager != null) {
             alarmManager.cancel(pendingIntent)
         }

@@ -6,7 +6,7 @@ import com.skysam.hchirinos.myfinances.listaGastosModule.interactor.CrearEditarL
 import com.skysam.hchirinos.myfinances.listaGastosModule.interactor.CrearEditarListaInteractorClass
 import com.skysam.hchirinos.myfinances.listaGastosModule.ui.CrearEditarListaView
 
-class CrearEditarListaPresenterClass(val crearEditarListaView: CrearEditarListaView): CrearEditarListaPresenter {
+class CrearEditarListaPresenterClass(private val crearEditarListaView: CrearEditarListaView): CrearEditarListaPresenter {
     private val crearEditarListaInteractor: CrearEditarListaInteractor = CrearEditarListaInteractorClass(this)
     override fun getImages() {
         crearEditarListaInteractor.getImages()
@@ -20,7 +20,7 @@ class CrearEditarListaPresenterClass(val crearEditarListaView: CrearEditarListaV
         crearEditarListaInteractor.deleteOldImage(image)
     }
 
-    override fun cargarImagenes(imagenes: ArrayList<ImagenesListasConstructor>) {
+    override fun cargarImagenes(imagenes: MutableList<ImagenesListasConstructor>) {
         crearEditarListaView.cargarImagenes(imagenes)
     }
 

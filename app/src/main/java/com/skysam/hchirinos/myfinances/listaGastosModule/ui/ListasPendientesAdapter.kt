@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.listaGastosModule.ui
 
+import android.app.ActivityOptions
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
@@ -35,6 +36,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
     private var itemLista: ListasConstructor? = null
+    private lateinit var imgPhoto: View
 
 
     init {
@@ -59,7 +61,8 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
                     putExtra(ListaPendientesDetailFragment.ARG_ITEM_NOMBRE, itemLista!!.nombreLista)
                     putExtra(ListaPendientesDetailFragment.ARG_ITEM_IMAGEN, itemLista!!.imagen)
                 }
-                v.context.startActivity(intent)
+                v.context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(parentActivity,
+                        imgPhoto, v.context.getString(R.string.transition_name_image)).toBundle())
             }
         }
 
@@ -97,6 +100,7 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
 
         with(holder.itemView) {
             tag = item
+            imgPhoto = holder.imagen
             setOnClickListener(onClickListener)
             setOnLongClickListener(onLongClickListener)
         }

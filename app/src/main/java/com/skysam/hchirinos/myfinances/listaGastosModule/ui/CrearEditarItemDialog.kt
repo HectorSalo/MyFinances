@@ -1,7 +1,5 @@
 package com.skysam.hchirinos.myfinances.listaGastosModule.ui
 
-import android.app.DatePickerDialog
-import android.app.DatePickerDialog.OnDateSetListener
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -16,13 +14,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
+import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearEditarItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, private val idLista: String, private val guardar: Boolean, private val items: ArrayList<ItemGastosConstructor>,
                             private val position: Int?, private val twoPane: Boolean):
-        DialogFragment() {
+        DialogFragment(), OnClickDatePicker {
 
     private var _binding : DialogCrearEditarItemBinding? = null
     private val binding get() = _binding!!
@@ -40,7 +40,7 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogCrearEditarItemBinding.inflate(layoutInflater)
 
-        binding.imageButton.setOnClickListener { selecFecha() }
+        binding.imageButton.setOnClickListener { ClassesCommon.selectDate(requireActivity().supportFragmentManager, this) }
 
         val builder = AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.btn_nuevo_item))
@@ -181,18 +181,8 @@ class CrearEditarItemDialog(private val adapter: ItemListPendienteAdapter, priva
                 }
     }
 
-    private fun selecFecha() {
-        val calendarSelec = Calendar.getInstance()
-        val calendar = Calendar.getInstance()
-        val day = calendar[Calendar.DAY_OF_MONTH]
-        val monthCurrent = calendar[Calendar.MONTH]
-        val yearCurrent = calendar[Calendar.YEAR]
-
-        val datePickerDialog = DatePickerDialog(requireContext(), OnDateSetListener { _, year, month, dayOfMonth ->
-            calendarSelec.set(year, month, dayOfMonth)
-            fechaSelec = calendarSelec.time
-            binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec!!)
-        }, yearCurrent, monthCurrent, day)
-        datePickerDialog.show()
+    override fun date(calendar: Calendar) {
+        fechaSelec = calendar.time
+        binding.textViewFechaAproximada.text = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault()).format(fechaSelec!!)
     }
 }

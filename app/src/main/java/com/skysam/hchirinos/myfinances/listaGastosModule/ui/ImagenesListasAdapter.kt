@@ -5,9 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -16,7 +13,7 @@ import com.google.android.material.card.MaterialCardView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 
-class ImagenesListasAdapter(private var imagenes: ArrayList<ImagenesListasConstructor>, private var context: Context,
+class ImagenesListasAdapter(private var imagenes: MutableList<ImagenesListasConstructor>, private var context: Context,
 private var crearEditarListaClick: CrearEditarListaClick):
         RecyclerView.Adapter<ImagenesListasAdapter.ViewHolder>() {
 
@@ -42,7 +39,7 @@ private var crearEditarListaClick: CrearEditarListaClick):
         val options2 = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .error(R.drawable.ic_image_not_selected_96)
-                .placeholder(android.R.drawable.ic_menu_gallery)
+                .placeholder(R.drawable.ic_image_not_selected_96)
 
         if (item.photoUrl != null) {
             Glide.with(context).load(item.photoUrl)
@@ -52,16 +49,13 @@ private var crearEditarListaClick: CrearEditarListaClick):
                     .apply(options2).into(holder.imagen)
         }
 
-        if (item.imageSelected!!) {
-            holder.cardview.strokeColor = ContextCompat.getColor(context, R.color.design_default_color_secondary_variant)
-        } else {
-            holder.cardview.strokeColor = ContextCompat.getColor(context, android.R.color.darker_gray)
-        }
+        holder.cardview.isChecked = item.isImageSelected!!
 
         with(holder.itemView) {
             tag = item
             holder.itemView.setOnClickListener {
                 update(position)
+                holder.cardview.isChecked = true
                 crearEditarListaClick.onImageClick(position)
             }
         }
@@ -71,9 +65,9 @@ private var crearEditarListaClick: CrearEditarListaClick):
 
     fun update(position: Int) {
         for (j in 0 until imagenes.size) {
-            imagenes[j].imageSelected = false
+            imagenes[j].isImageSelected = false
         }
-        imagenes[position].imageSelected = true
+        imagenes[position].isImageSelected = true
         notifyDataSetChanged()
     }
 }

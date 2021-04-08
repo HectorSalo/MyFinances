@@ -21,11 +21,13 @@
 
             <ImageView
                 android:id="@+id/iv_listas"
+                android:transitionName="@string/transition_name_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
-                app:srcCompat="@android:drawable/ic_menu_gallery" />
+                app:srcCompat="@android:drawable/ic_menu_gallery"
+                android:contentDescription="@string/title_activity_lista_gastos" />
 
             <LinearLayout
                 android:layout_width="match_parent"

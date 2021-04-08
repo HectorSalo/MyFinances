@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -101,6 +102,8 @@ public class GastosFragment extends Fragment {
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
+
         Calendar calendar = Calendar.getInstance();
         yearSelected = calendar.get(Calendar.YEAR);
         mesSelected = calendar.get(Calendar.MONTH);
@@ -169,6 +172,18 @@ public class GastosFragment extends Fragment {
         });
 
         recyclerView = view.findViewById(R.id.rv_gastos);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemSwipe);
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -441,22 +456,24 @@ public class GastosFragment extends Fragment {
     }
 
     public void buscarItem(String text) {
-        if (listaGastos.isEmpty()) {
-            Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
-        } else {
-            String userInput = text.toLowerCase();
-            newList = new ArrayList<>();
+        if (listaGastos != null) {
+            if (listaGastos.isEmpty()) {
+                Toast.makeText(getContext(), "No hay lista cargada", Toast.LENGTH_SHORT).show();
+            } else {
+                String userInput = text.toLowerCase();
+                newList = new ArrayList<>();
 
-            for (IngresosGastosConstructor name : listaGastos) {
-                if (name.getConcepto().toLowerCase().contains(userInput)) {
-                    newList.add(name);
+                for (IngresosGastosConstructor name : listaGastos) {
+                    if (name.getConcepto().toLowerCase().contains(userInput)) {
+                        newList.add(name);
+                    }
                 }
+                if (newList.isEmpty()) {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                }
+                gastosAdapter.updateList(newList);
             }
-            if (newList.isEmpty()) {
-                lottieAnimationView.setVisibility(View.VISIBLE);
-                lottieAnimationView.playAnimation();
-            }
-            gastosAdapter.updateList(newList);
         }
     }
 

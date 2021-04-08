@@ -205,6 +205,7 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
         if (ok) {
             progressBar.setVisibility(View.GONE);
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+            finish();
         } else {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), "Error al iniciar sesión\nPor favor, verifique los datos del Usuario y su conexión a internet",
@@ -223,6 +224,7 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
             intent.putExtras(bundle);
             startActivity(intent);
         }
+        finish();
     }
 
     @Override
@@ -230,6 +232,7 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
         if (ok) {
             progressBar.setVisibility(View.GONE);
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+            finish();
         } else {
             progressBar.setVisibility(View.GONE);
             etEmailLayout.setEnabled(true);
