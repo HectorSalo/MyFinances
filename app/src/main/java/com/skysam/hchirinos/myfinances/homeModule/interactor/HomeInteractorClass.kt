@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.constraintlayout.widget.Constraints
 import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
@@ -60,26 +60,26 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun getStatusNotification() {
-        val notificationStatus = SharedPreferencesBD.getFirstSubscribeMainTopic(FirebaseAuthentication.getCurrentUser()!!.uid, context)
+        val notificationStatus = SharedPreferencesBD.getFirstSubscribeMainTopic(Auth.getCurrentUser()!!.uid, context)
         if (!notificationStatus) {
             FirebaseMessaging.getInstance().subscribeToTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
                     .addOnSuccessListener {
-                        SharedPreferencesBD.subscribeFirstMainTopicNotification(FirebaseAuthentication.getCurrentUser()!!.uid, context)
+                        SharedPreferencesBD.subscribeFirstMainTopicNotification(Auth.getCurrentUser()!!.uid, context)
                     }
         }
     }
 
     private fun obtenerCotizacionShared() {
-        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context))
+        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context))
     }
 
     override fun guardarCotizacionShared(valorFloat: Float) {
-        SharedPreferencesBD.saveCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context, valorFloat)
+        SharedPreferencesBD.saveCotizacion(Auth.getCurrentUser()!!.uid, context, valorFloat)
     }
 
     override fun getIngresos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
-        FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context)
+        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -145,8 +145,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     override fun getAhoros(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
-        FirebaseFirestore.getAhorrosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context)
+        FirebaseFirestore.getAhorrosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -171,8 +171,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     override fun getDeudas(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
-        FirebaseFirestore.getDeudasReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context)
+        FirebaseFirestore.getDeudasReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -195,8 +195,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     override fun getPrestamos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
-        FirebaseFirestore.getPrestamosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context)
+        FirebaseFirestore.getPrestamosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -219,8 +219,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     override fun getGastos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, context)
-        FirebaseFirestore.getGastosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context)
+        FirebaseFirestore.getGastosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -284,7 +284,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     override fun moveDataNextYear(year: Int) {
-        val user = FirebaseAuthentication.getCurrentUser()!!.uid
+        val user = Auth.getCurrentUser()!!.uid
         FirebaseFirestore.getIngresosReference(user, year, 11)
                 .get()
                 .addOnCompleteListener { task->

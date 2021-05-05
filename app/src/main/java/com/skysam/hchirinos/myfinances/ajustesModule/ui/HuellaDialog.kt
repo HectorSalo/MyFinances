@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager
 import androidx.fragment.app.DialogFragment
 import com.skysam.hchirinos.myfinances.R
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogHuellaSettingsBinding
 
@@ -132,7 +132,7 @@ class HuellaDialog(private val validarPinRespaldo: ValidarPinRespaldo, var fromP
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
 
-        val sharedPreferences = requireActivity().getSharedPreferences(FirebaseAuthentication.getCurrentUser()!!.uid, Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences(Auth.getCurrentUser()!!.uid, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_BLOQUEO_HUELLA)
         editor.putString(Constants.PREFERENCE_PIN_ALMACENADO, pin)
@@ -161,7 +161,7 @@ class HuellaDialog(private val validarPinRespaldo: ValidarPinRespaldo, var fromP
     }
 
     private fun validatePinBakcup() {
-        val sharedPreferences = requireActivity().getSharedPreferences(FirebaseAuthentication.getCurrentUser()!!.uid, Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences(Auth.getCurrentUser()!!.uid, Context.MODE_PRIVATE)
         val pinRespaldo = sharedPreferences.getString(Constants.PREFERENCE_PIN_ALMACENADO, "0000")
         val pinIngresado = binding.etRegistrarPin.text.toString()
 

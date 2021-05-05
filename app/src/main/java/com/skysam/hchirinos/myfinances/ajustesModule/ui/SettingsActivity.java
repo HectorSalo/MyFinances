@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = getSharedPreferences(FirebaseAuthentication.INSTANCE.getCurrentUser().getUid(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Auth.INSTANCE.getCurrentUser().getUid(), Context.MODE_PRIVATE);
         String temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
         switch (temaInicial) {
             case Constants.PREFERENCE_TEMA_CLARO:

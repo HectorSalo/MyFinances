@@ -9,16 +9,6 @@ public class IngresosGastosConstructor {
     private int duracionFrecuencia;
     private Date fechaIncial, fechaFinal;
 
-    public IngresosGastosConstructor(String concepto, String tipoFrecuencia, String idIngreso, double monto, boolean dolar, int duracionFrecuencia, Date fechaIncial) {
-        this.concepto = concepto;
-        this.tipoFrecuencia = tipoFrecuencia;
-        this.idIngreso = idIngreso;
-        this.monto = monto;
-        this.dolar = dolar;
-        this.duracionFrecuencia = duracionFrecuencia;
-        this.fechaIncial = fechaIncial;
-    }
-
     public IngresosGastosConstructor() {
     }
 
