@@ -1,11 +1,8 @@
 package com.skysam.hchirinos.myfinances.homeModule.interactor
 
-import com.skysam.hchirinos.myfinances.common.MyFinancesApp
-import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
-import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.CronologiaPresenter
 import java.util.*
@@ -19,7 +16,7 @@ class CronologiaInteractorClass(private val cronologiaPresenter: CronologiaPrese
     }
 
     private fun getIngreso(month: Int, year: Int) {
-        FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -78,7 +75,7 @@ class CronologiaInteractorClass(private val cronologiaPresenter: CronologiaPrese
     }
 
     private fun getGastos(year: Int, month: Int) {
-        FirebaseFirestore.getGastosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        FirebaseFirestore.getGastosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {

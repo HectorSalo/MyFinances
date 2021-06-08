@@ -1,11 +1,10 @@
 package com.skysam.hchirinos.myfinances.ingresosModule.interactor
 
-import android.widget.Toast
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenter
@@ -14,7 +13,7 @@ import java.util.*
 class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter): IngresosInteractor {
     override fun getIngresos(year: Int, month: Int) {
         val listaIngresos = ArrayList<IngresosGastosConstructor>()
-        val reference = FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val reference = FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
         val query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING)
         query.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -83,7 +82,7 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
     }
 
     override fun suspenderMes(year: Int, month: Int, id: String) {
-        FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month).document(id)
+        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month).document(id)
                 .update(Constants.BD_MES_ACTIVO, false)
                 .addOnSuccessListener(OnSuccessListener<Void?> { ingresosPresenter.statusSuspenderMes(true) })
                 .addOnFailureListener(OnFailureListener { ingresosPresenter.statusSuspenderMes(false) })

@@ -7,7 +7,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.QuerySnapshot
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.TotalesGraphPresenter
@@ -15,8 +15,8 @@ import java.util.*
 
 class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGraphPresenter): TotalesGraphInteractor {
     override fun getIngresos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -82,8 +82,8 @@ class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGrap
     }
 
     override fun getGastos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getGastosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getGastosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {
@@ -147,8 +147,8 @@ class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGrap
     }
 
     override fun getDeudas(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getDeudasReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getDeudasReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {
@@ -173,8 +173,8 @@ class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGrap
     }
 
     override fun getPrestamos(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getPrestamosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getPrestamosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {
@@ -199,8 +199,8 @@ class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGrap
     }
 
     override fun getAhorros(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getAhorrosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getAhorrosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {

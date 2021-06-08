@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.constraintlayout.widget.Constraints
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.IngresosGraphPresenter
@@ -13,9 +13,9 @@ import java.util.*
 class IngresosGraphInteractorClass(private val ingresosGraphPresenter: IngresosGraphPresenter): IngresosGraphInteractor {
 
     override fun getMes(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
 
-        FirebaseFirestore.getIngresosReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {

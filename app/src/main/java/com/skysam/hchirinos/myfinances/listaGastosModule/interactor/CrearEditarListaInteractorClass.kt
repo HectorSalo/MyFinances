@@ -7,7 +7,7 @@ import com.google.firebase.storage.StorageReference
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseStorage
 import com.skysam.hchirinos.myfinances.common.utils.Constants
@@ -36,7 +36,7 @@ class CrearEditarListaInteractorClass(private val crearEditarListaPresenter: Cre
 
     override fun uploadImage(uri: Uri) {
         if (uri.lastPathSegment != null) {
-            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(FirebaseAuthentication.getCurrentUser()!!.uid)
+            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(Auth.getCurrentUser()!!.uid)
                     .child(FirebaseStorage.PATH_IMAGES_LISTS).child(uri.lastPathSegment!!)
 
             photoRef.putFile(uri).addOnSuccessListener { task ->

@@ -7,15 +7,15 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.QuerySnapshot
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.DeudasGraphPresenter
 
 class DeudasGraphInteractorClass(private val deudasGraphPresenter: DeudasGraphPresenter): DeudasGraphInteractor {
     override fun getMes(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(FirebaseAuthentication.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getDeudasReference(FirebaseAuthentication.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getDeudasReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
                 .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
                     if (task.isSuccessful) {
