@@ -129,26 +129,6 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
     }
 
-    override fun statusValorIngresos(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
-    override fun statusValorGastos(statusOk: Boolean, gastos: Float, message: String) {
-
-    }
-
-    override fun statusValorDeudas(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
-    override fun statusValorPrestamos(statusOk: Boolean, gastos: Float, message: String) {
-
-    }
-
-    override fun statusValorAhorros(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
     override fun statusMoveNextYear(statusOk: Boolean, message: String) {
         moveToNextYearDialog.dismiss()
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

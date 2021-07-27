@@ -10,9 +10,8 @@ import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CronologiaListAdapter(private var list: ArrayList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
+class CronologiaListAdapter(private var list: MutableList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val concepto: TextView = view.findViewById(R.id.tv_concepto)
         val monto : TextView = view.findViewById(R.id.tv_monto)
