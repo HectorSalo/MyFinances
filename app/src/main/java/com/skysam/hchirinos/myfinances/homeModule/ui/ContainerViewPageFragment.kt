@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
@@ -30,6 +31,7 @@ class ContainerViewPageFragment : Fragment(), HomeView {
     private lateinit var title: String
     private lateinit var toolbar: Toolbar
     private lateinit var itemBuscar: MenuItem
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -47,6 +49,8 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         binding.viewPager.adapter = sectionPageAdapter
         iniciarPuntosSlide(0)
         binding.viewPager.registerOnPageChangeCallback(callback)
+
+        fab = requireActivity().findViewById(R.id.fab)
 
         val calendar = Calendar.getInstance()
         val mesSelected = calendar[Calendar.MONTH]
@@ -109,6 +113,7 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
     override fun onResume() {
         super.onResume()
+        fab.show()
         Handler(Looper.myLooper()!!).postDelayed({
             toolbar.animate().translationY(0f).duration = 500
             itemBuscar.isVisible = false
