@@ -440,6 +440,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     @Override
     public void statusListaIngresos(boolean statusOk, @NotNull ArrayList<IngresosGastosConstructor> ingresos, @NotNull String message) {
         if (statusOk) {
+            listaIngresos.clear();
             listaIngresos = ingresos;
             ingresosAdapter.updateList(listaIngresos);
 

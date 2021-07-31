@@ -329,6 +329,7 @@ public class AhorrosFragment extends Fragment {
 
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                listaAhorros.clear();
                 for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                     AhorrosConstructor ahorro = new AhorrosConstructor();
 
