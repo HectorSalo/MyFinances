@@ -391,9 +391,9 @@ public class GastosFragment extends Fragment {
     private void suspenderMes(int position) {
         String id;
         if (newList == null || newList.isEmpty()) {
-            id = listaGastos.get(position).getIdIngreso();
+            id = listaGastos.get(position).getIdGasto();
         } else {
-            id = newList.get(position).getIdIngreso();
+            id = newList.get(position).getIdGasto();
         }
         db.collection(Constants.BD_GASTOS).document(user.getUid())
                 .collection(yearSelected + "-" + mesSelected).document(id)

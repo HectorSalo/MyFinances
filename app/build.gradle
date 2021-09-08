@@ -79,7 +79,7 @@ dependencies {
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.2'
     implementation 'org.jsoup:jsoup:1.14.2'
     implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0'
-    implementation 'com.airbnb.android:lottie:3.6.1'
+    implementation 'com.airbnb.android:lottie:4.1.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
