@@ -208,6 +208,7 @@ public class DeudasFragment extends Fragment {
 
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                listaDeudas.clear();
                 for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                     AhorrosConstructor deuda = new AhorrosConstructor();
 

@@ -289,6 +289,7 @@ public class GastosFragment extends Fragment {
         Query query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                listaGastos.clear();
                 for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                     boolean perteneceMes = true;
                     Calendar calendarPago = Calendar.getInstance();
