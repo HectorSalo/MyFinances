@@ -2,9 +2,6 @@ package com.skysam.hchirinos.myfinances.graficosModule.interactor
 
 import android.util.Log
 import androidx.constraintlayout.widget.Constraints
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
@@ -17,7 +14,7 @@ class PrestamosGraphInteractorClass(private val prestamosGraphPresenter: Prestam
         val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
         FirebaseFirestore.getPrestamosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         for (document in task.result!!) {
@@ -30,12 +27,22 @@ class PrestamosGraphInteractorClass(private val prestamosGraphPresenter: Prestam
                                 montototal + montoDetal / valorCotizacion
                             }
                         }
-                       prestamosGraphPresenter.statusMes(month, true, montototal.toFloat(), montototal.toString())
+                        prestamosGraphPresenter.statusMes(
+                            month,
+                            true,
+                            montototal.toFloat(),
+                            montototal.toString()
+                        )
                     } else {
                         prestamosGraphPresenter.statusMes(month, true, 0f, "")
                     }
-                }).addOnFailureListener(OnFailureListener {
-                    prestamosGraphPresenter.statusMes(month, false, 0f, "Error al obtener datos. Intente nuevamente")
-                })
+                }.addOnFailureListener {
+                prestamosGraphPresenter.statusMes(
+                    month,
+                    false,
+                    0f,
+                    "Error al obtener datos. Intente nuevamente"
+                )
+            }
     }
 }

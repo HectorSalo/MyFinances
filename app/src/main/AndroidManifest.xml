@@ -50,8 +50,8 @@
         <activity android:name=".inicioSesionModule.ui.RegistrarActivity"/>
         <activity
             android:name=".inicioSesionModule.ui.InicSesionActivity"
-            android:theme="@style/Splash"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -14,10 +14,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.skysam.hchirinos.myfinances.BuildConfig;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
@@ -145,6 +147,9 @@ public class SettingsActivity extends AppCompatActivity implements
 
             Preference preferenceCerrarSesion = findPreference("cerrar_sesion_header");
             Preference preferenceActualizarPass = findPreference("actualizar_pass_header");
+
+            PreferenceScreen preferenceVersion = findPreference(getString(R.string.version));
+            preferenceVersion.setSummary(BuildConfig.VERSION_NAME);
 
             String providerId = "";
 

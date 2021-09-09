@@ -2,9 +2,6 @@ package com.skysam.hchirinos.myfinances.graficosModule.interactor
 
 import android.util.Log
 import androidx.constraintlayout.widget.Constraints
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
@@ -18,7 +15,7 @@ class GastosGraphInteractorClass(private val gastosGraphPresenter: GastosGraphPr
         val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
         FirebaseFirestore.getGastosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         var mesPago: Int
@@ -29,11 +26,14 @@ class GastosGraphInteractorClass(private val gastosGraphPresenter: GastosGraphPr
                                 Log.d(Constraints.TAG, document.id + " => " + document.data)
                                 val montoDetal = document.getDouble(Constants.BD_MONTO)!!
                                 val dolar = document.getBoolean(Constants.BD_DOLAR)!!
-                                val tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA)
+                                val tipoFrecuencia =
+                                    document.getString(Constants.BD_TIPO_FRECUENCIA)
                                 if (tipoFrecuencia != null) {
                                     val calendarPago = Calendar.getInstance()
-                                    calendarPago.time = document.getDate(Constants.BD_FECHA_INCIAL)!!
-                                    val duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
+                                    calendarPago.time =
+                                        document.getDate(Constants.BD_FECHA_INCIAL)!!
+                                    val duracionFrecuencia =
+                                        document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                     val duracionFrecuenciaInt = duracionFrecuencia.toInt()
                                     mesPago = calendarPago[Calendar.MONTH]
                                     yearPago = calendarPago[Calendar.YEAR]
@@ -47,15 +47,24 @@ class GastosGraphInteractorClass(private val gastosGraphPresenter: GastosGraphPr
                                             }
                                         }
 
-                                        when(tipoFrecuencia) {
+                                        when (tipoFrecuencia) {
                                             "Dias" -> {
-                                                calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
+                                                calendarPago.add(
+                                                    Calendar.DAY_OF_YEAR,
+                                                    duracionFrecuenciaInt
+                                                )
                                             }
                                             "Semanas" -> {
-                                                calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7)
+                                                calendarPago.add(
+                                                    Calendar.DAY_OF_YEAR,
+                                                    duracionFrecuenciaInt * 7
+                                                )
                                             }
                                             "Meses" -> {
-                                                calendarPago.add(Calendar.MONTH, duracionFrecuenciaInt)
+                                                calendarPago.add(
+                                                    Calendar.MONTH,
+                                                    duracionFrecuenciaInt
+                                                )
                                             }
                                         }
                                         mesPago = calendarPago[Calendar.MONTH]
@@ -70,12 +79,22 @@ class GastosGraphInteractorClass(private val gastosGraphPresenter: GastosGraphPr
                                 }
                             }
                         }
-                        gastosGraphPresenter.statusMes(month, true, montototal.toFloat(), montototal.toString())
+                        gastosGraphPresenter.statusMes(
+                            month,
+                            true,
+                            montototal.toFloat(),
+                            montototal.toString()
+                        )
                     } else {
                         gastosGraphPresenter.statusMes(month, true, 0f, "")
                     }
-                }).addOnFailureListener(OnFailureListener {
-                    gastosGraphPresenter.statusMes(month, false, 0f, "Error al obtener datos. Intente nuevamente")
-                })
+                }.addOnFailureListener {
+                gastosGraphPresenter.statusMes(
+                    month,
+                    false,
+                    0f,
+                    "Error al obtener datos. Intente nuevamente"
+                )
+            }
     }
 }

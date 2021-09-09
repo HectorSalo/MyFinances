@@ -1,7 +1,5 @@
 package com.skysam.hchirinos.myfinances.ingresosModule.interactor
 
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
@@ -84,8 +82,8 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
     override fun suspenderMes(year: Int, month: Int, id: String) {
         FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month).document(id)
                 .update(Constants.BD_MES_ACTIVO, false)
-                .addOnSuccessListener(OnSuccessListener<Void?> { ingresosPresenter.statusSuspenderMes(true) })
-                .addOnFailureListener(OnFailureListener { ingresosPresenter.statusSuspenderMes(false) })
+                .addOnSuccessListener { ingresosPresenter.statusSuspenderMes(true) }
+            .addOnFailureListener { ingresosPresenter.statusSuspenderMes(false) }
     }
 
 

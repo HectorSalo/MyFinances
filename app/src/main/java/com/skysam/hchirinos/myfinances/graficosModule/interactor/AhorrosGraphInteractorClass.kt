@@ -1,8 +1,5 @@
 package com.skysam.hchirinos.myfinances.graficosModule.interactor
 
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
@@ -16,7 +13,7 @@ class AhorrosGraphInteractorClass(private val ahorrosGraphPresenter: AhorrosGrap
         val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
         FirebaseFirestore.getAhorrosReference(Auth.getCurrentUser()!!.uid, year, month)
                 .get()
-                .addOnCompleteListener(OnCompleteListener<QuerySnapshot?> { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         var montototal = 0.0
                         for (document in task.result!!) {
@@ -31,13 +28,23 @@ class AhorrosGraphInteractorClass(private val ahorrosGraphPresenter: AhorrosGrap
                                 montoDetal / valorCotizacion
                             }
                         }
-                        ahorrosGraphPresenter.statusMes(month, true, montototal.toFloat(), montototal.toString())
+                        ahorrosGraphPresenter.statusMes(
+                            month,
+                            true,
+                            montototal.toFloat(),
+                            montototal.toString()
+                        )
                     } else {
                         ahorrosGraphPresenter.statusMes(month, true, 0f, "")
                     }
-                }).addOnFailureListener(OnFailureListener {
-                    ahorrosGraphPresenter.statusMes(month, false, 0f, "Error al obtener datos. Intente nuevamente")
-                })
+                }.addOnFailureListener {
+                ahorrosGraphPresenter.statusMes(
+                    month,
+                    false,
+                    0f,
+                    "Error al obtener datos. Intente nuevamente"
+                )
+            }
     }
 
 }

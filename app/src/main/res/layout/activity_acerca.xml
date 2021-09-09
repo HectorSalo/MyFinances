@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AcercaActivity"
+    tools:context=".ui.activityGeneral.AcercaActivity"
     android:background="#2c2b2b"
     >
 
@@ -20,7 +20,6 @@
         app:lottie_fileName="logosks.json"
         app:lottie_imageAssetsFolder="images"
         app:lottie_loop="false"
-
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
