@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,9 +32,9 @@ class CronologiaListAdapter(private var list: MutableList<ItemCronologiaConstruc
         holder.concepto.text = item.concepto
 
         if (item.isDolar!!) {
-            holder.monto.text = "$ ${item.monto.toString()}"
+            holder.monto.text = "$ ${ClassesCommon.convertDoubleToString(item.monto!!)}"
         } else {
-            holder.monto.text = "Bs. ${item.monto.toString()}"
+            holder.monto.text = "Bs. ${ClassesCommon.convertDoubleToString(item.monto!!)}"
         }
 
         holder.fecha.text = tf.format(item.fecha!!)

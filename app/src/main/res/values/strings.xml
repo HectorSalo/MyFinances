@@ -72,7 +72,7 @@
     <string name="ingreso_mes">Ingreso único</string>
     <string name="escoger_mes">Escoja mes</string>
     <string name="sin_lista">No hay ítems guardados en esta lista</string>
-    <string name="text_total_balance_mensual">Suma: %1$f - %2$f</string>
+    <string name="text_total_balance_mensual">Suma: %1$s - %2$s</string>
     <string name="text_cargando_cotizacion">Cargando cotización&#8230;</string>
 
     <string name="menu_editar">Editar</string>

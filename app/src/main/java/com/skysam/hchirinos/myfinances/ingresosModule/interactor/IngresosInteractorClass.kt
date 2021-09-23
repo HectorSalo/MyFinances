@@ -21,8 +21,8 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
                     val ingreso = IngresosGastosConstructor()
                     ingreso.idIngreso = doc.id
                     ingreso.concepto = doc.getString(Constants.BD_CONCEPTO)
-                    ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!
                     ingreso.isDolar = doc.getBoolean(Constants.BD_DOLAR)!!
+                    val isDolar: Boolean = doc.getBoolean(Constants.BD_DOLAR)!!
                     val activo = doc.getBoolean(Constants.BD_MES_ACTIVO)
                     if (activo == null) {
                         ingreso.isMesActivo = true
@@ -39,7 +39,7 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
                         ingreso.tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                         ingreso.fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL)
 
-
+                        val mesInicial = calendarCobro[Calendar.MONTH]
                         var mesCobro = calendarCobro[Calendar.MONTH]
                         var yearCobro = calendarCobro[Calendar.YEAR]
 
@@ -59,6 +59,15 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
                             }
 
                             if (perteneceMes) {
+                                ingreso.monto = if (isDolar) {
+                                    doc.getDouble(Constants.BD_MONTO)!!
+                                } else {
+                                    if (mesInicial <= 8) {
+                                        doc.getDouble(Constants.BD_MONTO)!! / 1000000
+                                    } else {
+                                        doc.getDouble(Constants.BD_MONTO)!!
+                                    }
+                                }
                                 mesCobro += 12
                             } else {
                                 mesCobro = calendarCobro[Calendar.MONTH]

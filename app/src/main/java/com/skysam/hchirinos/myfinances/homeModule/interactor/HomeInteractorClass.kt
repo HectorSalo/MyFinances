@@ -6,6 +6,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
 import kotlinx.coroutines.*
@@ -23,7 +24,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
 
         getStatusNotification()
 
-        launch {
+        /*launch {
             var valor: String? = null
             var valorCotizacion: Float? = null
             val url = "https://monitordolarvenezuela.com/"
@@ -47,6 +48,36 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
 
                 val values2: List<String> = valor1.split(" ")
                 valor = values2[0]
+            }
+
+            if (valor != null) {
+                homePresenter.valorCotizacionWebOk(valor!!, valorCotizacion!!)
+            } else {
+                obtenerCotizacionShared()
+            }
+        }*/
+
+        launch {
+            var valor: String? = null
+            var valorCotizacion: Float? = null
+            val url = "http://www.bcv.org.ve/"
+
+            withContext(Dispatchers.IO) {
+                try {
+                    val doc = Jsoup.connect(url).get()
+                    val data = doc.select("div#dolar")
+                    valor = data.select("strong").last()?.text()
+                } catch (e: Exception) {
+                    Log.e("Error", e.toString())
+                }
+            }
+            if (valor != null) {
+                val valorNeto = valor?.replace(",", ".")
+                valorCotizacion = valorNeto?.toFloat()
+                val valorRounded = String.format(Locale.US, "%.2f", valorCotizacion)
+                valorCotizacion = valorRounded.toFloat()
+
+                valor = ClassesCommon.convertFloatToString(valorCotizacion)
             }
 
             if (valor != null) {

@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass;
 import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
@@ -100,9 +101,12 @@ public class HomeFragment extends Fragment implements HomeView {
             montoGastos = Float.parseFloat(gastos.toString());
             cargarFolios();
         });
-        viewModel.getAmountAhorros().observe(getViewLifecycleOwner(), ahorros-> tvAhorros.setText("Ahorros hasta la fecha: $" + ahorros));
-        viewModel.getAmountPrestamos().observe(getViewLifecycleOwner(), prestamos-> tvPrestamos.setText("Préstamos hasta la fecha: $" + prestamos));
-        viewModel.getAmountDeudas().observe(getViewLifecycleOwner(), deudas-> tvDeudas.setText("Deudas hasta la fecha: $" + deudas));
+        viewModel.getAmountAhorros().observe(getViewLifecycleOwner(), ahorros->
+                tvAhorros.setText("Ahorros hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(ahorros)));
+        viewModel.getAmountPrestamos().observe(getViewLifecycleOwner(), prestamos->
+                tvPrestamos.setText("Préstamos hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(prestamos)));
+        viewModel.getAmountDeudas().observe(getViewLifecycleOwner(), deudas->
+                tvDeudas.setText("Deudas hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(deudas)));
     }
 
 
@@ -142,8 +146,10 @@ public class HomeFragment extends Fragment implements HomeView {
                 tvSuperDeficit.setText("Balance en cero");
                 linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
             }
-            tvSuma.setText(getString(R.string.text_total_balance_mensual, montoIngresos, montoGastos));
-            tvMontoTotal.setText("$" + montoTotal);
+            tvSuma.setText(getString(R.string.text_total_balance_mensual,
+                    ClassesCommon.INSTANCE.convertFloatToString(montoIngresos),
+                    ClassesCommon.INSTANCE.convertFloatToString(montoGastos)));
+            tvMontoTotal.setText("$" + ClassesCommon.INSTANCE.convertFloatToString(montoTotal));
         }
     }
 
@@ -163,7 +169,7 @@ public class HomeFragment extends Fragment implements HomeView {
     @Override
     public void valorCotizacionWebError(float valorFloat) {
         if (tvCotizacionDolar != null) {
-            tvCotizacionDolar.setText("Bs.S " + valorFloat);
+            tvCotizacionDolar.setText("Bs.S " + ClassesCommon.INSTANCE.convertFloatToString(valorFloat));
         }
     }
 
