@@ -10,6 +10,11 @@
       <map>
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_acerca.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_listapendientes_detail.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_ahorros_graph.xml" value="0.17249240121580547" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_deudas_graph.xml" value="0.17249240121580547" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_gastos_graph.xml" value="0.17249240121580547" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_ingresos_graph.xml" value="0.17249240121580547" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_prestamos_graph.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/listapendientes_detail.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/xml/header_preferences.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/xml/preferencias_preferences.xml" value="0.18614130434782608" />

@@ -160,6 +160,7 @@
     <string name="nav_header_title">Estadísticas</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="label_nav_totales">Totales</string>
+    <string name="text_prom_graphs">Promedio ($) %1$s</string>
 
 
     <!-- Tutorial -->

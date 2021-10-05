@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.graficosModule.ui
 
 import android.content.res.Resources
-import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,17 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.databinding.FragmentIngresosGraphBinding
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.IngresosGraphPresenter
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.IngresosGraphPresenterClass
@@ -134,6 +132,16 @@ class IngresosGraphFragment : Fragment(), IngresosGraphView {
         binding.barCharts.animateY(3000)
         binding.barCharts.description = null
         binding.barCharts.data = barData
+
+        val calendar = Calendar.getInstance()
+        val monthCurrent = calendar[Calendar.MONTH]
+        var amountTotal = 0.0
+        for (i in 0..monthCurrent) {
+            amountTotal += barEntries[i].y
+        }
+        val prom = amountTotal / (monthCurrent + 1)
+        binding.tvProm.text = getString(R.string.text_prom_graphs,
+                ClassesCommon.convertDoubleToString(prom))
     }
 
     override fun onDestroyView() {

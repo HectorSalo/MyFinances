@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.databinding.FragmentPrestamosGraphBinding
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.PrestamosGraphPresenter
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.PrestamosGraphPresenterClass
@@ -43,7 +44,7 @@ class PrestamosGraphFragment : Fragment(), PrestamosGraphView {
     private lateinit var prestamosGraphPresenter: PrestamosGraphPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         _binding = FragmentPrestamosGraphBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -127,6 +128,16 @@ class PrestamosGraphFragment : Fragment(), PrestamosGraphView {
         binding.barCharts.animateY(3000)
         binding.barCharts.description = null
         binding.barCharts.data = barData
+
+        val calendar = Calendar.getInstance()
+        val monthCurrent = calendar[Calendar.MONTH]
+        var amountTotal = 0.0
+        for (i in 0..monthCurrent) {
+            amountTotal += barEntries[i].y
+        }
+        val prom = amountTotal / (monthCurrent + 1)
+        binding.tvProm.text = getString(R.string.text_prom_graphs,
+                ClassesCommon.convertDoubleToString(prom))
     }
 
     override fun onDestroyView() {

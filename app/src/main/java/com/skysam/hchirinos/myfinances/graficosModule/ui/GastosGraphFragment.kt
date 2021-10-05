@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.databinding.FragmentGastosGraphBinding
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.GastosGraphPresenter
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.GastosGraphPresenterClass
@@ -127,6 +128,16 @@ class GastosGraphFragment : Fragment(), GastosGraphView {
         binding.barCharts.animateY(3000)
         binding.barCharts.description = null
         binding.barCharts.data = barData
+
+        val calendar = Calendar.getInstance()
+        val monthCurrent = calendar[Calendar.MONTH]
+        var amountTotal = 0.0
+        for (i in 0..monthCurrent) {
+            amountTotal += barEntries[i].y
+        }
+        val prom = amountTotal / (monthCurrent + 1)
+        binding.tvProm.text = getString(R.string.text_prom_graphs,
+                ClassesCommon.convertDoubleToString(prom))
     }
 
     override fun onDestroyView() {
