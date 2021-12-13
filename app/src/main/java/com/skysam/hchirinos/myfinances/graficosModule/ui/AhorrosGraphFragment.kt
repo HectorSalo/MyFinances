@@ -72,16 +72,21 @@ class AhorrosGraphFragment : Fragment(), AhorrosGraphView {
         val adapterYears = ArrayAdapter(requireContext(), R.layout.layout_spinner, listaYears)
         binding.spYear.adapter = adapterYears
 
-        if (yearSelected == 2020) {
-            binding.spYear.setSelection(0)
-        } else {
-            binding.spYear.setSelection(1)
+        when(yearSelected) {
+            2020 -> binding.spYear.setSelection(0)
+            2021 -> binding.spYear.setSelection(1)
+            2022 -> binding.spYear.setSelection(2)
         }
 
         binding.spYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 binding.progressBar.visibility = View.VISIBLE
-                yearSelected = if (position == 0) 2020 else 2021
+                yearSelected = when(position) {
+                    0 -> 2020
+                    1 -> 2021
+                    2 -> 2022
+                    else -> yearSelected
+                }
                 ahorrosGraphPresenter.getMes(yearSelected, 0)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -136,8 +141,10 @@ class AhorrosGraphFragment : Fragment(), AhorrosGraphView {
         binding.barCharts.data = barData
 
         val calendar = Calendar.getInstance()
-        val monthCurrent = calendar[Calendar.MONTH]
+        val yearCurrent = calendar[Calendar.YEAR]
+        val monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
         var amountTotal = 0.0
+
         for (i in 0..monthCurrent) {
             amountTotal += barEntries[i].y
         }

@@ -59,7 +59,7 @@ object CronologyRepository {
                                         if (doc.getBoolean(Constants.BD_DOLAR)!!) {
                                             ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!
                                         } else {
-                                            if (mesInicial <= 8) {
+                                            if (mesInicial <= 8 && year <= 2021) {
                                                 ingreso.monto = (doc.getDouble(Constants.BD_MONTO)!! / 1000000)
                                             } else {
                                                 ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!

@@ -42,7 +42,7 @@ class TotalesGraphInteractorClass(private val totalesGraphPresenter: TotalesGrap
                                             montototal = if (dolar) {
                                                 montototal + montoDetal
                                             } else {
-                                                if (mesInicial <= 8) {
+                                                if (mesInicial <= 8 && year <= 2021) {
                                                     montototal + (montoDetal / 1000000) / valorCotizacion
                                                 } else {
                                                     montototal + montoDetal / valorCotizacion

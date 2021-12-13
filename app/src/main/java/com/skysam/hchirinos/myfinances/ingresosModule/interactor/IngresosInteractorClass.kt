@@ -62,7 +62,7 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
                                 ingreso.monto = if (isDolar) {
                                     doc.getDouble(Constants.BD_MONTO)!!
                                 } else {
-                                    if (mesInicial <= 8) {
+                                    if (mesInicial <= 8 && year <= 2021) {
                                         doc.getDouble(Constants.BD_MONTO)!! / 1000000
                                     } else {
                                         doc.getDouble(Constants.BD_MONTO)!!
@@ -78,7 +78,7 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
                         ingreso.monto = if (isDolar) {
                             doc.getDouble(Constants.BD_MONTO)!!
                         } else {
-                            if (mesInicial <= 8) {
+                            if (mesInicial <= 8 && year <= 2021) {
                                 doc.getDouble(Constants.BD_MONTO)!! / 1000000
                             } else {
                                 doc.getDouble(Constants.BD_MONTO)!!
