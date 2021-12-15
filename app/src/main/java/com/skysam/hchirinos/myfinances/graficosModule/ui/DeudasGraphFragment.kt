@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.databinding.FragmentDeudasGraphBinding
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.DeudasGraphPresenter
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.DeudasGraphPresenterClass
@@ -66,16 +67,21 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
         val adapterYears = ArrayAdapter(requireContext(), R.layout.layout_spinner, listaYears)
         binding.spYear.adapter = adapterYears
 
-        if (yearSelected == 2020) {
-            binding.spYear.setSelection(0)
-        } else {
-            binding.spYear.setSelection(1)
+        when(yearSelected) {
+            2020 -> binding.spYear.setSelection(0)
+            2021 -> binding.spYear.setSelection(1)
+            2022 -> binding.spYear.setSelection(2)
         }
 
         binding.spYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 binding.progressBar.visibility = View.VISIBLE
-                yearSelected = if (position == 0) 2020 else 2021
+                yearSelected = when(position) {
+                    0 -> 2020
+                    1 -> 2021
+                    2 -> 2022
+                    else -> yearSelected
+                }
                 deudasGraphPresenter.getMes(yearSelected, 0)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -128,6 +134,17 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
         binding.barCharts.animateY(3000)
         binding.barCharts.description = null
         binding.barCharts.data = barData
+
+        val calendar = Calendar.getInstance()
+        val yearCurrent = calendar[Calendar.YEAR]
+        val monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
+        var amountTotal = 0.0
+        for (i in 0..monthCurrent) {
+            amountTotal += barEntries[i].y
+        }
+        val prom = amountTotal / (monthCurrent + 1)
+        binding.tvProm.text = getString(R.string.text_prom_graphs,
+                ClassesCommon.convertDoubleToString(prom))
     }
 
     override fun onDestroyView() {

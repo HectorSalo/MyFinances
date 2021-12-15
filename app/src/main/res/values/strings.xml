@@ -72,7 +72,7 @@
     <string name="ingreso_mes">Ingreso único</string>
     <string name="escoger_mes">Escoja mes</string>
     <string name="sin_lista">No hay ítems guardados en esta lista</string>
-    <string name="text_total_balance_mensual">Suma: %1$f - %2$f</string>
+    <string name="text_total_balance_mensual">Suma: %1$s - %2$s</string>
     <string name="text_cargando_cotizacion">Cargando cotización&#8230;</string>
 
     <string name="menu_editar">Editar</string>
@@ -160,6 +160,7 @@
     <string name="nav_header_title">Estadísticas</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="label_nav_totales">Totales</string>
+    <string name="text_prom_graphs">Promedio ($) %1$s</string>
 
 
     <!-- Tutorial -->

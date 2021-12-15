@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,9 +52,9 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
         holder.tvConcepto.setText(listIngresos.get(position).getConcepto());
 
         if (listIngresos.get(position).isDolar()) {
-            holder.tvMonto.setText("$" + listIngresos.get(position).getMonto());
+            holder.tvMonto.setText("$" + ClassesCommon.INSTANCE.convertDoubleToString(listIngresos.get(position).getMonto()));
         } else {
-            holder.tvMonto.setText("Bs. " + listIngresos.get(position).getMonto());
+            holder.tvMonto.setText("Bs. " + ClassesCommon.INSTANCE.convertDoubleToString(listIngresos.get(position).getMonto()));
         }
 
         if(listIngresos.get(position).isMesActivo()) {

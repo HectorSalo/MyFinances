@@ -53,6 +53,7 @@ object HomeRepository {
                                 calendarCobro.time = document.getDate(Constants.BD_FECHA_INCIAL)!!
                                 val duracionFrecuencia = document.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                 val duracionFrecuenciaInt = duracionFrecuencia.toInt()
+                                val mesInicial = calendarCobro[Calendar.MONTH]
                                 mesCobro = calendarCobro[Calendar.MONTH]
                                 yearCobro = calendarCobro[Calendar.YEAR]
 
@@ -61,7 +62,11 @@ object HomeRepository {
                                         montototal = if (dolar) {
                                             montototal + montoDetal
                                         } else {
-                                            montototal + montoDetal / valorCotizacion
+                                            if (mesInicial <= 8) {
+                                                montototal + (montoDetal / 1000000) / valorCotizacion
+                                            } else {
+                                                montototal + montoDetal / valorCotizacion
+                                            }
                                         }
                                     }
 

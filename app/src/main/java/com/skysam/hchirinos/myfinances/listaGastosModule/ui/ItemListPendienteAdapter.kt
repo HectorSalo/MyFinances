@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,7 +53,7 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
         val item = items[position]
 
         holder.concepto.text = item.concepto
-        holder.monto.text = "\$ ${item.montoAproximado}"
+        holder.monto.text = "\$ ${ClassesCommon.convertDoubleToString(item.montoAproximado)}"
         if (item.fechaAproximada != null) {
             holder.fechaAproximada.text = "Realizar el gasto el: ${df.format(item.fechaAproximada)}"
         } else {

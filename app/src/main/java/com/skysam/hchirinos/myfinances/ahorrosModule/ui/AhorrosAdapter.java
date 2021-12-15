@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,9 +59,9 @@ public class AhorrosAdapter extends RecyclerView.Adapter<AhorrosAdapter.ViewHold
 
 
         if (listaAhorros.get(i).isDolar()) {
-            holder.monto.setText("$" + listaAhorros.get(i).getMonto());
+            holder.monto.setText("$" + ClassesCommon.INSTANCE.convertDoubleToString(listaAhorros.get(i).getMonto()));
         } else {
-            holder.monto.setText("Bs. " + listaAhorros.get(i).getMonto());
+            holder.monto.setText("Bs. " + ClassesCommon.INSTANCE.convertDoubleToString(listaAhorros.get(i).getMonto()));
         }
 
         if (position == 0) {

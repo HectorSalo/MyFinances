@@ -73,10 +73,10 @@ class TotalesGraphFragment : Fragment(), TotalesGraphView {
 
         binding.spMes.setSelection(mesSelected)
 
-        if (yearSelected == 2020) {
-            binding.spYear.setSelection(0)
-        } else {
-            binding.spYear.setSelection(1)
+        when(yearSelected) {
+            2020 -> binding.spYear.setSelection(0)
+            2021 -> binding.spYear.setSelection(1)
+            2022 -> binding.spYear.setSelection(2)
         }
 
         binding.spMes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -91,7 +91,12 @@ class TotalesGraphFragment : Fragment(), TotalesGraphView {
 
         binding.spYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-                yearSelected = if (position == 0) 2020 else 2021
+                yearSelected = when(position) {
+                    0 -> 2020
+                    1 -> 2021
+                    2 -> 2022
+                    else -> yearSelected
+                }
                 totalesGraphPresenter.getIngresos(yearSelected, mesSelected)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {

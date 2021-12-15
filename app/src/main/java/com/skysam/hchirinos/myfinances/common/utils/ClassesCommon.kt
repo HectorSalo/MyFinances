@@ -79,6 +79,14 @@ object ClassesCommon {
         picker.show(fragmentManager, picker.toString())
     }
 
+    fun convertFloatToString(value: Float): String {
+        return String.format(Locale.GERMANY, "%,.2f", value)
+    }
+
+    fun convertDoubleToString(value: Double): String {
+        return String.format(Locale.GERMANY, "%,.2f", value)
+    }
+
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val bundle = Bundle()

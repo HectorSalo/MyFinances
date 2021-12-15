@@ -109,11 +109,16 @@ public class DeudasFragment extends Fragment {
         ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
-        if (yearSelected == 2020) {
-            spinnerYear.setSelection(0);
-        }
-        if (yearSelected == 2021) {
-            spinnerYear.setSelection(1);
+        switch (yearSelected) {
+            case 2020:
+                spinnerYear.setSelection(0);
+                break;
+            case 2021:
+                spinnerYear.setSelection(1);
+                break;
+            case 2022:
+                spinnerYear.setSelection(2);
+                break;
         }
 
         spinner.setSelection(mesSelected);
@@ -140,6 +145,9 @@ public class DeudasFragment extends Fragment {
                         break;
                     case 1:
                         yearSelected = 2021;
+                        break;
+                    case 2:
+                        yearSelected = 2022;
                         break;
                 }
                 if (!fragmentCreado) {

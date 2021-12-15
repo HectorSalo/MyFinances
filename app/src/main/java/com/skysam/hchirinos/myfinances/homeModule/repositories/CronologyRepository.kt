@@ -45,6 +45,7 @@ object CronologyRepository {
                                 val duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)!!
                                 val duracionFrecuenciaInt = duracionFrecuencia.toInt()
                                 calendarCobro.time = doc.getDate(Constants.BD_FECHA_INCIAL)!!
+                                val mesInicial = calendarCobro[Calendar.MONTH]
                                 var mesCobro = calendarCobro[Calendar.MONTH]
                                 var yearCobro = calendarCobro[Calendar.YEAR]
 
@@ -52,10 +53,18 @@ object CronologyRepository {
                                     if (mesCobro == month) {
                                         val ingreso = ItemCronologiaConstructor()
                                         ingreso.concepto = doc.getString(Constants.BD_CONCEPTO)
-                                        ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!
                                         ingreso.isDolar = doc.getBoolean(Constants.BD_DOLAR)!!
                                         ingreso.pasivo = false
                                         ingreso.fecha = calendarCobro.time
+                                        if (doc.getBoolean(Constants.BD_DOLAR)!!) {
+                                            ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!
+                                        } else {
+                                            if (mesInicial <= 8 && year <= 2021) {
+                                                ingreso.monto = (doc.getDouble(Constants.BD_MONTO)!! / 1000000)
+                                            } else {
+                                                ingreso.monto = doc.getDouble(Constants.BD_MONTO)!!
+                                            }
+                                        }
                                         listaCronologia.add(ingreso)
                                     }
 

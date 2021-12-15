@@ -28,6 +28,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
@@ -67,9 +68,9 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
         holder.destinatario.setText(listaPrestamos.get(i).getConcepto());
 
         if (listaPrestamos.get(i).isDolar()) {
-            holder.monto.setText("$" + listaPrestamos.get(i).getMonto());
+            holder.monto.setText("$" + ClassesCommon.INSTANCE.convertDoubleToString(listaPrestamos.get(i).getMonto()));
         } else {
-            holder.monto.setText("Bs. " + listaPrestamos.get(i).getMonto());
+            holder.monto.setText("Bs. " + ClassesCommon.INSTANCE.convertDoubleToString(listaPrestamos.get(i).getMonto()));
         }
 
         holder.fechaIngreso.setText("Préstamo realizado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaPrestamos.get(i).getFechaIngreso()));
