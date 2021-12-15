@@ -9,17 +9,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_acerca.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_listapendientes_detail.xml" value="0.18614130434782608" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_ahorros_graph.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_deudas_graph.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_gastos_graph.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_ingresos_graph.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_prestamos_graph.xml" value="0.17249240121580547" />
-        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/listapendientes_detail.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/xml/header_preferences.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/xml/preferencias_preferences.xml" value="0.18614130434782608" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/xml/root_preferences.xml" value="0.19739583333333333" />
+        <entry key="..\:/Users/hchirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout-land/fragment_home.xml" value="0.21031746031746032" />
         <entry key="..\:/Users/hchirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/dialog_pin_settings.xml" value="0.1" />
+        <entry key="..\:/Users/hchirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_container_view_page.xml" value="0.24856696195935382" />
+        <entry key="..\:/Users/hchirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_home.xml" value="0.20923913043478262" />
         <entry key="..\:/Users/hchirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_pin.xml" value="0.192481884057971" />
       </map>
     </option>

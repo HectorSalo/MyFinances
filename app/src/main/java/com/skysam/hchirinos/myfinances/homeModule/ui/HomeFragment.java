@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,7 @@ import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-
+import java.util.Calendar;
 
 
 public class HomeFragment extends Fragment implements HomeView {
@@ -83,6 +84,22 @@ public class HomeFragment extends Fragment implements HomeView {
         tvDeudas = view.findViewById(R.id.tv_total_deudas);
         tvAhorros = view.findViewById(R.id.tv_total_ahorros);
         tvPrestamos = view.findViewById(R.id.tv_total_prestamos);
+        ImageButton ibTransfer = view.findViewById(R.id.ib_transfer);
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        if (currentMonth == 11 && currentDay > 14) {
+            ibTransfer.setVisibility(View.VISIBLE);
+        }
+
+        ibTransfer.setOnClickListener(view1 -> {
+            MoveToNextYearDialog moveToNextYearDialog = new MoveToNextYearDialog(currentYear, homePresenter);
+            moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
+            moveToNextYearDialog.setCancelable(false);
+        });
 
         montoIngresos = 0;
         montoGastos = 0;

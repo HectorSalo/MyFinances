@@ -55,21 +55,10 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         val calendar = Calendar.getInstance()
         val mesSelected = calendar[Calendar.MONTH]
         val yearSelected = calendar[Calendar.YEAR]
-        val currentDay = calendar[Calendar.DAY_OF_MONTH]
 
-        if (mesSelected == 11 && currentDay > 14) {
-            binding.ibTransfer.visibility = View.VISIBLE
-        }
         val mesString = listOf(*resources.getStringArray(R.array.meses))[mesSelected]
         title = "$mesString, $yearSelected"
         configToolbar()
-
-        binding.ibTransfer.setOnClickListener {
-            moveToNextYearDialog = MoveToNextYearDialog(yearSelected, homePresenter)
-            moveToNextYearDialog.show(requireActivity().supportFragmentManager, tag)
-            moveToNextYearDialog.isCancelable = false
-        }
-
     }
 
     private val callback: ViewPager2.OnPageChangeCallback = object: ViewPager2.OnPageChangeCallback() {
