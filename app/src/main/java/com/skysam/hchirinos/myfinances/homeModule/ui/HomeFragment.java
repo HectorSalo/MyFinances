@@ -42,6 +42,7 @@ public class HomeFragment extends Fragment implements HomeView {
     private LinearLayout linearLayout;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
+    private MoveToNextYearDialog moveToNextYearDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -96,7 +97,7 @@ public class HomeFragment extends Fragment implements HomeView {
         }
 
         ibTransfer.setOnClickListener(view1 -> {
-            MoveToNextYearDialog moveToNextYearDialog = new MoveToNextYearDialog(currentYear, homePresenter);
+            moveToNextYearDialog = new MoveToNextYearDialog(currentYear, homePresenter);
             moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
             moveToNextYearDialog.setCancelable(false);
         });
@@ -199,6 +200,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
     @Override
     public void statusMoveNextYear(boolean statusOk, @NotNull String message) {
-
+        moveToNextYearDialog.dismiss();
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

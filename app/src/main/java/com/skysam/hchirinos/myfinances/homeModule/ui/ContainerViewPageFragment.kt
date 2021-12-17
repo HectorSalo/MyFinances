@@ -17,17 +17,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
-import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
-import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass
 import java.util.*
 
 
-class ContainerViewPageFragment : Fragment(), HomeView {
+class ContainerViewPageFragment : Fragment() {
 
     private var _binding: FragmentContainerViewPageBinding? = null
     private val binding get() = _binding!!
-    private lateinit var moveToNextYearDialog: MoveToNextYearDialog
-    private lateinit var homePresenter: HomePresenter
     private lateinit var title: String
     private lateinit var toolbar: Toolbar
     private lateinit var itemBuscar: MenuItem
@@ -42,8 +38,6 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        homePresenter = HomePresenterClass(this, requireContext())
 
         val sectionPageAdapter = SectionPageAdapter(requireActivity())
         binding.viewPager.adapter = sectionPageAdapter
@@ -114,18 +108,4 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         super.onPause()
         toolbar.animate().translationY(toolbar.height.toFloat()).duration = 300
     }
-
-    override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {
-
-    }
-
-    override fun valorCotizacionWebError(valorFloat: Float) {
-
-    }
-
-    override fun statusMoveNextYear(statusOk: Boolean, message: String) {
-        moveToNextYearDialog.dismiss()
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
 }

@@ -5,7 +5,7 @@ import com.skysam.hchirinos.myfinances.homeModule.interactor.HomeInteractor
 import com.skysam.hchirinos.myfinances.homeModule.interactor.HomeInteractorClass
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeView
 
-class HomePresenterClass(val homeView: HomeView, context: Context): HomePresenter {
+class HomePresenterClass(private val homeView: HomeView, context: Context): HomePresenter {
     val homeInteractor: HomeInteractor = HomeInteractorClass(this, context)
     override fun obtenerCotizacionWeb() {
         homeInteractor.obtenerCotizacionWeb()
