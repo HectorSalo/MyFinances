@@ -14,12 +14,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.skysam.hchirinos.myfinances.BuildConfig;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseAuthentication;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = getSharedPreferences(FirebaseAuthentication.INSTANCE.getCurrentUser().getUid(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Auth.INSTANCE.getCurrentUser().getUid(), Context.MODE_PRIVATE);
         String temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
         switch (temaInicial) {
             case Constants.PREFERENCE_TEMA_CLARO:
@@ -145,6 +147,9 @@ public class SettingsActivity extends AppCompatActivity implements
 
             Preference preferenceCerrarSesion = findPreference("cerrar_sesion_header");
             Preference preferenceActualizarPass = findPreference("actualizar_pass_header");
+
+            PreferenceScreen preferenceVersion = findPreference(getString(R.string.version));
+            preferenceVersion.setSummary(BuildConfig.VERSION_NAME);
 
             String providerId = "";
 

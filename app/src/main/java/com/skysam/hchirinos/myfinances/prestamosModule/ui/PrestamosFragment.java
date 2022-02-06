@@ -25,15 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -112,11 +109,16 @@ public class PrestamosFragment extends Fragment {
         ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
-        if (yearSelected == 2020) {
-            spinnerYear.setSelection(0);
-        }
-        if (yearSelected == 2021) {
-            spinnerYear.setSelection(1);
+        switch (yearSelected) {
+            case 2020:
+                spinnerYear.setSelection(0);
+                break;
+            case 2021:
+                spinnerYear.setSelection(1);
+                break;
+            case 2022:
+                spinnerYear.setSelection(2);
+                break;
         }
 
         spinner.setSelection(mesSelected);
@@ -143,6 +145,9 @@ public class PrestamosFragment extends Fragment {
                         break;
                     case 1:
                         yearSelected = 2021;
+                        break;
+                    case 2:
+                        yearSelected = 2022;
                         break;
                 }
                 if (!fragmentCreado) {
@@ -183,35 +188,33 @@ public class PrestamosFragment extends Fragment {
 
         CollectionReference reference = db.collection(Constants.BD_PRESTAMOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                        AhorrosConstructor prestamo = new AhorrosConstructor();
+        reference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                listaPrestamos.clear();
+                for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                    AhorrosConstructor prestamo = new AhorrosConstructor();
 
-                        prestamo.setIdAhorro(doc.getId());
-                        prestamo.setConcepto(doc.getString(Constants.BD_CONCEPTO));
-                        prestamo.setDolar(doc.getBoolean(Constants.BD_DOLAR));
-                        prestamo.setMonto(doc.getDouble(Constants.BD_MONTO));
-                        prestamo.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
+                    prestamo.setIdAhorro(doc.getId());
+                    prestamo.setConcepto(doc.getString(Constants.BD_CONCEPTO));
+                    prestamo.setDolar(doc.getBoolean(Constants.BD_DOLAR));
+                    prestamo.setMonto(doc.getDouble(Constants.BD_MONTO));
+                    prestamo.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
-                        listaPrestamos.add(prestamo);
+                    listaPrestamos.add(prestamo);
 
-                    }
-                    prestamosAdapter.updateList(listaPrestamos);
-                    if (listaPrestamos.isEmpty()) {
-                        tvSinLista.setVisibility(View.VISIBLE);
-                    } else {
-                        tvSinLista.setVisibility(View.GONE);
-                    }
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
-                fragmentCreado = false;
+                prestamosAdapter.updateList(listaPrestamos);
+                if (listaPrestamos.isEmpty()) {
+                    tvSinLista.setVisibility(View.VISIBLE);
+                } else {
+                    tvSinLista.setVisibility(View.GONE);
+                }
+                progressBar.setVisibility(View.GONE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error al cargar la lista. Intente nuevamente", Toast.LENGTH_SHORT).show();
             }
+            fragmentCreado = false;
         });
     }
 

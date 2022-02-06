@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.common.model.firebase
 
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 
@@ -9,13 +8,8 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 object FirebaseFirestore {
     private const val SEPARATOR = "-"
 
-    private var mDatabaseReference: FirebaseFirestore? = null
-
-    fun getInstance() : FirebaseFirestore {
-        if (mDatabaseReference == null) {
-            mDatabaseReference = FirebaseFirestore.getInstance()
-        }
-        return mDatabaseReference!!
+    private fun getInstance(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
     }
 
     fun getIngresosReference(uid: String, year: Int, month: Int): CollectionReference {

@@ -72,7 +72,7 @@
     <string name="ingreso_mes">Ingreso único</string>
     <string name="escoger_mes">Escoja mes</string>
     <string name="sin_lista">No hay ítems guardados en esta lista</string>
-    <string name="text_total_balance_mensual">Suma: %1$f - %2$f</string>
+    <string name="text_total_balance_mensual">Suma: %1$s - %2$s</string>
     <string name="text_cargando_cotizacion">Cargando cotización&#8230;</string>
 
     <string name="menu_editar">Editar</string>
@@ -121,7 +121,7 @@
     <string name="cerrar_sesion">Cerrar Sesión</string>
     <string name="acerca">Información de la App</string>
     <string name="acerca_title">Desarrollado por&#8230;</string>
-    <string name="sync_header">Sync</string>
+    <string name="version">Versión</string>
 
     <!-- Preferencias Preferences -->
     <string name="tipo_bloqueo_title">Bloqueo de la Aplicación</string>
@@ -160,6 +160,7 @@
     <string name="nav_header_title">Estadísticas</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="label_nav_totales">Totales</string>
+    <string name="text_prom_graphs">Promedio ($) %1$s</string>
 
 
     <!-- Tutorial -->
@@ -174,19 +175,5 @@
     <!-- Notification -->
     <string name="notification_gastos_body">Pagar %1$s</string>
     <string name="notification_ingresos_body">Cobrar %1$s</string>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-
 
 </resources>

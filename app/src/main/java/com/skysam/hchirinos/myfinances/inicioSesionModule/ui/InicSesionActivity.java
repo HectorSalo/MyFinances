@@ -44,6 +44,7 @@ public class InicSesionActivity extends AppCompatActivity implements InitSession
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         setTheme(R.style.Theme_MyFinances);
         setContentView(R.layout.activity_inic_sesion);
 

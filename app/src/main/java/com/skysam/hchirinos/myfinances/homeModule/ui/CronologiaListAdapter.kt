@@ -8,11 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CronologiaListAdapter(private var list: ArrayList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
+class CronologiaListAdapter(private var list: MutableList<ItemCronologiaConstructor>): RecyclerView.Adapter<CronologiaListAdapter.ViewHolder> () {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val concepto: TextView = view.findViewById(R.id.tv_concepto)
         val monto : TextView = view.findViewById(R.id.tv_monto)
@@ -32,9 +32,9 @@ class CronologiaListAdapter(private var list: ArrayList<ItemCronologiaConstructo
         holder.concepto.text = item.concepto
 
         if (item.isDolar!!) {
-            holder.monto.text = "$ ${item.monto.toString()}"
+            holder.monto.text = "$ ${ClassesCommon.convertDoubleToString(item.monto!!)}"
         } else {
-            holder.monto.text = "Bs. ${item.monto.toString()}"
+            holder.monto.text = "Bs. ${ClassesCommon.convertDoubleToString(item.monto!!)}"
         }
 
         holder.fecha.text = tf.format(item.fecha!!)

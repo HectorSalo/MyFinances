@@ -5,28 +5,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemCronologiaConstructor
 import com.skysam.hchirinos.myfinances.databinding.FragmentCronologiaBinding
-import com.skysam.hchirinos.myfinances.homeModule.presenter.CronologiaPresenter
-import com.skysam.hchirinos.myfinances.homeModule.presenter.CronologiaPresenterClass
-import java.util.*
-import kotlin.collections.ArrayList
+import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel
 
 
-class CronologiaFragment : Fragment(), CronologiaView {
+class CronologiaFragment : Fragment() {
 
     private var _binding: FragmentCronologiaBinding? = null
     private val binding get() = _binding!!
-    private lateinit var cronologiaPresenter: CronologiaPresenter
-    private lateinit var lista: ArrayList<ItemCronologiaConstructor>
+    private val viewModel: MainViewModel by activityViewModels()
+    private val listIngresos: MutableList<ItemCronologiaConstructor> = mutableListOf()
+    private val listGastos: MutableList<ItemCronologiaConstructor> = mutableListOf()
+    private val lista: MutableList<ItemCronologiaConstructor> = mutableListOf()
     private lateinit var adapter: CronologiaListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         _binding = FragmentCronologiaBinding.inflate(inflater, container, false)
-        cronologiaPresenter = CronologiaPresenterClass(this)
         return binding.root
     }
 
@@ -39,8 +38,6 @@ class CronologiaFragment : Fragment(), CronologiaView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        lista = ArrayList()
         adapter = CronologiaListAdapter(lista)
         binding.rvCronologia.setHasFixedSize(true)
         binding.rvCronologia.adapter = adapter
@@ -48,12 +45,7 @@ class CronologiaFragment : Fragment(), CronologiaView {
                 LinearLayoutManager.HORIZONTAL)
         binding.rvCronologia.addItemDecoration(dividerItemDecoration)
 
-
-        val calendar = Calendar.getInstance()
-        val month = calendar[Calendar.MONTH]
-        val year = calendar[Calendar.YEAR]
-
-        cronologiaPresenter.getCronologia(month, year)
+        loadViewModels()
     }
 
 
@@ -62,13 +54,28 @@ class CronologiaFragment : Fragment(), CronologiaView {
         _binding = null
     }
 
-    override fun listCronologia(list: ArrayList<ItemCronologiaConstructor>) {
+    private fun loadViewModels() {
+        viewModel.listIngresos.observe(viewLifecycleOwner, {
+            listIngresos.clear()
+            listIngresos.addAll(it)
+            sortList()
+        })
+        viewModel.listGastos.observe(viewLifecycleOwner, {
+            listGastos.clear()
+            listGastos.addAll(it)
+            sortList()
+        })
+    }
+
+    private fun sortList() {
         if (_binding != null) {
-            if (list.isEmpty()) {
+            lista.clear()
+            lista.addAll(listIngresos)
+            lista.addAll(listGastos)
+            if (lista.isEmpty()) {
                 binding.tvSinCronologia.visibility = View.VISIBLE
                 binding.rvCronologia.visibility = View.GONE
             } else {
-                lista = list
                 lista.sortWith { t, t2 -> t.fecha!!.compareTo(t2.fecha) }
                 adapter = CronologiaListAdapter(lista)
                 binding.rvCronologia.adapter = adapter

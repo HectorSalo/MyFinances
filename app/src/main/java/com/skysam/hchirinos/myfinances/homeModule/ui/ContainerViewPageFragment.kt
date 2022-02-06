@@ -14,22 +14,20 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.databinding.FragmentContainerViewPageBinding
-import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
-import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass
 import java.util.*
 
 
-class ContainerViewPageFragment : Fragment(), HomeView {
+class ContainerViewPageFragment : Fragment() {
 
     private var _binding: FragmentContainerViewPageBinding? = null
     private val binding get() = _binding!!
-    private lateinit var moveToNextYearDialog: MoveToNextYearDialog
-    private lateinit var homePresenter: HomePresenter
     private lateinit var title: String
     private lateinit var toolbar: Toolbar
     private lateinit var itemBuscar: MenuItem
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -41,31 +39,20 @@ class ContainerViewPageFragment : Fragment(), HomeView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        homePresenter = HomePresenterClass(this, requireContext())
-
         val sectionPageAdapter = SectionPageAdapter(requireActivity())
         binding.viewPager.adapter = sectionPageAdapter
         iniciarPuntosSlide(0)
         binding.viewPager.registerOnPageChangeCallback(callback)
 
+        fab = requireActivity().findViewById(R.id.fab)
+
         val calendar = Calendar.getInstance()
         val mesSelected = calendar[Calendar.MONTH]
         val yearSelected = calendar[Calendar.YEAR]
-        val currentDay = calendar[Calendar.DAY_OF_MONTH]
 
-        if (mesSelected == 11 && currentDay > 14) {
-            binding.ibTransfer.visibility = View.VISIBLE
-        }
         val mesString = listOf(*resources.getStringArray(R.array.meses))[mesSelected]
         title = "$mesString, $yearSelected"
         configToolbar()
-
-        binding.ibTransfer.setOnClickListener {
-            moveToNextYearDialog = MoveToNextYearDialog(yearSelected, homePresenter)
-            moveToNextYearDialog.show(requireActivity().supportFragmentManager, tag)
-            moveToNextYearDialog.isCancelable = false
-        }
-
     }
 
     private val callback: ViewPager2.OnPageChangeCallback = object: ViewPager2.OnPageChangeCallback() {
@@ -109,6 +96,7 @@ class ContainerViewPageFragment : Fragment(), HomeView {
 
     override fun onResume() {
         super.onResume()
+        fab.show()
         Handler(Looper.myLooper()!!).postDelayed({
             toolbar.animate().translationY(0f).duration = 500
             itemBuscar.isVisible = false
@@ -120,38 +108,4 @@ class ContainerViewPageFragment : Fragment(), HomeView {
         super.onPause()
         toolbar.animate().translationY(toolbar.height.toFloat()).duration = 300
     }
-
-    override fun valorCotizacionWebOk(valor: String, valorFloat: Float) {
-
-    }
-
-    override fun valorCotizacionWebError(valorFloat: Float) {
-
-    }
-
-    override fun statusValorIngresos(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
-    override fun statusValorGastos(statusOk: Boolean, gastos: Float, message: String) {
-
-    }
-
-    override fun statusValorDeudas(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
-    override fun statusValorPrestamos(statusOk: Boolean, gastos: Float, message: String) {
-
-    }
-
-    override fun statusValorAhorros(statusOk: Boolean, ingresos: Float, message: String) {
-
-    }
-
-    override fun statusMoveNextYear(statusOk: Boolean, message: String) {
-        moveToNextYearDialog.dismiss()
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
 }

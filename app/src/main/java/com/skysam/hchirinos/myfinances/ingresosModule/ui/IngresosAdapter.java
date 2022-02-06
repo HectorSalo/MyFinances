@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
-import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,10 +28,10 @@ import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHolder> {
 
     private ArrayList<IngresosGastosConstructor> listIngresos;
-    private Context context;
-    private Calendar calendarActual = Calendar.getInstance(Locale.getDefault());
-    private Date fechaActual = calendarActual.getTime();
-    private Activity activity;
+    private final Context context;
+    private final Calendar calendarActual = Calendar.getInstance(Locale.getDefault());
+    private final Date fechaActual = calendarActual.getTime();
+    private final Activity activity;
 
     public IngresosAdapter(ArrayList<IngresosGastosConstructor> listIngresos, Context context, Activity activity) {
         this.listIngresos = listIngresos;
@@ -49,17 +49,16 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final IngresosAdapter.ViewHolder holder, int position) {
-        final int i = position;
         holder.tvConcepto.setText(listIngresos.get(position).getConcepto());
 
         if (listIngresos.get(position).isDolar()) {
-            holder.tvMonto.setText("$" + listIngresos.get(position).getMonto());
+            holder.tvMonto.setText("$" + ClassesCommon.INSTANCE.convertDoubleToString(listIngresos.get(position).getMonto()));
         } else {
-            holder.tvMonto.setText("Bs. " + listIngresos.get(position).getMonto());
+            holder.tvMonto.setText("Bs. " + ClassesCommon.INSTANCE.convertDoubleToString(listIngresos.get(position).getMonto()));
         }
 
-        if(listIngresos.get(i).isMesActivo()) {
-            if (listIngresos.get(i).getTipoFrecuencia() != null) {
+        if(listIngresos.get(position).isMesActivo()) {
+            if (listIngresos.get(position).getTipoFrecuencia() != null) {
                 holder.tvFrecuencia.setText("Se cobra cada " + listIngresos.get(position).getDuracionFrecuencia() + " " + listIngresos.get(position).getTipoFrecuencia());
 
 
@@ -69,18 +68,22 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
                 Calendar calendarInicial = Calendar.getInstance();
                 calendarInicial.setTime(dateInicial);
 
-                if (tipoFrecuencia.equals("Dias")) {
-                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia));
-                    }
-                } else if (tipoFrecuencia.equals("Semanas")) {
-                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                        calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * 7));
-                    }
-                } else if (tipoFrecuencia.equals("Meses")) {
-                    for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
-                        calendarInicial.add(Calendar.MONTH, (duracionFrecuencia));
-                    }
+                switch (tipoFrecuencia) {
+                    case "Dias":
+                        for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia));
+                        }
+                        break;
+                    case "Semanas":
+                        for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                            calendarInicial.add(Calendar.DAY_OF_YEAR, (duracionFrecuencia * 7));
+                        }
+                        break;
+                    case "Meses":
+                        for (int j = 1; fechaActual.after(calendarInicial.getTime()); j++) {
+                            calendarInicial.add(Calendar.MONTH, (duracionFrecuencia));
+                        }
+                        break;
                 }
 
                 holder.tvProximoCobro.setText("Fecha próximo cobro: " + new SimpleDateFormat("EEE d MMM yyyy").format(calendarInicial.getTime()));

@@ -131,11 +131,16 @@ public class AhorrosFragment extends Fragment {
 
         fragmentCreado = true;
 
-        if (yearSelected == 2020) {
-            spinnerYear.setSelection(0);
-        }
-        if (yearSelected == 2021) {
-            spinnerYear.setSelection(1);
+        switch (yearSelected) {
+            case 2020:
+                spinnerYear.setSelection(0);
+                break;
+            case 2021:
+                spinnerYear.setSelection(1);
+                break;
+            case 2022:
+                spinnerYear.setSelection(2);
+                break;
         }
 
         spinnerMes.setSelection(mesSelected);
@@ -162,6 +167,9 @@ public class AhorrosFragment extends Fragment {
                         break;
                     case 1:
                         yearSelected = 2021;
+                        break;
+                    case 2:
+                        yearSelected = 2022;
                         break;
                 }
                 if (!fragmentCreado) {
@@ -329,6 +337,7 @@ public class AhorrosFragment extends Fragment {
 
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                listaAhorros.clear();
                 for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                     AhorrosConstructor ahorro = new AhorrosConstructor();
 

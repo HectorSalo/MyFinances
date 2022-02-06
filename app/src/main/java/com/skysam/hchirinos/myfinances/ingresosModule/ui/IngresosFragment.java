@@ -135,11 +135,16 @@ public class IngresosFragment extends Fragment implements IngresosView {
         ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
-        if (yearSelected == 2020) {
-            spinnerYear.setSelection(0);
-        }
-        if (yearSelected == 2021) {
-            spinnerYear.setSelection(1);
+        switch (yearSelected) {
+            case 2020:
+                spinnerYear.setSelection(0);
+                break;
+            case 2021:
+                spinnerYear.setSelection(1);
+                break;
+            case 2022:
+                spinnerYear.setSelection(2);
+                break;
         }
 
         spinnerMes.setSelection(mesSelected);
@@ -167,6 +172,9 @@ public class IngresosFragment extends Fragment implements IngresosView {
                         break;
                     case 1:
                         yearSelected = 2021;
+                        break;
+                    case 2:
+                        yearSelected = 2022;
                         break;
                 }
                 if (!fragmentCreado) {
@@ -440,6 +448,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     @Override
     public void statusListaIngresos(boolean statusOk, @NotNull ArrayList<IngresosGastosConstructor> ingresos, @NotNull String message) {
         if (statusOk) {
+            listaIngresos.clear();
             listaIngresos = ingresos;
             ingresosAdapter.updateList(listaIngresos);
 

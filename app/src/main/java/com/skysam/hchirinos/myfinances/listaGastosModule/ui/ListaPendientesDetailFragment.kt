@@ -23,7 +23,7 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.ListapendientesDetailBinding
 
 
-class ListaPendientesDetailFragment : Fragment() {
+class ListaPendientesDetailFragment : Fragment(){
 
     private var _binding: ListapendientesDetailBinding? = null
     private val binding get() = _binding!!
@@ -46,7 +46,7 @@ class ListaPendientesDetailFragment : Fragment() {
             }
             if (it.containsKey(ARG_ITEM_IMAGEN)) {
                 if (it.getString(ARG_ITEM_IMAGEN) != null) {
-                    val imageView: ImageView = activity?.findViewById<ImageView>(R.id.iv_listas)!!
+                    val imageView: ImageView = activity?.findViewById(R.id.iv_listas)!!
                     Glide.with(this).load(it.getString(ARG_ITEM_IMAGEN)).into(imageView)
                 }
             }
@@ -76,7 +76,13 @@ class ListaPendientesDetailFragment : Fragment() {
         setupRecyclerView(binding.rvItemsLista)
 
         val fab = activity?.findViewById<FloatingActionButton>(R.id.fab)
-        fab!!.setOnClickListener { crearItem() }
+        fab!!.setOnClickListener {
+            crearItem()
+            if (items.isEmpty()) {
+                binding.tvInfoLista.visibility = View.GONE
+                binding.rvItemsLista.visibility = View.VISIBLE
+            }
+        }
 
         binding.extendedFab.setOnClickListener {
             crearItem()

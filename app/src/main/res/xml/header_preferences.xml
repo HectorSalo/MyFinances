@@ -28,6 +28,10 @@
                 android:targetClass="com.skysam.hchirinos.myfinances.ui.activityGeneral.AcercaActivity"
                 android:targetPackage="com.skysam.hchirinos.myfinances" />
         </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="@string/version"
+            android:title="@string/version"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

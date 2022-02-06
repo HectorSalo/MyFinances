@@ -1,10 +1,8 @@
 package com.skysam.hchirinos.myfinances.deudasModule.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -17,10 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 
@@ -35,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -75,9 +69,9 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
         if (listaDeudas.get(i).getMonto() > 0) {
             if (listaDeudas.get(i).isDolar()) {
-                holder.monto.setText("$" + listaDeudas.get(i).getMonto());
+                holder.monto.setText("$" + ClassesCommon.INSTANCE.convertDoubleToString(listaDeudas.get(i).getMonto()));
             } else {
-                holder.monto.setText("Bs. " + listaDeudas.get(i).getMonto());
+                holder.monto.setText("Bs. " + ClassesCommon.INSTANCE.convertDoubleToString(listaDeudas.get(i).getMonto()));
             }
         } else {
             holder.monto.setText("Deuda pagada por completo");
@@ -86,6 +80,10 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         holder.tvMenu.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.tvMenu);
             popupMenu.inflate(R.menu.deudas_popmenu);
+            if (listaDeudas.get(i).getMonto() == 0) {
+                popupMenu.getMenu().findItem(R.id.menu_abono).setVisible(false);
+                popupMenu.getMenu().findItem(R.id.menu_aumento).setVisible(false);
+            }
             popupMenu.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.menu_abono) {
                     ingresarAbono(i);

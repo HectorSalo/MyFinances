@@ -1,6 +1,5 @@
 package com.skysam.hchirinos.myfinances.common.utils
 
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -17,7 +16,6 @@ import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.NotificationReceiverFCM
 import java.io.FileNotFoundException
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -81,6 +79,14 @@ object ClassesCommon {
         picker.show(fragmentManager, picker.toString())
     }
 
+    fun convertFloatToString(value: Float): String {
+        return String.format(Locale.GERMANY, "%,.2f", value)
+    }
+
+    fun convertDoubleToString(value: Double): String {
+        return String.format(Locale.GERMANY, "%,.2f", value)
+    }
+
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val bundle = Bundle()
@@ -100,6 +106,5 @@ object ClassesCommon {
         if (pendingIntent != null && alarmManager != null) {
             alarmManager.cancel(pendingIntent)
         }
-
     }
 }

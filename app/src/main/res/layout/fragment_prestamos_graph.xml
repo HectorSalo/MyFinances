@@ -26,6 +26,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/progressBar" />
 
+    <TextView
+        android:id="@+id/tv_prom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        tools:text="@string/menu_graphs"
+        app:layout_constraintBottom_toBottomOf="@+id/sp_year"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sp_year"
+        app:layout_constraintTop_toTopOf="@id/progressBar"
+        style="@style/TextAppearance.AppCompat.Title"/>
+
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barCharts"
         android:layout_width="0dp"
