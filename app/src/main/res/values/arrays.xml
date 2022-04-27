@@ -5,6 +5,7 @@
         <item>2020</item>
         <item>2021</item>
         <item>2022</item>
+        <item>2023</item>
     </string-array>
 
     <string-array name="meses">
@@ -73,6 +74,7 @@
     </string-array>
 
     <string-array name="opciones_borrar">
+        <item>Pagar</item>
         <item>Suspender por este mes</item>
         <item>Eliminar definitivo</item>
     </string-array>

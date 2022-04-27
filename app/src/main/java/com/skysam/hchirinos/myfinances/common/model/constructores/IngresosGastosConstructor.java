@@ -5,11 +5,19 @@ import java.util.Date;
 public class IngresosGastosConstructor {
     private String concepto, tipoFrecuencia, idIngreso, idGasto;
     private double monto;
-    private boolean dolar, mesActivo;
+    private boolean dolar, mesActivo, pagado;
     private int duracionFrecuencia;
     private Date fechaIncial, fechaFinal;
 
     public IngresosGastosConstructor() {
+    }
+
+    public boolean isPagado() {
+        return pagado;
+    }
+
+    public void setPagado(boolean pagado) {
+        this.pagado = pagado;
     }
 
     public String getIdIngreso() {

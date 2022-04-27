@@ -66,21 +66,12 @@ class GastosGraphFragment : Fragment(), GastosGraphView {
         val adapterYears = ArrayAdapter(requireContext(), R.layout.layout_spinner, listaYears)
         binding.spYear.adapter = adapterYears
 
-        when(yearSelected) {
-            2020 -> binding.spYear.setSelection(0)
-            2021 -> binding.spYear.setSelection(1)
-            2022 -> binding.spYear.setSelection(2)
-        }
+        binding.spYear.setSelection(yearSelected - 2020)
 
         binding.spYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 binding.progressBar.visibility = View.VISIBLE
-                yearSelected = when(position) {
-                    0 -> 2020
-                    1 -> 2021
-                    2 -> 2022
-                    else -> yearSelected
-                }
+                yearSelected = 2020 + position
                 gastosGraphPresenter.getMes(yearSelected, 0)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {

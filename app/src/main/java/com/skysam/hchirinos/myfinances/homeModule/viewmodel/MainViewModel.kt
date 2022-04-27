@@ -17,6 +17,7 @@ class MainViewModel: ViewModel() {
     val amountAhorros: LiveData<Double> = HomeRepository.getAhorros().asLiveData()
     val amountPrestamos: LiveData<Double> = HomeRepository.getPrestamos().asLiveData()
     val amountDeudas: LiveData<Double> = HomeRepository.getDeudas().asLiveData()
+    val amountGastosNoFijos: LiveData<Double> = HomeRepository.getGastosNoFijos().asLiveData()
 
     val listIngresos: LiveData<List<ItemCronologiaConstructor>> = CronologyRepository.getIngresos().asLiveData()
     val listGastos: LiveData<List<ItemCronologiaConstructor>> = CronologyRepository.getGastos().asLiveData()

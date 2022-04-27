@@ -295,6 +295,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         docData[Constants.BD_DURACION_FRECUENCIA] = doc.getDouble(Constants.BD_DURACION_FRECUENCIA)
                                         docData[Constants.BD_TIPO_FRECUENCIA] = doc.getString(Constants.BD_TIPO_FRECUENCIA)
                                         docData[Constants.BD_MES_ACTIVO] = true
+                                        docData[Constants.BD_PAGADO] = true
                                         docData[Constants.BD_FECHA_FINAL] = calendarFinal.time
                                         docData[Constants.BD_FECHA_INCIAL] = fechaInicial
 

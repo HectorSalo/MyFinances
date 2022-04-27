@@ -93,7 +93,7 @@ object HomeRepository {
                             }
                         }
                     }
-                    offer(montototal)
+                    trySend(montototal)
                 }
             awaitClose { request.remove() }
         }
@@ -159,7 +159,7 @@ object HomeRepository {
                             }
                         }
                     }
-                    offer(montototal)
+                    trySend(montototal)
                 }
             awaitClose { request.remove() }
         }
@@ -188,7 +188,7 @@ object HomeRepository {
                             montoDetal / valorCotizacion
                         }
                     }
-                    offer(montototal)
+                    trySend(montototal)
                 }
             awaitClose { request.remove() }
         }
@@ -215,7 +215,7 @@ object HomeRepository {
                             montototal + montoDetal / valorCotizacion
                         }
                     }
-                    offer(montototal)
+                    trySend(montototal)
                 }
             awaitClose { request.remove() }
         }
@@ -242,7 +242,40 @@ object HomeRepository {
                             montototal + montoDetal / valorCotizacion
                         }
                     }
-                    offer(montototal)
+                    trySend(montototal)
+                }
+            awaitClose { request.remove() }
+        }
+    }
+
+    fun getGastosNoFijos(): Flow<Double> {
+        return callbackFlow {
+            val request = getInstance()
+                .collection(Constants.BD_GASTOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
+                    if (error != null) {
+                        Log.w(ContentValues.TAG, "Listen failed.", error)
+                        return@addSnapshotListener
+                    }
+
+                    var montototal = 0.0
+                    for (document in value!!) {
+                        val activo = document.getBoolean(Constants.BD_MES_ACTIVO)
+                        if (activo == null || activo) {
+                            Log.d(Constraints.TAG, document.id + " => " + document.data)
+                            val montoDetal = document.getDouble(Constants.BD_MONTO)!!
+                            val dolar = document.getBoolean(Constants.BD_DOLAR)!!
+                            val tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA)
+                            if (tipoFrecuencia == null) {
+                                montototal = if (dolar) {
+                                    montototal + montoDetal
+                                } else {
+                                    montototal + montoDetal / valorCotizacion
+                                }
+                            }
+                        }
+                    }
+                    trySend(montototal)
                 }
             awaitClose { request.remove() }
         }

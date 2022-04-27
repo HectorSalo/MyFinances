@@ -131,17 +131,7 @@ public class AhorrosFragment extends Fragment {
 
         fragmentCreado = true;
 
-        switch (yearSelected) {
-            case 2020:
-                spinnerYear.setSelection(0);
-                break;
-            case 2021:
-                spinnerYear.setSelection(1);
-                break;
-            case 2022:
-                spinnerYear.setSelection(2);
-                break;
-        }
+        spinnerYear.setSelection(yearSelected - 2020);
 
         spinnerMes.setSelection(mesSelected);
         spinnerMes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -161,17 +151,7 @@ public class AhorrosFragment extends Fragment {
         spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                switch (position) {
-                    case 0:
-                        yearSelected = 2020;
-                        break;
-                    case 1:
-                        yearSelected = 2021;
-                        break;
-                    case 2:
-                        yearSelected = 2022;
-                        break;
-                }
+                yearSelected = 2020 + position;
                 if (!fragmentCreado) {
                     cargarAhorros();
                 }

@@ -94,7 +94,7 @@ object CronologyRepository {
                             }
                         }
                     }
-                    offer(listaCronologia)
+                    trySend(listaCronologia)
                 }
             awaitClose { request.remove() }
         }
@@ -132,6 +132,8 @@ object CronologyRepository {
                                         gasto.isDolar = doc.getBoolean(Constants.BD_DOLAR)!!
                                         gasto.pasivo = true
                                         gasto.fecha = calendarPago.time
+                                        gasto.isPaid = if (doc.getBoolean(Constants.BD_PAGADO) == null) false
+                                        else doc.getBoolean(Constants.BD_PAGADO)!!
                                         listaCronologia.add(gasto)
                                     }
 
@@ -161,7 +163,7 @@ object CronologyRepository {
                             }
                         }
                     }
-                    offer(listaCronologia)
+                    trySend(listaCronologia)
                 }
             awaitClose { request.remove() }
         }

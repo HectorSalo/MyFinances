@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment implements HomeView {
     private PieChart pieBalance;
     private MainViewModel viewModel;
     private float montoIngresos, montoGastos;
-    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros, tvPrestamos;
+    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros, tvPrestamos, tvGastosVarios;
     private LinearLayout linearLayout;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
@@ -85,6 +85,7 @@ public class HomeFragment extends Fragment implements HomeView {
         tvDeudas = view.findViewById(R.id.tv_total_deudas);
         tvAhorros = view.findViewById(R.id.tv_total_ahorros);
         tvPrestamos = view.findViewById(R.id.tv_total_prestamos);
+        tvGastosVarios = view.findViewById(R.id.tv_total_gastos_varios);
         ImageButton ibTransfer = view.findViewById(R.id.ib_transfer);
 
         Calendar calendar = Calendar.getInstance();
@@ -125,6 +126,8 @@ public class HomeFragment extends Fragment implements HomeView {
                 tvPrestamos.setText("Préstamos hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(prestamos)));
         viewModel.getAmountDeudas().observe(getViewLifecycleOwner(), deudas->
                 tvDeudas.setText("Deudas hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(deudas)));
+        viewModel.getAmountGastosNoFijos().observe(getViewLifecycleOwner(), gastos->
+                tvGastosVarios.setText("Gastos varios: $" + ClassesCommon.INSTANCE.convertDoubleToString(gastos)));
     }
 
 

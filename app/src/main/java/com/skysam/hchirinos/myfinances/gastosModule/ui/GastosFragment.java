@@ -126,17 +126,7 @@ public class GastosFragment extends Fragment {
         ArrayAdapter<String> adapterYears = new ArrayAdapter<>(getContext(), R.layout.layout_spinner, listaYear);
         spinnerYear.setAdapter(adapterYears);
 
-        switch (yearSelected) {
-            case 2020:
-                spinnerYear.setSelection(0);
-                break;
-            case 2021:
-                spinnerYear.setSelection(1);
-                break;
-            case 2022:
-                spinnerYear.setSelection(2);
-                break;
-        }
+        spinnerYear.setSelection(yearSelected - 2020);
 
         spinner.setSelection(mesSelected);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -157,17 +147,7 @@ public class GastosFragment extends Fragment {
         spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                switch (position) {
-                    case 0:
-                        yearSelected = 2020;
-                        break;
-                    case 1:
-                        yearSelected = 2021;
-                        break;
-                    case 2:
-                        yearSelected = 2022;
-                        break;
-                }
+                yearSelected = 2020 + position;
                 if (!fragmentCreado) {
                     cargarGastos();
                 }
@@ -293,7 +273,7 @@ public class GastosFragment extends Fragment {
 
         CollectionReference reference = db.collection(Constants.BD_GASTOS).document(userID).collection(yearSelected + "-" + mesSelected);
 
-        Query query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING);
+        Query query = reference.orderBy(Constants.BD_FECHA_INCIAL, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 listaGastos.clear();
@@ -315,6 +295,9 @@ public class GastosFragment extends Fragment {
                     } else {
                         gasto.setMesActivo(activo);
                     }
+
+                    Boolean pagado = doc.getBoolean(Constants.BD_PAGADO);
+                    gasto.setPagado(pagado != null && pagado);
 
                     if (tipoFrecuencia != null) {
                         double duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
@@ -384,14 +367,32 @@ public class GastosFragment extends Fragment {
                 .setItems(R.array.opciones_borrar, (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
-                            suspenderMes(position);
+                            pagar(position);
                             break;
                         case 1:
+                            suspenderMes(position);
+                            break;
+                        case 2:
                             eliminarDefinitivo(position);
                             break;
                     }
                 })
                 .setNegativeButton(getString(R.string.btn_cancelar), (dialogInterface, i) -> cargarGastos()).show();
+    }
+
+
+    private void pagar(int position) {
+        String id;
+        if (newList == null || newList.isEmpty()) {
+            id = listaGastos.get(position).getIdGasto();
+        } else {
+            id = newList.get(position).getIdGasto();
+        }
+        db.collection(Constants.BD_GASTOS).document(user.getUid())
+                .collection(yearSelected + "-" + mesSelected).document(id)
+                .update(Constants.BD_PAGADO, true)
+                .addOnSuccessListener(aVoid -> cargarGastos())
+                .addOnFailureListener(e -> Toast.makeText(getContext(), getString(R.string.error_cargar_data), Toast.LENGTH_SHORT).show());
     }
 
 

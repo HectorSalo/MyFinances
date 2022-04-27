@@ -55,16 +55,16 @@ class CronologiaFragment : Fragment() {
     }
 
     private fun loadViewModels() {
-        viewModel.listIngresos.observe(viewLifecycleOwner, {
+        viewModel.listIngresos.observe(viewLifecycleOwner) {
             listIngresos.clear()
             listIngresos.addAll(it)
             sortList()
-        })
-        viewModel.listGastos.observe(viewLifecycleOwner, {
+        }
+        viewModel.listGastos.observe(viewLifecycleOwner) {
             listGastos.clear()
             listGastos.addAll(it)
             sortList()
-        })
+        }
     }
 
     private fun sortList() {

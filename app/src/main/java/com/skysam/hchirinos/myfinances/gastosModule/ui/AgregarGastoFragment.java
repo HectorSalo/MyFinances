@@ -273,6 +273,7 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         docData.put(Constants.BD_DURACION_FRECUENCIA, duracionFrecuencia);
         docData.put(Constants.BD_TIPO_FRECUENCIA, tipoFrecuencia);
         docData.put(Constants.BD_MES_ACTIVO, true);
+        docData.put(Constants.BD_PAGADO, false);
 
         for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;

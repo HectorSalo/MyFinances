@@ -8,9 +8,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_add_36dp.xml" value="0.356" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_add_deuda_24.xml" value="0.356" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_calculator_24.xml" value="0.356" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_deudas_24dp.xml" value="0.356" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_paid_24.xml" value="0.356" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/drawable/ic_restablecimiento_pass_24dp.xml" value="0.356" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout-land/fragment_home.xml" value="0.1693121693121693" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_acerca.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/activity_listapendientes_detail.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/cardview_cronologia.xml" value="0.3546875" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_ahorros_graph.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_deudas_graph.xml" value="0.17249240121580547" />
         <entry key="..\:/Users/Chirinos/AndroidStudioProjects/MyFinances/app/src/main/res/layout/fragment_gastos_graph.xml" value="0.17249240121580547" />
@@ -24,7 +31,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

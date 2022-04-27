@@ -18,6 +18,7 @@ class CronologiaListAdapter(private var list: MutableList<ItemCronologiaConstruc
         val monto : TextView = view.findViewById(R.id.tv_monto)
         val fecha: TextView = view.findViewById(R.id.tv_fecha)
         val imagen: ImageView = view.findViewById(R.id.iv_status)
+        val paid: ImageView = view.findViewById(R.id.iv_paid)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,6 +45,8 @@ class CronologiaListAdapter(private var list: MutableList<ItemCronologiaConstruc
         } else {
             holder.imagen.setImageResource(R.drawable.ic_trending_up_24)
         }
+
+        if (item.isPaid) holder.paid.visibility = View.VISIBLE else holder.paid.visibility = View.GONE
 
     }
 

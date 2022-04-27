@@ -1,7 +1,6 @@
 package com.skysam.hchirinos.myfinances.common.utils;
 
 public class Constants {
-    public static final String BD_PROPIETARIOS = "propietarios";
     public static final String BD_INGRESOS= "ingresos";
     public static final String BD_AHORROS = "ahorros";
     public static final String BD_PRESTAMOS = "prestamos";
@@ -18,6 +17,7 @@ public class Constants {
     public static final String BD_FECHA_FINAL = "fechaFinal";
     public static final String BD_MES_ACTIVO = "mesActivo";
     public static final String BD_MONTO_ULT_PAGO = "montoUltPago";
+    public static final String BD_PAGADO = "pagado";
 
     public static final String BD_ORIGEN = "origen";
     public static final String BD_PRESTAMISTA = "prestamista";

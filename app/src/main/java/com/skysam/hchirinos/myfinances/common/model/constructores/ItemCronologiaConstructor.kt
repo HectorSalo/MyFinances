@@ -8,4 +8,5 @@ class ItemCronologiaConstructor {
     var monto: Double? = null
     var pasivo: Boolean? = false
     var isDolar: Boolean? = true
+    var isPaid = false
 }
