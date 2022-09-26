@@ -21,7 +21,7 @@ object HomeRepository {
     private val calendar: Calendar = Calendar.getInstance()
     private val month = calendar.get(Calendar.MONTH)
     private val year = calendar.get(Calendar.YEAR)
-    private val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
+    private val valorCotizacion = SharedPreferencesBD.getCotizacion(MyFinancesApp.MyFinancesAppObject.getContext())
 
     private fun getInstance(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
@@ -30,7 +30,7 @@ object HomeRepository {
     fun getIngresos(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_INGRESOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_INGRESOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -102,7 +102,7 @@ object HomeRepository {
     fun getGastos(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_GASTOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_GASTOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -168,7 +168,7 @@ object HomeRepository {
     fun getAhorros(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_AHORROS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_AHORROS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -197,7 +197,7 @@ object HomeRepository {
     fun getPrestamos(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_PRESTAMOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_PRESTAMOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -224,7 +224,7 @@ object HomeRepository {
     fun getDeudas(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_DEUDAS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_DEUDAS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -251,7 +251,7 @@ object HomeRepository {
     fun getGastosNoFijos(): Flow<Double> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_GASTOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_GASTOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)

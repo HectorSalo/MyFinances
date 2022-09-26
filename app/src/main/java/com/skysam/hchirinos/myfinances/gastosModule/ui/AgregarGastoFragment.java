@@ -24,10 +24,9 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker;
@@ -59,7 +58,6 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
     private RadioButton rbGastoMes;
     private TextView tvFechaInicio, tvFechaFinal;
     private Date fechaSelecInicial, fechaSelecFinal;
-    private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton ibFechaInicial, ibFechaFinal;
@@ -92,9 +90,6 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         calendarActual = Calendar.getInstance();
         int mesActual = calendarActual.get(Calendar.MONTH);
         anualActual = calendarActual.get(Calendar.YEAR);
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         etConcepto = view.findViewById(R.id.et_concepto);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto);
@@ -277,13 +272,14 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
 
         for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
+            db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot written succesfully");
                         if (finalJ == mesSelecFinal) {
                             if (itemListGastos) {
-                                borrarItemListGastos(true);
+                                borrarItemListGastos();
                             } else {
                                 finalizarProceso();
                             }
@@ -323,12 +319,13 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         docData.put(Constants.BD_MES_ACTIVO, true);
 
 
-            db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelecInicial.getTime()))
+            db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot written succesfully");
                         if (itemListGastos) {
-                            borrarItemListGastos(false);
+                            borrarItemListGastos();
                         } else {
                             progressBar.setVisibility(View.GONE);
                             requireActivity().finish();
@@ -367,9 +364,10 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
                 }).show();
     }
 
-    private void borrarItemListGastos(boolean notification) {
+    private void borrarItemListGastos() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.BD_LISTA_GASTOS).document(user.getUid()).collection(idLista).document(idItem)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(idLista).document(idItem)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!");
@@ -383,7 +381,8 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
 
     private void actualizarCantidadItems () {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.BD_LISTA_GASTOS).document(user.getUid()).collection(Constants.BD_TODAS_LISTAS).document(idLista)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(Constants.BD_TODAS_LISTAS).document(idLista)
                 .update(Constants.BD_CANTIDAD_ITEMS, (cantidadItems - 1))
                 .addOnSuccessListener(aVoid -> {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!");

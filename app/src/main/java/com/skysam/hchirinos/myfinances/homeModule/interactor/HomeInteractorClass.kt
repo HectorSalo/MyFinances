@@ -57,26 +57,26 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun getStatusNotification() {
-        val notificationStatus = SharedPreferencesBD.getFirstSubscribeMainTopic(Auth.getCurrentUser()!!.uid, context)
+        val notificationStatus = SharedPreferencesBD.getFirstSubscribeMainTopic(context)
         if (!notificationStatus) {
             FirebaseMessaging.getInstance().subscribeToTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
                     .addOnSuccessListener {
-                        SharedPreferencesBD.subscribeFirstMainTopicNotification(Auth.getCurrentUser()!!.uid, context)
+                        SharedPreferencesBD.subscribeFirstMainTopicNotification(context)
                     }
         }
     }
 
     private fun obtenerCotizacionShared() {
-        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, context))
+        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(context))
     }
 
     override fun guardarCotizacionShared(valorFloat: Float) {
-        SharedPreferencesBD.saveCotizacion(Auth.getCurrentUser()!!.uid, context, valorFloat)
+        SharedPreferencesBD.saveCotizacion(context, valorFloat)
     }
 
     override fun moveDataNextYear(year: Int) {
-        val user = Auth.getCurrentUser()!!.uid
-        FirebaseFirestore.getIngresosReference(user, year, 11)
+        val user = Auth.uidCurrentUser()
+        FirebaseFirestore.getIngresosReference(year, 11)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -146,7 +146,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         docData[Constants.BD_FECHA_INCIAL] = fechaInicial
 
                                         for (j in 0..11) {
-                                            FirebaseFirestore.getIngresosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                            FirebaseFirestore.getIngresosReference((year + 1), j).document(fechaInicial!!.time.toString())
                                                     .set(docData)
                                                     .addOnSuccessListener {  }
                                                     .addOnFailureListener {
@@ -165,7 +165,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun moveAhorros(user: String, year: Int) {
-        FirebaseFirestore.getAhorrosReference(user, year, 11)
+        FirebaseFirestore.getAhorrosReference(year, 11)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -179,7 +179,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                 docData[Constants.BD_ORIGEN] = doc.getString(Constants.BD_ORIGEN)
 
                                 for (j in 0..11) {
-                                    FirebaseFirestore.getAhorrosReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                    FirebaseFirestore.getAhorrosReference((year + 1), j).document(fechaIngreso!!.time.toString())
                                             .set(docData)
                                             .addOnSuccessListener {  }
                                             .addOnFailureListener {
@@ -197,7 +197,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun movePrestamos(user: String, year: Int) {
-        FirebaseFirestore.getPrestamosReference(user, year, 11)
+        FirebaseFirestore.getPrestamosReference(year, 11)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -211,7 +211,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
 
 
                                 for (j in 0..11) {
-                                    FirebaseFirestore.getPrestamosReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                    FirebaseFirestore.getPrestamosReference((year + 1), j).document(fechaIngreso!!.time.toString())
                                             .set(docData)
                                             .addOnSuccessListener {  }
                                             .addOnFailureListener {
@@ -228,7 +228,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun moveGastos(user: String, year: Int) {
-        FirebaseFirestore.getGastosReference(user, year, 11)
+        FirebaseFirestore.getGastosReference(year, 11)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -300,7 +300,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                         docData[Constants.BD_FECHA_INCIAL] = fechaInicial
 
                                         for (j in 0..11) {
-                                            FirebaseFirestore.getGastosReference(user, (year + 1), j).document(fechaInicial!!.time.toString())
+                                            FirebaseFirestore.getGastosReference((year + 1), j).document(fechaInicial!!.time.toString())
                                                     .set(docData)
                                                     .addOnSuccessListener {  }
                                                     .addOnFailureListener {
@@ -319,7 +319,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun moveDeudas(user: String, year: Int) {
-        FirebaseFirestore.getDeudasReference(user, year, 11)
+        FirebaseFirestore.getDeudasReference(year, 11)
                 .get()
                 .addOnCompleteListener { task->
                     if (task.isSuccessful) {
@@ -333,7 +333,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                     docData[Constants.BD_DOLAR] = doc.getBoolean(Constants.BD_DOLAR)
 
                                     for (j in 0..11) {
-                                        FirebaseFirestore.getDeudasReference(user, (year + 1), j).document(fechaIngreso!!.time.toString())
+                                        FirebaseFirestore.getDeudasReference((year + 1), j).document(fechaIngreso!!.time.toString())
                                                 .set(docData)
                                                 .addOnSuccessListener {  }
                                                 .addOnFailureListener {

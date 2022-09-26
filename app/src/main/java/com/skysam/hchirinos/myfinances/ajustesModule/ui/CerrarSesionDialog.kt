@@ -12,12 +12,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth.uidCurrentUser
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.inicioSesionModule.ui.InicSesionActivity
 
 class CerrarSesionDialog : DialogFragment() {
-    val user = FirebaseAuth.getInstance().currentUser
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val builder = AlertDialog.Builder(requireContext())
@@ -32,7 +32,7 @@ class CerrarSesionDialog : DialogFragment() {
     private fun cerrarSesion() {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PREFERENCE_NOTIFICATION_MAIN_TOPIC)
         FirebaseAuth.getInstance().signOut()
-        val sharedPreferences = requireActivity().getSharedPreferences(user!!.uid, Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences(uidCurrentUser(), Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         editor.putString(Constants.PREFERENCE_TIPO_BLOQUEO, Constants.PREFERENCE_SIN_BLOQUEO)
@@ -42,7 +42,7 @@ class CerrarSesionDialog : DialogFragment() {
         editor.apply()
 
         var providerId = ""
-        user.let {
+        Auth.getUser()?.let {
             for (profile in it.providerData) {
                 providerId = profile.providerId
             }

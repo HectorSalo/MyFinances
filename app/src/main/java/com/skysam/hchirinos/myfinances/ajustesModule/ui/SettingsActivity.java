@@ -2,11 +2,13 @@ package com.skysam.hchirinos.myfinances.ajustesModule.ui;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -21,8 +23,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.skysam.hchirinos.myfinances.BuildConfig;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD;
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = getSharedPreferences(Auth.INSTANCE.getCurrentUser().getUid(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Auth.INSTANCE.uidCurrentUser(), Context.MODE_PRIVATE);
         String temaInicial = sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA);
         switch (temaInicial) {
             case Constants.PREFERENCE_TEMA_CLARO:
@@ -145,6 +149,9 @@ public class SettingsActivity extends AppCompatActivity implements
             setPreferencesFromResource(R.xml.header_preferences, rootKey);
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+            int account = SharedPreferencesBD.INSTANCE.getAccount(requireContext());
+
+            Preference changeAccount = findPreference("change_account");
             Preference preferenceCerrarSesion = findPreference("cerrar_sesion_header");
             Preference preferenceActualizarPass = findPreference("actualizar_pass_header");
 
@@ -159,9 +166,21 @@ public class SettingsActivity extends AppCompatActivity implements
                 }
             }
 
+            if (changeAccount != null) {
+                changeAccount.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(@NonNull Preference preference) {
+                        SharedPreferencesBD.INSTANCE.saveAccount(
+                                requireContext(), account == 1 ? 2 : 1);
+                        requireActivity().startActivity(new Intent(requireContext(), HomeActivity.class));
+                        requireActivity().finish();
+                        return true;
+                    }
+                });
+            }
+
             if (preferenceActualizarPass != null) {
                 preferenceActualizarPass.setVisible(!providerId.equals("google.com"));
-
 
                 preferenceActualizarPass.setOnPreferenceClickListener(preference -> {
                     ActualizarPassDialog actualizarPassDialog = new ActualizarPassDialog();

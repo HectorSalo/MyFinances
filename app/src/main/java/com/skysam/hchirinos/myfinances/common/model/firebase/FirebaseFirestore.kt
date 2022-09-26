@@ -12,24 +12,29 @@ object FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }
 
-    fun getIngresosReference(uid: String, year: Int, month: Int): CollectionReference {
-        return getInstance().collection(Constants.BD_INGRESOS).document(uid).collection("$year$SEPARATOR$month")
+    fun getIngresosReference(year: Int, month: Int): CollectionReference {
+        return getInstance().collection(Constants.BD_INGRESOS).document(Auth.uidCurrentUser())
+            .collection("$year$SEPARATOR$month")
     }
 
-    fun getAhorrosReference(uid: String, year: Int, month: Int): CollectionReference {
-        return getInstance().collection(Constants.BD_AHORROS).document(uid).collection("$year$SEPARATOR$month")
+    fun getAhorrosReference(year: Int, month: Int): CollectionReference {
+        return getInstance().collection(Constants.BD_AHORROS).document(Auth.uidCurrentUser())
+            .collection("$year$SEPARATOR$month")
     }
 
-    fun getPrestamosReference(uid: String, year: Int, month: Int): CollectionReference {
-        return getInstance().collection(Constants.BD_PRESTAMOS).document(uid).collection("$year$SEPARATOR$month")
+    fun getPrestamosReference(year: Int, month: Int): CollectionReference {
+        return getInstance().collection(Constants.BD_PRESTAMOS).document(Auth.uidCurrentUser())
+            .collection("$year$SEPARATOR$month")
     }
 
-    fun getGastosReference(uid: String, year: Int, month: Int): CollectionReference {
-        return getInstance().collection(Constants.BD_GASTOS).document(uid).collection("$year$SEPARATOR$month")
+    fun getGastosReference(year: Int, month: Int): CollectionReference {
+        return getInstance().collection(Constants.BD_GASTOS).document(Auth.uidCurrentUser())
+            .collection("$year$SEPARATOR$month")
     }
 
-    fun getDeudasReference(uid: String, year: Int, month: Int): CollectionReference {
-        return getInstance().collection(Constants.BD_DEUDAS).document(uid).collection("$year$SEPARATOR$month")
+    fun getDeudasReference(year: Int, month: Int): CollectionReference {
+        return getInstance().collection(Constants.BD_DEUDAS).document(Auth.uidCurrentUser())
+            .collection("$year$SEPARATOR$month")
     }
 
     fun getImages(): CollectionReference {

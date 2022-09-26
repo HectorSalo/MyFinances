@@ -22,12 +22,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
@@ -167,12 +166,11 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
     private void eliminarPrestamo(final int position) {
         String idDoc = listaPrestamos.get(position).getIdAhorro();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constants.BD_PRESTAMOS).document(Auth.INSTANCE.uidCurrentUser()).collection(year + "-" + j).document(idDoc)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -211,12 +209,12 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
             fecha = null;
         }
         String idDoc = listaPrestamos.get(position).getIdAhorro();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constants.BD_PRESTAMOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(year + "-" + j).document(idDoc)
                     .update(Constants.BD_MONTO, montoNuevo, Constants.BD_FECHA_HISTORIAL, FieldValue.arrayUnion(fecha))
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -283,10 +281,10 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
 
     private void verPagos(int position) {
         String idDoc = listaPrestamos.get(position).getIdAhorro();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + mes).document(idDoc)
+        db.collection(Constants.BD_PRESTAMOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(year + "-" + mes).document(idDoc)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override

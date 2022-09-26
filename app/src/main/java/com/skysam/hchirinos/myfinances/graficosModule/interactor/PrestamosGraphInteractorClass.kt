@@ -4,15 +4,14 @@ import android.util.Log
 import androidx.constraintlayout.widget.Constraints
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
-import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.PrestamosGraphPresenter
 
 class PrestamosGraphInteractorClass(private val prestamosGraphPresenter: PrestamosGraphPresenter): PrestamosGraphInteractor {
     override fun getMes(year: Int, month: Int) {
-        val valorCotizacion = SharedPreferencesBD.getCotizacion(Auth.getCurrentUser()!!.uid, MyFinancesApp.MyFinancesAppObject.getContext())
-        FirebaseFirestore.getPrestamosReference(Auth.getCurrentUser()!!.uid, year, month)
+        val valorCotizacion = SharedPreferencesBD.getCotizacion(MyFinancesApp.MyFinancesAppObject.getContext())
+        FirebaseFirestore.getPrestamosReference(year, month)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {

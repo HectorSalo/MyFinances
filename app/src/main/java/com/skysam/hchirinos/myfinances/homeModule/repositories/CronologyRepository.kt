@@ -27,7 +27,7 @@ object CronologyRepository {
     fun getIngresos(): Flow<List<ItemCronologiaConstructor>> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_INGRESOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_INGRESOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)
@@ -103,7 +103,7 @@ object CronologyRepository {
     fun getGastos(): Flow<List<ItemCronologiaConstructor>> {
         return callbackFlow {
             val request = getInstance()
-                .collection(Constants.BD_GASTOS).document(Auth.getCurrentUser()!!.uid).collection("$year-$month")
+                .collection(Constants.BD_GASTOS).document(Auth.uidCurrentUser()).collection("$year-$month")
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)

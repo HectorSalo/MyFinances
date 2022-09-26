@@ -27,9 +27,6 @@ public class AhorrosAdapter extends RecyclerView.Adapter<AhorrosAdapter.ViewHold
     private Context context;
     private Activity activity;
 
-    public AhorrosAdapter() {
-    }
-
     public AhorrosAdapter(ArrayList<AhorrosConstructor> listaAhorros, Context context, Activity activity) {
         this.listaAhorros = listaAhorros;
         this.context = context;

@@ -34,10 +34,9 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
@@ -67,7 +66,6 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
     private MenuItem itemBuscar;
@@ -351,7 +349,8 @@ public class IngresosFragment extends Fragment implements IngresosView {
             final int mesFinal = calendar.get(Calendar.MONTH);
             for (int i = mesSelected; i <= mesFinal; i++) {
                 final int finalI = i;
-                db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
+                        .collection(yearSelected + "-" + i).document(id)
                         .delete()
                         .addOnSuccessListener(aVoid -> {
                             Log.d("Delete", "DocumentSnapshot successfully deleted!");
@@ -365,7 +364,8 @@ public class IngresosFragment extends Fragment implements IngresosView {
                         .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));
             }
         } else {
-            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
+            db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
                     .addOnSuccessListener(aVoid -> Log.d("Delete", "DocumentSnapshot successfully deleted!"))
                     .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));

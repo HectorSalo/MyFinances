@@ -119,6 +119,7 @@
     <string name="preferencias_header">Preferencias</string>
     <string name="actualizar_pass_header">Actualizar Contraseña</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="change_account">Cambiar cuenta</string>
     <string name="acerca">Información de la App</string>
     <string name="acerca_title">Desarrollado por&#8230;</string>
     <string name="version">Versión</string>

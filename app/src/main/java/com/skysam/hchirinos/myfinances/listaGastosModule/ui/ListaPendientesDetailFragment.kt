@@ -13,12 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.ListapendientesDetailBinding
 
@@ -29,7 +28,6 @@ class ListaPendientesDetailFragment : Fragment(){
     private val binding get() = _binding!!
     private var idLista: String? = null
     private var items: ArrayList<ItemGastosConstructor> = ArrayList()
-    private var user: FirebaseUser? = null
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: ItemListPendienteAdapter
     private var twoPane = false
@@ -65,7 +63,6 @@ class ListaPendientesDetailFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         db = FirebaseFirestore.getInstance()
-        user = FirebaseAuth.getInstance().currentUser
 
         adapter = ItemListPendienteAdapter(items, requireActivity(), requireActivity().supportFragmentManager, twoPane)
 
@@ -100,7 +97,7 @@ class ListaPendientesDetailFragment : Fragment(){
         if (_binding != null) {
             items = ArrayList()
             binding.progressBar.visibility = View.VISIBLE
-            val reference = db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(idLista!!)
+            val reference = db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser()).collection(idLista!!)
 
             reference.orderBy(Constants.BD_FECHA_INGRESO, Query.Direction.ASCENDING)
                     .get().addOnSuccessListener { result ->

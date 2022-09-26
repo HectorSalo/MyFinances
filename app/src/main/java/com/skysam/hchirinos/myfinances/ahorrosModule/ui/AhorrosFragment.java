@@ -35,12 +35,11 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -68,7 +67,6 @@ public class AhorrosFragment extends Fragment {
     private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
     private MenuItem itemBuscar;
@@ -306,14 +304,14 @@ public class AhorrosFragment extends Fragment {
 
     private void cargarAhorros() {
         progressBar.setVisibility(View.VISIBLE);
-        String userID = user.getUid();
         listaAhorros = new ArrayList<>();
         ahorrosAdapter = new AhorrosAdapter(listaAhorros, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(ahorrosAdapter);
 
-        CollectionReference reference = db.collection(Constants.BD_AHORROS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_AHORROS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -389,7 +387,8 @@ public class AhorrosFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+            db.collection(Constants.BD_AHORROS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(yearSelected + "-" + i).document(idDoc)
                     .update(Constants.BD_DOLAR, dolar, Constants.BD_MONTO, monto)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
@@ -415,7 +414,8 @@ public class AhorrosFragment extends Fragment {
     private void deleteItemSwipe(String id) {
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
-            db.collection(Constants.BD_AHORROS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+            db.collection(Constants.BD_AHORROS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(yearSelected + "-" + i).document(id)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         Log.d("Delete", "DocumentSnapshot successfully deleted!");

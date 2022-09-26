@@ -2,7 +2,6 @@ package com.skysam.hchirinos.myfinances.ingresosModule.interactor
 
 import com.google.firebase.firestore.Query
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor
-import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.ingresosModule.presenter.IngresosPresenter
@@ -11,7 +10,7 @@ import java.util.*
 class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter): IngresosInteractor {
     override fun getIngresos(year: Int, month: Int) {
         val listaIngresos = ArrayList<IngresosGastosConstructor>()
-        val reference = FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month)
+        val reference = FirebaseFirestore.getIngresosReference(year, month)
         val query = reference.orderBy(Constants.BD_MONTO, Query.Direction.ASCENDING)
         query.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -98,7 +97,7 @@ class IngresosInteractorClass(private val ingresosPresenter: IngresosPresenter):
     }
 
     override fun suspenderMes(year: Int, month: Int, id: String) {
-        FirebaseFirestore.getIngresosReference(Auth.getCurrentUser()!!.uid, year, month).document(id)
+        FirebaseFirestore.getIngresosReference(year, month).document(id)
                 .update(Constants.BD_MES_ACTIVO, false)
                 .addOnSuccessListener { ingresosPresenter.statusSuspenderMes(true) }
             .addOnFailureListener { ingresosPresenter.statusSuspenderMes(false) }

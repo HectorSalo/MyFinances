@@ -19,11 +19,11 @@ import androidx.constraintlayout.widget.Constraints
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.model.constructores.ImagenesListasConstructor
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.databinding.DialogCrearListaBinding
@@ -37,7 +37,6 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         DialogFragment(), CrearEditarListaView, CrearEditarListaClick {
     private var _binding : DialogCrearListaBinding? = null
     private val binding get() = _binding!!
-    private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private var dialog : AlertDialog? = null
     private var imagenesListas: MutableList<ImagenesListasConstructor> = mutableListOf()
@@ -139,7 +138,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
         docData[Constants.BD_FECHA_INGRESO] = fechaIngreso
         docData[Constants.BD_IMAGEN] = imagen
 
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser()).collection(Constants.BD_TODAS_LISTAS)
                 .add(docData)
                 .addOnSuccessListener { document ->
                     val docId = document.id
@@ -184,7 +183,7 @@ class CrearEditarListaDialog(private val twoPane: Boolean, private val guardar: 
     private fun editarLista(nombre: String) {
         Toast.makeText(context, "Actualizando...", Toast.LENGTH_SHORT).show()
 
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(lista[position!!].idLista)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser()).collection(Constants.BD_TODAS_LISTAS).document(lista[position!!].idLista)
                 .update(Constants.BD_NOMBRE, nombre, Constants.BD_IMAGEN, imagen)
                 .addOnSuccessListener {
                     if (!imagenVieja.equals(imagen)) {

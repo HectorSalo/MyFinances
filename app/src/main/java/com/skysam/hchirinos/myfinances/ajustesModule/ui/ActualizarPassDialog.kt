@@ -11,15 +11,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.skysam.hchirinos.myfinances.R
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth.uidCurrentUser
 import com.skysam.hchirinos.myfinances.databinding.DialogModificarPassBinding
 
 class ActualizarPassDialog : DialogFragment() {
 
     private var _dialogModificarPassBinding : DialogModificarPassBinding? = null
     private val dialogModificarPassBinding get() = _dialogModificarPassBinding!!
-    private val user = FirebaseAuth.getInstance().currentUser
     private var button : Button? = null
     private var passNuevo : Boolean = false
     private var dialog : AlertDialog? = null
@@ -50,7 +50,7 @@ class ActualizarPassDialog : DialogFragment() {
     private fun validarPassOld() {
         var email = ""
         val pass = dialogModificarPassBinding.etPass.text.toString()
-        user?.let {
+        Auth.getUser()?.let {
             for (profile in it.providerData) {
                 email = profile.email.toString()
             }
@@ -63,7 +63,7 @@ class ActualizarPassDialog : DialogFragment() {
         dialogModificarPassBinding.progressBar.visibility = View.VISIBLE
         button?.hideKeyboard()
         val credential = EmailAuthProvider.getCredential(email, pass)
-        user?.reauthenticate(credential)?.addOnSuccessListener {
+        Auth.getUser()?.reauthenticate(credential)?.addOnSuccessListener {
             dialogModificarPassBinding.progressBar.visibility = View.GONE
             dialogModificarPassBinding.inputRepetirPass.visibility = View.VISIBLE
             dialogModificarPassBinding.etPass.setText("")
@@ -95,7 +95,7 @@ class ActualizarPassDialog : DialogFragment() {
         dialogModificarPassBinding.progressBar.visibility = View.VISIBLE
         button?.hideKeyboard()
 
-        user?.updatePassword(passNuevo)?.addOnSuccessListener {
+        Auth.getUser()?.updatePassword(passNuevo)?.addOnSuccessListener {
             dialogModificarPassBinding.progressBar.visibility = View.VISIBLE
             Toast.makeText(requireContext(), getString(R.string.actualizar_pass_ok), Toast.LENGTH_LONG).show()
             dialog?.dismiss()

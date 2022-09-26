@@ -33,13 +33,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.IngresosGastosConstructor;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -67,7 +66,6 @@ public class GastosFragment extends Fragment {
     private boolean fromSearch = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
     private MenuItem itemBuscar;
@@ -264,14 +262,14 @@ public class GastosFragment extends Fragment {
 
     private void cargarGastos() {
         progressBar.setVisibility(View.VISIBLE);
-        String userID = user.getUid();
         listaGastos = new ArrayList<>();
         gastosAdapter = new GastosAdapter(listaGastos, getContext(), requireActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(gastosAdapter);
 
-        CollectionReference reference = db.collection(Constants.BD_GASTOS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected);
 
         Query query = reference.orderBy(Constants.BD_FECHA_INCIAL, Query.Direction.ASCENDING);
         query.get().addOnCompleteListener(task -> {
@@ -388,7 +386,7 @@ public class GastosFragment extends Fragment {
         } else {
             id = newList.get(position).getIdGasto();
         }
-        db.collection(Constants.BD_GASTOS).document(user.getUid())
+        db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(id)
                 .update(Constants.BD_PAGADO, true)
                 .addOnSuccessListener(aVoid -> cargarGastos())
@@ -403,7 +401,7 @@ public class GastosFragment extends Fragment {
         } else {
             id = newList.get(position).getIdGasto();
         }
-        db.collection(Constants.BD_GASTOS).document(user.getUid())
+        db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(id)
                 .update(Constants.BD_MES_ACTIVO, false)
                 .addOnSuccessListener(aVoid -> cargarGastos())
@@ -463,7 +461,7 @@ public class GastosFragment extends Fragment {
             final int mesFinal = calendar.get(Calendar.MONTH);
             for (int i = mesSelected; i <= mesFinal; i++) {
                 final int finalI = i;
-                db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(id)
+                db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser()).collection(yearSelected + "-" + i).document(id)
                         .delete()
                         .addOnSuccessListener(aVoid -> {
                             Log.d("Delete", "DocumentSnapshot successfully deleted!");
@@ -477,7 +475,7 @@ public class GastosFragment extends Fragment {
                         .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));
             }
         } else {
-            db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(id)
+            db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser()).collection(yearSelected + "-" + mesSelected).document(id)
                     .delete()
                     .addOnSuccessListener(aVoid -> Log.d("Delete", "DocumentSnapshot successfully deleted!"))
                     .addOnFailureListener(e -> Log.w("Delete", "Error deleting document", e));

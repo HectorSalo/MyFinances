@@ -21,11 +21,10 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
@@ -56,7 +55,6 @@ public class EditarIngresoFragment extends Fragment {
     private Spinner spFrecuencia;
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbEditAllMonth;
     private TextView tvFechaInicial, tvFechaFinal;
-    private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnEditar;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -71,9 +69,6 @@ public class EditarIngresoFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         etConcepto = view.findViewById(R.id.et_concepto_editar);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto_editar);
@@ -140,7 +135,7 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+        db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(idDoc).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -217,7 +212,7 @@ public class EditarIngresoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+        db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(idDoc).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -326,7 +321,7 @@ public class EditarIngresoFragment extends Fragment {
             item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
         }
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid())
+        db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(idDoc)
                 .update(item)
                 .addOnSuccessListener(aVoid -> {
@@ -381,7 +376,7 @@ public class EditarIngresoFragment extends Fragment {
 
         for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
-            db.collection(Constants.BD_INGRESOS).document(user.getUid())
+            db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
                     .collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
                     .addOnSuccessListener(aVoid -> {
@@ -430,7 +425,7 @@ public class EditarIngresoFragment extends Fragment {
             item.put(Constants.BD_DOLAR, true);
         }
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected)
+        db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser()).collection(yearSelected + "-" + mesSelected)
                 .document(idDoc)
                 .update(item)
                 .addOnSuccessListener(aVoid -> {

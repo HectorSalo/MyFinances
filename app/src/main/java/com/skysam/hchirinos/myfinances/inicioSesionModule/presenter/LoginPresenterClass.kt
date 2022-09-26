@@ -7,7 +7,7 @@ import com.skysam.hchirinos.myfinances.inicioSesionModule.interactor.LoginIntera
 import com.skysam.hchirinos.myfinances.inicioSesionModule.interactor.LoginInteractorClass
 import com.skysam.hchirinos.myfinances.inicioSesionModule.ui.InitSessionView
 
-class LoginPresenterClass(val initSessionView: InitSessionView, val context: Context): LoginPresenter {
+class LoginPresenterClass(private val initSessionView: InitSessionView, val context: Context): LoginPresenter {
     val loginInteractor: LoginInteractor = LoginInteractorClass(this, context)
     override fun getCurrentUser() {
         loginInteractor.getCurrentUser()

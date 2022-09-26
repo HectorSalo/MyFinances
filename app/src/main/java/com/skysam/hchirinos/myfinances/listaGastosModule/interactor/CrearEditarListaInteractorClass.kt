@@ -36,7 +36,7 @@ class CrearEditarListaInteractorClass(private val crearEditarListaPresenter: Cre
 
     override fun uploadImage(uri: Uri) {
         if (uri.lastPathSegment != null) {
-            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(Auth.getCurrentUser()!!.uid)
+            val photoRef: StorageReference = FirebaseStorage.getPhotosReferenceByUid(Auth.uidCurrentUser())
                     .child(FirebaseStorage.PATH_IMAGES_LISTS).child(uri.lastPathSegment!!)
 
             photoRef.putFile(uri).addOnSuccessListener { task ->

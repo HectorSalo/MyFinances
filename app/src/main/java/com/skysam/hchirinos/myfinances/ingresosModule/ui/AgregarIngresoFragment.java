@@ -22,10 +22,9 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker;
@@ -56,7 +55,6 @@ public class AgregarIngresoFragment extends Fragment implements OnClickDatePicke
     private RadioButton rbIngresoMes;
     private TextView tvFechaInicio, tvFechaFinal;
     private Date fechaSelecInicial, fechaSelecFinal;
-    private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnGuardar;
     private ImageButton ibFEchaInicial, ibFechaFinal;
@@ -80,9 +78,6 @@ public class AgregarIngresoFragment extends Fragment implements OnClickDatePicke
         calendarActual = Calendar.getInstance();
         int mesActual = calendarActual.get(Calendar.MONTH);
         anualActual = calendarActual.get(Calendar.YEAR);
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         etConcepto = view.findViewById(R.id.et_concepto);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto);
@@ -241,7 +236,8 @@ public class AgregarIngresoFragment extends Fragment implements OnClickDatePicke
 
         for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
+            db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(anualActual + "-" + finalJ).document(String.valueOf(fechaSelecInicial.getTime()))
                     .set(docData)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot written succesfully");
@@ -281,7 +277,8 @@ public class AgregarIngresoFragment extends Fragment implements OnClickDatePicke
         docData.put(Constants.BD_TIPO_FRECUENCIA, null);
         docData.put(Constants.BD_MES_ACTIVO, true);
 
-        db.collection(Constants.BD_INGRESOS).document(user.getUid()).collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
+        db.collection(Constants.BD_INGRESOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(anualActual + "-" + mesSelec).document(String.valueOf(fechaSelec.getTime()))
                 .set(docData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "DocumentSnapshot written succesfully");

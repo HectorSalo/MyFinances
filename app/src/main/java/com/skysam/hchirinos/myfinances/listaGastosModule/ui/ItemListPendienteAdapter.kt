@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ItemGastosConstructor
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.AgregarActivity
 import java.text.SimpleDateFormat
@@ -30,7 +30,6 @@ import java.util.*
 class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructor>, private val activity: Activity, private val supportFragmentManager: FragmentManager, private val twoPane: Boolean) :
     RecyclerView.Adapter<ItemListPendienteAdapter.ViewHolder>() {
 
-    private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private val onLongClickListener: View.OnLongClickListener
 
@@ -131,7 +130,8 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     private fun deleteItem(item: ItemGastosConstructor) {
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(item.idListItem).document(item.idItem)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser())
+            .collection(item.idListItem).document(item.idItem)
                 .delete()
                 .addOnSuccessListener(OnSuccessListener<Void?> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!")
@@ -144,7 +144,8 @@ class ItemListPendienteAdapter(private var items: ArrayList<ItemGastosConstructo
     }
 
     private fun actualizarCantidadItems(item: ItemGastosConstructor) {
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(item.idListItem)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser())
+            .collection(Constants.BD_TODAS_LISTAS).document(item.idListItem)
                 .update(Constants.BD_CANTIDAD_ITEMS, items.size)
                 .addOnSuccessListener {
                     Log.d(Constraints.TAG, "DocumentSnapshot successfully updated!")

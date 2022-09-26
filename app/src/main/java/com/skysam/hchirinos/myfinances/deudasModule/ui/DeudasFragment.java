@@ -25,12 +25,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
@@ -56,7 +55,6 @@ public class DeudasFragment extends Fragment {
     private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
     private MenuItem itemBuscar;
@@ -185,14 +183,14 @@ public class DeudasFragment extends Fragment {
 
     private void cargarDeudas() {
         progressBar.setVisibility(View.VISIBLE);
-        String userID = user.getUid();
         listaDeudas = new ArrayList<>();
         deudasAdapter = new DeudasAdapter(listaDeudas, getContext(), yearSelected, mesSelected);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(deudasAdapter);
 
-        CollectionReference reference = db.collection(Constants.BD_DEUDAS).document(userID).collection(yearSelected + "-" + mesSelected);
+        CollectionReference reference = db.collection(Constants.BD_DEUDAS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected);
 
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

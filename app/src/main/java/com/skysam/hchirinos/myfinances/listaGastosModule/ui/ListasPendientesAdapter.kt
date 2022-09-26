@@ -21,17 +21,16 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.common.model.constructores.ListasConstructor
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseStorage
 
 class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, private val parentActivity: ListaPendientesListActivity, private val twoPane: Boolean) :
     RecyclerView.Adapter<ListasPendientesAdapter.ViewHolder>() {
 
-    private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
@@ -166,7 +165,8 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     private fun deleteLista(id: String, url: String?) {
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(Constants.BD_TODAS_LISTAS).document(id)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser())
+            .collection(Constants.BD_TODAS_LISTAS).document(id)
                 .delete()
                 .addOnSuccessListener(OnSuccessListener<Void?> {
                     Log.d("Delete", "DocumentSnapshot successfully deleted!")
@@ -180,13 +180,14 @@ class ListasPendientesAdapter(private var listas: ArrayList<ListasConstructor>, 
     }
 
     private fun deleteCollection(id: String) {
-        db.collection(Constants.BD_LISTA_GASTOS).document(user!!.uid).collection(id)
+        db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser()).collection(id)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         for (document in task.result!!) {
                             Log.d(ContentValues.TAG, document.id + " => " + document.data)
-                            db.collection(Constants.BD_LISTA_GASTOS).document(user.uid).collection(id).document(document.id)
+                            db.collection(Constants.BD_LISTA_GASTOS).document(Auth.uidCurrentUser())
+                                .collection(id).document(document.id)
                                     .delete()
                         }
                     } else {

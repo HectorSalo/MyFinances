@@ -14,8 +14,8 @@ class MyFinancesApp: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (Auth.getCurrentUser() != null) {
-            val sharedPreferences = getSharedPreferences(Auth.getCurrentUser()!!.uid, MODE_PRIVATE)
+        if (Auth.getUser() != null) {
+            val sharedPreferences = getSharedPreferences(Auth.getUser()!!.uid, MODE_PRIVATE)
 
             when (sharedPreferences.getString(Constants.PREFERENCE_TEMA, Constants.PREFERENCE_TEMA_SISTEMA)) {
                 Constants.PREFERENCE_TEMA_SISTEMA -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)

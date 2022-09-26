@@ -11,11 +11,11 @@ import com.skysam.hchirinos.myfinances.inicioSesionModule.presenter.LoginPresent
 class LoginInteractorClass(private val loginPresenter: LoginPresenter, val context: Context): LoginInteractor {
 
     override fun getCurrentUser() {
-        val user = Auth.getCurrentUser()
+        val user = Auth.getUser()
         if (user != null) {
             loginPresenter.userActive(true, user)
         } else {
-            loginPresenter.userActive(false, user)
+            loginPresenter.userActive(false, null)
         }
     }
 
@@ -36,7 +36,7 @@ class LoginInteractorClass(private val loginPresenter: LoginPresenter, val conte
     }
 
     override fun getTipoBloqueo(uid: String) {
-        val bloqueo = SharedPreferencesBD.getTipoBloqueo(uid, context)
+        val bloqueo = SharedPreferencesBD.getTipoBloqueo(context)
         loginPresenter.tipoBloqueo(bloqueo)
     }
 

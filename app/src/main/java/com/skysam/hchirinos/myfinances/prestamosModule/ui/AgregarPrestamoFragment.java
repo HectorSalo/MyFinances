@@ -16,10 +16,9 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.util.Calendar;
@@ -36,7 +35,6 @@ public class AgregarPrestamoFragment extends Fragment {
     private String destinatario;
     private double monto;
     private RadioButton rbDolar;
-    private final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private ProgressBar progressBar;
     private Button btnGuardar;
 
@@ -131,7 +129,8 @@ public class AgregarPrestamoFragment extends Fragment {
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_PRESTAMOS).document(user.getUid()).collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
+            db.collection(Constants.BD_PRESTAMOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(year + "-" + j).document(String.valueOf(fechaIngreso.getTime()))
                     .set(docData)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot written succesfully");

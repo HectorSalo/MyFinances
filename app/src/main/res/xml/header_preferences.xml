@@ -9,6 +9,11 @@
 
     <PreferenceCategory app:title="Perfil">
         <Preference
+            app:icon="@drawable/ic_change_24"
+            app:key="change_account"
+            app:title="@string/change_account" />
+
+        <Preference
             app:icon="@drawable/ic_update_pass_24"
             app:key="actualizar_pass_header"
             app:title="@string/actualizar_pass_header" />

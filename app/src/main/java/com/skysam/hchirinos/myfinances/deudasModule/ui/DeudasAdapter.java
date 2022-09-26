@@ -16,12 +16,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.model.constructores.AhorrosConstructor;
@@ -173,12 +172,12 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
             fecha = null;
         }
         String idDoc = listaDeudas.get(position).getIdDeuda();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         for (int j = mes; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constants.BD_DEUDAS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(year + "-" + j).document(idDoc)
                     .update(Constants.BD_MONTO, montoNuevo, Constants.BD_FECHA_HISTORIAL, FieldValue.arrayUnion(fecha))
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
@@ -203,7 +202,6 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
     private void eliminarDeuda(final int position, double monto) {
         String idDoc = listaDeudas.get(position).getIdDeuda();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         int month;
@@ -214,7 +212,8 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         }
         for (int j = month; j < 12; j++) {
             final int finalJ = j;
-            db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + j).document(idDoc)
+            db.collection(Constants.BD_DEUDAS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(year + "-" + j).document(idDoc)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot successfully deleted!");
@@ -242,10 +241,10 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         updates.put(Constants.BD_MONTO_ULT_PAGO, monto);
 
         String idDoc = listaDeudas.get(position).getIdDeuda();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + mes).document(idDoc)
+        db.collection(Constants.BD_DEUDAS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(year + "-" + mes).document(idDoc)
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "DocumentSnapshot successfully updated!");
@@ -295,10 +294,10 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
 
     private void verPagos(int position) {
         String idDoc = listaDeudas.get(position).getIdDeuda();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(Constants.BD_DEUDAS).document(user.getUid()).collection(year + "-" + mes).document(idDoc)
+        db.collection(Constants.BD_DEUDAS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(year + "-" + mes).document(idDoc)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

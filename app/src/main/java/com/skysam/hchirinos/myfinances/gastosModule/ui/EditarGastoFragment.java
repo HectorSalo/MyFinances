@@ -20,11 +20,10 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +56,6 @@ public class EditarGastoFragment extends Fragment {
     private Spinner spFrecuencia;
     private RadioButton rbBs, rbDolar, rbDias, rbSemanas, rbMeses, rbEditAllMonth;
     private TextView tvFechaInicial, tvFechaFinal;
-    private FirebaseUser user;
     private ProgressBar progressBar;
     private Button btnEditar;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -79,8 +77,6 @@ public class EditarGastoFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
 
         etConcepto = view.findViewById(R.id.et_concepto);
         etConceptoLayout = view.findViewById(R.id.outlined_concepto);
@@ -147,7 +143,8 @@ public class EditarGastoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
+        db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
@@ -220,7 +217,8 @@ public class EditarGastoFragment extends Fragment {
         etMontoLayout.setEnabled(false);
         btnEditar.setEnabled(false);
 
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
+        db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
@@ -326,7 +324,8 @@ public class EditarGastoFragment extends Fragment {
             item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
         }
 
-        db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+        db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                .collection(yearSelected + "-" + mesSelected).document(idDoc)
                 .update(item)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
@@ -380,7 +379,8 @@ public class EditarGastoFragment extends Fragment {
 
         for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
-            db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + i).document(idDoc)
+            db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(yearSelected + "-" + i).document(idDoc)
                     .update(item)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
@@ -428,7 +428,8 @@ public class EditarGastoFragment extends Fragment {
             item.put(Constants.BD_DOLAR, true);
         }
 
-            db.collection(Constants.BD_GASTOS).document(user.getUid()).collection(yearSelected + "-" + mesSelected).document(idDoc)
+            db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
+                    .collection(yearSelected + "-" + mesSelected).document(idDoc)
                     .update(item)
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
