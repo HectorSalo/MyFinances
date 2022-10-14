@@ -11,8 +11,8 @@ android {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 15
-        versionName "11.0"
+        versionCode 16
+        versionName "11.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.github.bumptech.glide:glide:4.13.2'
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.2'
-    implementation 'org.jsoup:jsoup:1.15.1'
+    implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0'
     implementation 'com.airbnb.android:lottie:5.2.0'
 

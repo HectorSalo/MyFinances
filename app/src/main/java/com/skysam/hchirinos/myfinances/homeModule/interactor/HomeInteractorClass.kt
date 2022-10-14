@@ -11,7 +11,14 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
+import java.security.KeyManagementException
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
 import java.util.*
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import kotlin.coroutines.CoroutineContext
 
 class HomeInteractorClass(private val homePresenter: HomePresenter, val context: Context): HomeInteractor, CoroutineScope {
@@ -31,7 +38,7 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
 
             withContext(Dispatchers.IO) {
                 try {
-                    val doc = Jsoup.connect(url).get()
+                    val doc = Jsoup.connect(url).sslSocketFactory(socketFactory()).get()
                     val data = doc.select("div#dolar")
                     valor = data.select("strong").last()?.text()
                 } catch (e: Exception) {
@@ -347,6 +354,35 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         homePresenter.statusMoveNextYear(false, "Error al copiar los Deudas. Intente más tarde")
                     }
                 }
+    }
+
+    private fun socketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+            @Throws(CertificateException::class)
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+            }
+
+            @Throws(CertificateException::class)
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            }
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        })
+
+        try {
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            return sslContext.socketFactory
+        } catch (e: Exception) {
+            when (e) {
+                is RuntimeException, is KeyManagementException -> {
+                    throw RuntimeException("Failed to create a SSL socket factory", e)
+                }
+                else -> throw e
+            }
+        }
     }
 
 }
