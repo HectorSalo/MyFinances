@@ -11,8 +11,8 @@ android {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 17
-        versionName "11.2"
+        versionCode 18
+        versionName "11.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

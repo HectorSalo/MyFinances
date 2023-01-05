@@ -272,7 +272,7 @@ public class IngresosFragment extends Fragment implements IngresosView {
     private void crearDialog(final int position) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("¿Qué desea hacer?")
-                .setItems(R.array.opciones_borrar, (dialogInterface, i) -> {
+                .setItems(R.array.opciones_borrar_ingreso, (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
                             suspenderMes(position);

@@ -67,16 +67,21 @@
         <item>Eliminar lista</item>
     </string-array>
 
-    <string-array name="opciones_item_list_gasto">
-        <item>Mover a Gastos realizados</item>
-        <item>Editar ítem</item>
-        <item>Eliminar ítem</item>
-    </string-array>
-
     <string-array name="opciones_borrar">
         <item>Pagar</item>
         <item>Suspender por este mes</item>
         <item>Eliminar definitivo</item>
+    </string-array>
+
+    <string-array name="opciones_borrar_ingreso">
+        <item>Suspender por este mes</item>
+        <item>Eliminar definitivo</item>
+    </string-array>
+
+    <string-array name="opciones_item_list_gasto">
+        <item>Mover a Gastos realizados</item>
+        <item>Editar ítem</item>
+        <item>Eliminar ítem</item>
     </string-array>
     <!-- Bloqueo Preference -->
     <string-array name="bloqueo_entries">
