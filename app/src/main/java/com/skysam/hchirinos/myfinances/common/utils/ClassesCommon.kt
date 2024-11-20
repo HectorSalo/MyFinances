@@ -92,7 +92,7 @@ object ClassesCommon {
     fun convertDateToCotizaciones(dateString: String): String {
         return try {
             // Formato de entrada basado en el string de fecha recibido
-            val inputFormat = SimpleDateFormat("dd/MM/yyyy, hh:mm a", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("dd/MM/yyyy, hh:mm a", Locale.ENGLISH)
 
             // Parseamos el string a un objeto Date
             val date = inputFormat.parse(dateString)
