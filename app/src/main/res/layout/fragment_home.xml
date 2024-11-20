@@ -35,79 +35,176 @@
         app:tint="?attr/colorControlNormal" />
 
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/linearLayout_resultado_balance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/fondo_cotizacion"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_marginEnd="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pie_balance">
 
-        <TextView
-            android:id="@+id/textView_suma"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/texto_vacio"
-            android:textSize="18sp" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView_deficit_superhabil"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/texto_vacio"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/textView_suma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/texto_vacio"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="TextView" />
 
-        <TextView
-            android:id="@+id/textView_monto_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:text="@string/texto_vacio"
-            android:textSize="18sp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView_deficit_superhabil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/texto_vacio"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView_suma"
+                tools:text="TextView" />
 
-    <LinearLayout
+            <TextView
+                android:id="@+id/textView_monto_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/texto_vacio"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView_deficit_superhabil"
+                tools:text="TextView" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/linearLayout_cotizacion_dolar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/fondo_cotizacion"
-        android:gravity="center"
-        android:orientation="vertical"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="@color/colorPrimaryDark"
+        app:strokeWidth="4dp"
+        android:outlineSpotShadowColor="@color/transparent"
+        android:outlineAmbientShadowColor="@color/transparent"
+        app:cardBackgroundColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout_resultado_balance">
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Bs./$"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView_cotizacion_dolar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:text="@string/text_cargando_cotizacion"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp" />
-    </LinearLayout>
+            <androidx.constraintlayout.widget.Guideline
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/guideline"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.33" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/guideline2"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.66" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Bs./$"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView_cotizacion_dolar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="@string/text_cargando_cotizacion"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+            <TextView
+                android:id="@+id/textView_cotizacion_dolar_bcv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:text="@string/text_cargando_cotizacion"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/textView_cotizacion_dolar_paralelo"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView_cotizacion_dolar_paralelo" />
+
+            <TextView
+                android:id="@+id/textView_cotizacion_dolar_paralelo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="@string/text_cargando_cotizacion"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline2"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/textView_cotizacion_dolar" />
+
+            <TextView
+                android:id="@+id/textView_cotizacion_dolar_promedio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="@string/text_cargando_cotizacion"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/textView_cotizacion_dolar_paralelo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/tv_total_ahorros"

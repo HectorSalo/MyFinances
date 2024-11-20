@@ -20,6 +20,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.android.material.card.MaterialCardView;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
@@ -28,6 +29,7 @@ import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -38,8 +40,9 @@ public class HomeFragment extends Fragment implements HomeView {
     private PieChart pieBalance;
     private MainViewModel viewModel;
     private float montoIngresos, montoGastos;
-    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros, tvPrestamos, tvGastosVarios;
-    private LinearLayout linearLayout;
+    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros,
+            tvPrestamos, tvGastosVarios, tvCotizacionDolarBCV, tvCotizacionDolarParalelo, tvCotizacionDolarPromedio;
+    private MaterialCardView linearLayout;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
     private MoveToNextYearDialog moveToNextYearDialog;
@@ -78,6 +81,9 @@ public class HomeFragment extends Fragment implements HomeView {
 
         pieBalance = view.findViewById(R.id.pie_balance);
         tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
+        tvCotizacionDolarBCV = view.findViewById(R.id.textView_cotizacion_dolar_bcv);
+        tvCotizacionDolarParalelo = view.findViewById(R.id.textView_cotizacion_dolar_paralelo);
+        tvCotizacionDolarPromedio = view.findViewById(R.id.textView_cotizacion_dolar_promedio);
         linearLayout = view.findViewById(R.id.linearLayout_resultado_balance);
         tvSuma = view.findViewById(R.id.textView_suma);
         tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
@@ -159,13 +165,13 @@ public class HomeFragment extends Fragment implements HomeView {
             float montoTotal = montoIngresos - montoGastos;
             if (montoTotal > 0) {
                 tvSuperDeficit.setText("Tiene un superávit de:");
-                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
             } else if (montoTotal < 0) {
                 tvSuperDeficit.setText("Tiene un déficit de:");
-                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
+                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
             } else if (montoTotal == 0) {
                 tvSuperDeficit.setText("Balance en cero");
-                linearLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
             }
             tvSuma.setText(getString(R.string.text_total_balance_mensual,
                     ClassesCommon.INSTANCE.convertFloatToString(montoIngresos),
@@ -180,17 +186,31 @@ public class HomeFragment extends Fragment implements HomeView {
     }
 
     @Override
-    public void valorCotizacionWebOk(@NotNull String valor, float valorFloat) {
+    public void valorCotizacionWebOk(float valorBCV, float valorParalelo, String fechaBCV, String fechaParalelo) {
         if (tvCotizacionDolar != null) {
-            tvCotizacionDolar.setText(valor);
-            homePresenter.guardarCotizacionShared(valorFloat);
+            tvCotizacionDolar.setText("Últ. actualización\n" + "BCV: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaBCV)
+                    + "\nParalelo: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaParalelo));
+            tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
+            tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
+            float promedio = (valorBCV + valorParalelo) / 2;
+            tvCotizacionDolarPromedio.setText("Promedio\n" + ClassesCommon.INSTANCE.convertFloatToString(promedio));
+            tvCotizacionDolarBCV.setVisibility(View.VISIBLE);
+            tvCotizacionDolarParalelo.setVisibility(View.VISIBLE);
+            tvCotizacionDolarPromedio.setVisibility(View.VISIBLE);
+            homePresenter.guardarCotizacionShared(valorBCV, valorParalelo);
         }
     }
 
     @Override
-    public void valorCotizacionWebError(float valorFloat) {
+    public void valorCotizacionWebError(float valorBCV, float valorParalelo) {
         if (tvCotizacionDolar != null) {
-            tvCotizacionDolar.setText("Bs.S " + ClassesCommon.INSTANCE.convertFloatToString(valorFloat));
+            tvCotizacionDolar.setText("Error al obtener la cotización.\nSe muestran los últimos valores guardados");
+            tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
+            tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
+            tvCotizacionDolarPromedio.setText("Promedio\n" + ClassesCommon.INSTANCE.convertFloatToString((valorBCV + valorParalelo) / 2));
+            tvCotizacionDolarBCV.setVisibility(View.VISIBLE);
+            tvCotizacionDolarParalelo.setVisibility(View.VISIBLE);
+            tvCotizacionDolarPromedio.setVisibility(View.VISIBLE);
         }
     }
 

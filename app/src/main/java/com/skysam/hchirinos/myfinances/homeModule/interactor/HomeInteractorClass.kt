@@ -11,6 +11,9 @@ import com.skysam.hchirinos.myfinances.common.utils.Constants
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.security.KeyManagementException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
@@ -32,32 +35,34 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
         getStatusNotification()
 
         launch {
-            var valor: String? = null
-            var valorCotizacion: Float? = null
-            val url = "http://www.bcv.org.ve/"
-
             withContext(Dispatchers.IO) {
-                try {
-                    val doc = Jsoup.connect(url).sslSocketFactory(socketFactory()).get()
-                    val data = doc.select("div#dolar")
-                    valor = data.select("strong").last()?.text()
-                } catch (e: Exception) {
-                    Log.e("Error", e.toString())
-                }
-            }
-            if (valor != null) {
-                val valorNeto = valor?.replace(",", ".")
-                valorCotizacion = valorNeto?.toFloat()
-                val valorRounded = String.format(Locale.US, "%.2f", valorCotizacion)
-                valorCotizacion = valorRounded.toFloat()
+                RetrofitClient.instance.getCotizacion()
+                    .enqueue(object : Callback<ApiResponse> {
+                        override fun onResponse(
+                            call: Call<ApiResponse>,
+                            response: Response<ApiResponse>
+                        ) {
+                            if (response.isSuccessful) {
+                                val data = response.body()
+                                data?.let {
+                                    val priceParalelo = data.monitors.enparalelovzla.price
+                                    val priceBCV = data.monitors.bcv.price
+                                    val fechaBCV = data.monitors.bcv.last_update
+                                    val fechaParalelo = data.monitors.enparalelovzla.last_update
 
-                valor = ClassesCommon.convertFloatToString(valorCotizacion)
-            }
+                                    homePresenter.valorCotizacionWebOk(priceBCV, priceParalelo, fechaBCV, fechaParalelo)
+                                }
+                            } else {
+                                obtenerCotizacionShared()
+                            }
+                        }
 
-            if (valor != null) {
-                homePresenter.valorCotizacionWebOk(valor!!, valorCotizacion!!)
-            } else {
-                obtenerCotizacionShared()
+                        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                            Log.e("Error", t.toString())
+                            obtenerCotizacionShared()
+                        }
+
+                    })
             }
         }
 
@@ -74,11 +79,11 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     }
 
     private fun obtenerCotizacionShared() {
-        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(context))
+        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(context), SharedPreferencesBD.getCotizacionParalelo(context))
     }
 
-    override fun guardarCotizacionShared(valorFloat: Float) {
-        SharedPreferencesBD.saveCotizacion(context, valorFloat)
+    override fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float) {
+        SharedPreferencesBD.saveCotizacion(context, valorBCV, valorParalelo)
     }
 
     override fun moveDataNextYear(year: Int) {
@@ -354,35 +359,6 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         homePresenter.statusMoveNextYear(false, "Error al copiar los Deudas. Intente más tarde")
                     }
                 }
-    }
-
-    private fun socketFactory(): SSLSocketFactory {
-        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-            @Throws(CertificateException::class)
-            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-            }
-
-            @Throws(CertificateException::class)
-            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
-            }
-
-            override fun getAcceptedIssuers(): Array<X509Certificate> {
-                return arrayOf()
-            }
-        })
-
-        try {
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-            return sslContext.socketFactory
-        } catch (e: Exception) {
-            when (e) {
-                is RuntimeException, is KeyManagementException -> {
-                    throw RuntimeException("Failed to create a SSL socket factory", e)
-                }
-                else -> throw e
-            }
-        }
     }
 
 }

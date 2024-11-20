@@ -16,6 +16,8 @@ import com.skysam.hchirinos.myfinances.R
 import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.NotificationReceiverFCM
 import java.io.FileNotFoundException
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -85,6 +87,22 @@ object ClassesCommon {
 
     fun convertDoubleToString(value: Double): String {
         return String.format(Locale.GERMANY, "%,.2f", value)
+    }
+
+    fun convertDateToCotizaciones(dateString: String): String {
+        return try {
+            // Formato de entrada basado en el string de fecha recibido
+            val inputFormat = SimpleDateFormat("dd/MM/yyyy, hh:mm a", Locale.getDefault())
+
+            // Parseamos el string a un objeto Date
+            val date = inputFormat.parse(dateString)
+
+            // Convertimos el objeto Date al formato local
+            DateFormat.getDateTimeInstance().format(date!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Invalid date"
+        }
     }
 
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {

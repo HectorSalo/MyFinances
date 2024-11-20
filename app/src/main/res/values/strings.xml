@@ -81,6 +81,12 @@
     <string name="calculadora_bolivares">Bolívares:</string>
     <string name="calculadora_dolares">Dólares:</string>
     <string name="text_calculadora_cero">0,00</string>
+    <string name="calculadora_bolivares_bcv">Bolívares a BCV:</string>
+    <string name="calculadora_bolivares_paralelo">Bolívares a Paralelo:</string>
+    <string name="calculadora_bolivares_promedio">Bolívares a Promedio:</string>
+    <string name="calculadora_dolares_bcv">Dólares a BCV:</string>
+    <string name="calculadora_dolares_paralelo">Dólares a Paralelo:</string>
+    <string name="calculadora_dolares_promedio">Dólares a Promedio:</string>
 
     <string name="btn_nueva_lista">Nueva Lista</string>
     <string name="text_editar_lista">Editar Lista</string>
