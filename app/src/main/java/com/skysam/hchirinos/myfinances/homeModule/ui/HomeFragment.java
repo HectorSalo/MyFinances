@@ -22,6 +22,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.card.MaterialCardView;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass;
@@ -188,10 +189,19 @@ public class HomeFragment extends Fragment implements HomeView {
     @Override
     public void valorCotizacionWebOk(float valorBCV, float valorParalelo, String fechaBCV, String fechaParalelo) {
         if (tvCotizacionDolar != null) {
+            String emojiUp = "\u2B06\uFE0F";
             tvCotizacionDolar.setText("Últ. actualización\n" + "BCV: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaBCV)
                     + "\nParalelo: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaParalelo));
-            tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
-            tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
+            if (valorBCV > SharedPreferencesBD.INSTANCE.getCotizacion(requireContext())) {
+                tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV) + " " + emojiUp);
+            } else {
+                tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
+            }
+            if (valorParalelo > SharedPreferencesBD.INSTANCE.getCotizacionParalelo(requireContext())) {
+                tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo) + " " + emojiUp);
+            } else {
+                tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
+            }
             float promedio = (valorBCV + valorParalelo) / 2;
             tvCotizacionDolarPromedio.setText("Promedio\n" + ClassesCommon.INSTANCE.convertFloatToString(promedio));
             tvCotizacionDolarBCV.setVisibility(View.VISIBLE);

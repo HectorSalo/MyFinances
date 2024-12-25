@@ -42,6 +42,7 @@ class IngresosGraphFragment : Fragment(), IngresosGraphView {
     private var montoOctubre = 0f
     private var montoNoviembre = 0f
     private var montoDiciembre = 0f
+    private var monthCurrent = 0
     private lateinit var ingresosGraphPresenter: IngresosGraphPresenter
 
     override fun onCreateView(
@@ -131,7 +132,7 @@ class IngresosGraphFragment : Fragment(), IngresosGraphView {
 
         val calendar = Calendar.getInstance()
         val yearCurrent = calendar[Calendar.YEAR]
-        val monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
+        monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
         var amountTotal = 0.0
         for (i in 0..monthCurrent) {
             amountTotal += barEntries[i].y
@@ -171,7 +172,12 @@ class IngresosGraphFragment : Fragment(), IngresosGraphView {
                         9 -> montoOctubre = monto
                         10 -> montoNoviembre = monto
                     }
-                    ingresosGraphPresenter.getMes(yearSelected, (month + 1))
+                    if (month < monthCurrent) {
+                        ingresosGraphPresenter.getMes(yearSelected, (month + 1))
+                    } else {
+                        binding.progressBar.visibility = View.GONE
+                        cargarGraficos()
+                    }
                 } else {
                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                     binding.progressBar.visibility = View.GONE

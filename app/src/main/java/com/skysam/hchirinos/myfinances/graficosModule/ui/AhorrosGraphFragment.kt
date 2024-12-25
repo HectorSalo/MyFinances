@@ -43,6 +43,7 @@ class AhorrosGraphFragment : Fragment(), AhorrosGraphView {
     private var montoOctubre = 0f
     private var montoNoviembre = 0f
     private var montoDiciembre = 0f
+    private var monthCurrent = 0
 
 
     override fun onCreateView(
@@ -133,7 +134,7 @@ class AhorrosGraphFragment : Fragment(), AhorrosGraphView {
 
         val calendar = Calendar.getInstance()
         val yearCurrent = calendar[Calendar.YEAR]
-        val monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
+        monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
         var amountTotal = 0.0
 
         for (i in 0..monthCurrent) {
@@ -174,7 +175,12 @@ class AhorrosGraphFragment : Fragment(), AhorrosGraphView {
                         9 -> montoOctubre = monto
                         10 -> montoNoviembre = monto
                     }
-                    ahorrosGraphPresenter.getMes(yearSelected, (month + 1))
+                    if (month < monthCurrent) {
+                        ahorrosGraphPresenter.getMes(yearSelected, (month + 1))
+                    } else {
+                        binding.progressBar.visibility = View.GONE
+                        cargarGraficos()
+                    }
                 } else {
                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                     binding.progressBar.visibility = View.GONE
