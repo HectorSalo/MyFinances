@@ -1,6 +1,7 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui;
 
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -8,6 +9,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -189,16 +193,29 @@ public class HomeFragment extends Fragment implements HomeView {
     @Override
     public void valorCotizacionWebOk(float valorBCV, float valorParalelo, String fechaBCV, String fechaParalelo) {
         if (tvCotizacionDolar != null) {
-            String emojiUp = "\u2B06\uFE0F";
+            Drawable arrowDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_circle_up_24px);
+            arrowDrawable.setBounds(0, 0, 40, 40);
             tvCotizacionDolar.setText("Últ. actualización\n" + "BCV: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaBCV)
                     + "\nParalelo: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaParalelo));
             if (valorBCV > SharedPreferencesBD.INSTANCE.getCotizacion(requireContext())) {
-                tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV) + " " + emojiUp);
+                SpannableStringBuilder spannable = new SpannableStringBuilder();
+                spannable.append("BCV\n");
+                spannable.append(ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
+                spannable.append("  "); // Espacio antes del ícono
+                ImageSpan imageSpan = new ImageSpan(arrowDrawable, ImageSpan.ALIGN_BASELINE);
+                spannable.setSpan(imageSpan, spannable.length() - 1, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                tvCotizacionDolarBCV.setText(spannable);
             } else {
                 tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
             }
             if (valorParalelo > SharedPreferencesBD.INSTANCE.getCotizacionParalelo(requireContext())) {
-                tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo) + " " + emojiUp);
+                SpannableStringBuilder spannable = new SpannableStringBuilder();
+                spannable.append("Paralelo\n");
+                spannable.append(ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
+                spannable.append("  "); // Espacio antes del ícono
+                ImageSpan imageSpan = new ImageSpan(arrowDrawable, ImageSpan.ALIGN_BASELINE);
+                spannable.setSpan(imageSpan, spannable.length() - 1, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
                 tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
             }
