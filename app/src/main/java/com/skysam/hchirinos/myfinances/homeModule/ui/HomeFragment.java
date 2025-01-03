@@ -216,6 +216,8 @@ public class HomeFragment extends Fragment implements HomeView {
                 spannable.append("  "); // Espacio antes del ícono
                 ImageSpan imageSpan = new ImageSpan(arrowDrawable, ImageSpan.ALIGN_BASELINE);
                 spannable.setSpan(imageSpan, spannable.length() - 1, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                tvCotizacionDolarParalelo.setText(spannable);
             } else {
                 tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
             }

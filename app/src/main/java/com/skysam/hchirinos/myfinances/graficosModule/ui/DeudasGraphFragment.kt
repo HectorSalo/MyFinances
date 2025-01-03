@@ -63,6 +63,7 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
 
         val calendar = Calendar.getInstance()
         yearSelected = calendar[Calendar.YEAR]
+        monthCurrent = calendar[Calendar.MONTH]
 
         val listaYears = listOf(*resources.getStringArray(R.array.years))
         val adapterYears = ArrayAdapter(requireContext(), R.layout.layout_spinner, listaYears)
@@ -72,8 +73,22 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
 
         binding.spYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                montoEnero = 0f
+                montoFebrero = 0f
+                montoMarzo = 0f
+                montoAbril = 0f
+                montoMayo = 0f
+                montoJunio = 0f
+                montoJulio = 0f
+                montoAgosto = 0f
+                montoSeptiembre = 0f
+                montoOctubre = 0f
+                montoNoviembre = 0f
+                montoDiciembre = 0f
                 binding.progressBar.visibility = View.VISIBLE
                 yearSelected = 2020 + position
+                val yearCurrent = calendar[Calendar.YEAR]
+                monthCurrent = if (yearCurrent == yearSelected) calendar[Calendar.MONTH] else 11
                 deudasGraphPresenter.getMes(yearSelected, 0)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -127,9 +142,6 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
         binding.barCharts.description = null
         binding.barCharts.data = barData
 
-        val calendar = Calendar.getInstance()
-        val yearCurrent = calendar[Calendar.YEAR]
-        monthCurrent = if (yearCurrent != yearSelected) calendar[Calendar.MONTH] else 11
         var amountTotal = 0.0
         for (i in 0..monthCurrent) {
             amountTotal += barEntries[i].y
