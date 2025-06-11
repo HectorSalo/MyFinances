@@ -41,4 +41,8 @@ object FirebaseFirestore {
         return getInstance().collection(Constants.BD_IMAGENES_LISTAS)
     }
 
+    fun getExchangeFirestore(): CollectionReference {
+        return getInstance().collection(Constants.BD_EXCHANGE)
+    }
+
 }

@@ -50,7 +50,22 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                                     val fechaBCV = data.monitors.bcv.last_update
                                     val fechaParalelo = data.monitors.enparalelovzla.last_update
 
-                                    homePresenter.valorCotizacionWebOk(priceBCV, priceParalelo, fechaBCV, fechaParalelo)
+                                    if (priceParalelo > 1.00 && priceBCV > 1.00) {
+                                        homePresenter.valorCotizacionWebOk(priceBCV, priceParalelo, fechaBCV, fechaParalelo)
+                                    } else {
+                                        FirebaseFirestore.getExchangeFirestore()
+                                            .document("current")
+                                            .get()
+                                            .addOnSuccessListener { task ->
+                                                val exchangeDolar = task.getDouble("dolar")!!.toFloat()
+                                                val date = task.getString("date")
+                                                homePresenter.valorCotizacionWebOk(priceBCV, exchangeDolar, fechaBCV, date!!)
+                                            }
+                                            .addOnFailureListener {
+                                                Log.e("Error", "Error al obtener la cotización del Firestore")
+                                                obtenerCotizacionShared()
+                                            }
+                                    }
                                 }
                             } else {
                                 obtenerCotizacionShared()

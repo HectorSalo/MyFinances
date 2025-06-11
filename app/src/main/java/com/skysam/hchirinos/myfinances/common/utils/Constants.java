@@ -1,5 +1,7 @@
 package com.skysam.hchirinos.myfinances.common.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Constants {
     public static final String BD_INGRESOS= "ingresos";
     public static final String BD_AHORROS = "ahorros";
@@ -55,4 +57,6 @@ public class Constants {
     public static final int RP_STORAGE = 23;
     public static  final  int RC_PHOTO_PICKER = 22;
 
+
+    public static final String BD_EXCHANGE = "exchange";
 }
