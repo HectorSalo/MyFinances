@@ -8,7 +8,7 @@ import retrofit2.http.GET
  */
 
 interface ApiService {
- @GET("api/v1/dollar")
+ @GET("v1/dolares/oficial")
  fun getCotizacion(): Call<ApiResponse>
 
 }

@@ -5,8 +5,10 @@ package com.skysam.hchirinos.myfinances.homeModule.interactor
  */
 
 data class ApiResponse(
-    val datetime: DateTime,
-    val monitors: Monitors
+    val fuente: String,
+    val nombre: String,
+    val promedio: Float,
+    val fechaActualizacion: String
 )
 
 data class DateTime(

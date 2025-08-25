@@ -91,11 +91,12 @@ object ClassesCommon {
 
     fun convertDateToCotizaciones(dateString: String): String {
         return try {
-            // Formato de entrada basado en el string de fecha recibido
-            val inputFormat = SimpleDateFormat("dd/MM/yyyy, hh:mm a", Locale.ENGLISH)
+            // Patrón ISO-8601 con zona (Z o ±HH:mm)
+            val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
+            input.timeZone = TimeZone.getTimeZone("UTC") // la cadena viene en UTC
 
             // Parseamos el string a un objeto Date
-            val date = inputFormat.parse(dateString)
+            val date = input.parse(dateString)
 
             // Convertimos el objeto Date al formato local
             DateFormat.getDateTimeInstance().format(date!!)
@@ -120,7 +121,7 @@ object ClassesCommon {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)
         val alarmManager = MyFinancesApp.appContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val pendingIntent = PendingIntent.getService(MyFinancesApp.appContext, requestId, intent,
-                PendingIntent.FLAG_NO_CREATE)
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
         if (pendingIntent != null && alarmManager != null) {
             alarmManager.cancel(pendingIntent)
         }
