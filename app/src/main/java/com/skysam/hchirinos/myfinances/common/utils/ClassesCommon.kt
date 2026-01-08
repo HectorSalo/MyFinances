@@ -90,21 +90,39 @@ object ClassesCommon {
     }
 
     fun convertDateToCotizaciones(dateString: String): String {
-        return try {
-            // Patrón ISO-8601 con zona (Z o ±HH:mm)
-            val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
-            input.timeZone = TimeZone.getTimeZone("UTC") // la cadena viene en UTC
+        if (dateString.isBlank()) return ""
 
-            // Parseamos el string a un objeto Date
-            val date = input.parse(dateString)
+        // Formato de salida uniforme (ajústalo a tu preferencia)
+        // Ej: "25/12/2025 11:14 PM" (respeta 12/24h según Locale si quieres)
+        val output = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        output.timeZone = TimeZone.getDefault()
 
-            // Convertimos el objeto Date al formato local
-            DateFormat.getDateTimeInstance().format(date!!)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            "Invalid date"
+        // Lista de formatos aceptados (backend puede variar)
+        val patterns = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX", // 2026-01-05T17:02:43.751Z
+            "yyyy-MM-dd'T'HH:mm:ssX",     // 2026-01-05T17:02:43Z
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", // algunos backends mandan Z literal
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd"                  // 2026-01-07
+        )
+
+        for (p in patterns) {
+            try {
+                val input = SimpleDateFormat(p, Locale.US).apply {
+                    // Si viene con Z / offset, el parser lo gestiona; para yyyy-MM-dd tomamos UTC para consistencia
+                    timeZone = TimeZone.getTimeZone("UTC")
+                    isLenient = false
+                }
+                val date = input.parse(dateString) ?: continue
+                return output.format(date)
+            } catch (_: Exception) {
+                // Ignorar y probar el siguiente patrón
+            }
         }
+
+        return "Invalid date"
     }
+
 
     fun createNotification(concepto: String, gasto: Boolean, requestId: Int, fechaInicial: Long) {
         val intent = Intent(MyFinancesApp.appContext, NotificationReceiverFCM::class.java)

@@ -7,14 +7,20 @@ import retrofit2.converter.gson.GsonConverterFactory
  * Created by Hector Chirinos on 19/11/2024.
  */
 
-object RetrofitClient {
- private const val BASE_URL = "https://ve.dolarapi.com/"
+object RetrofitClientDolarVzla {
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://api.dolarvzla.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-    val instance: ApiService by lazy {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        retrofit.create(ApiService::class.java)
-    }
+    val service: DolarVzlaService = retrofit.create(DolarVzlaService::class.java)
+}
+
+object RetrofitClientDolarApiVe {
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://ve.dolarapi.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val service: DolarApiVeService = retrofit.create(DolarApiVeService::class.java)
 }

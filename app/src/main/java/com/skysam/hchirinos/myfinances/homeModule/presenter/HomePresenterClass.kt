@@ -7,24 +7,39 @@ import com.skysam.hchirinos.myfinances.homeModule.ui.HomeView
 
 class HomePresenterClass(private val homeView: HomeView, context: Context): HomePresenter {
     private val homeInteractor: HomeInteractor = HomeInteractorClass(this, context)
-    override fun obtenerCotizacionWeb() {
-        homeInteractor.obtenerCotizacionWeb()
+
+    override fun obtenerCotizacionWeb() = homeInteractor.obtenerCotizacionWeb()
+
+    override fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float, valorEuro: Float) {
+        homeInteractor.guardarCotizacionShared(valorBCV, valorParalelo, valorEuro)
     }
 
-    override fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float) {
-        homeInteractor.guardarCotizacionShared(valorBCV, valorParalelo)
+    override fun moveDataNextYear(year: Int) = homeInteractor.moveDataNextYear(year)
+
+    override fun valorCotizacionWebOk(
+        valorBCV: Float,
+        valorBCVPrev: Float,
+        valorParalelo: Float,
+        valorParaleloPrev: Float,
+        valorEuro: Float,
+        valorEuroPrev: Float,
+        fechaBCV: String,
+        fechaParalelo: String
+    ) {
+        homeView.valorCotizacionWebOk(
+            valorBCV,
+            valorBCVPrev,
+            valorParalelo,
+            valorParaleloPrev,
+            valorEuro,
+            valorEuroPrev,
+            fechaBCV,
+            fechaParalelo
+        )
     }
 
-    override fun moveDataNextYear(year: Int) {
-        homeInteractor.moveDataNextYear(year)
-    }
-
-    override fun valorCotizacionWebOk(valorBCV: Float, valorParalelo: Float, fechaBCV: String, fechaParalelo: String) {
-        homeView.valorCotizacionWebOk(valorBCV, valorParalelo, fechaBCV, fechaParalelo)
-    }
-
-    override fun valorCotizacionWebError(valorBCV: Float, valorParalelo: Float) {
-        homeView.valorCotizacionWebError(valorBCV, valorParalelo)
+    override fun valorCotizacionWebError(valorBCV: Float, valorParalelo: Float, valorEuro: Float) {
+        homeView.valorCotizacionWebError(valorBCV, valorParalelo, valorEuro)
     }
 
     override fun statusMoveNextYear(statusOk: Boolean, message: String) {

@@ -33,47 +33,121 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
     override fun obtenerCotizacionWeb() {
         getStatusNotification()
 
-        launch {
-            withContext(Dispatchers.IO) {
-                RetrofitClient.instance.getCotizacion()
-                    .enqueue(object : Callback<ApiResponse> {
-                        override fun onResponse(
-                            call: Call<ApiResponse>,
-                            response: Response<ApiResponse>
-                        ) {
-                            if (response.isSuccessful) {
-                                val data = response.body()
-                                data?.let {
-                                    val priceBCV = data.promedio
-                                    val fechaBCV = data.fechaActualizacion
+        // 1) BCV + EURO (api.dolarvzla)
+        RetrofitClientDolarVzla.service.getExchangeRate()
+            .enqueue(object : Callback<DolarVzlaExchangeRateResponse> {
 
-                                    FirebaseFirestore.getExchangeFirestore()
-                                        .document("current")
-                                        .get()
-                                        .addOnSuccessListener { task ->
-                                            val exchangeDolar = task.getDouble("dolar")!!.toFloat()
-                                            val date = task.getString("date")
-                                            homePresenter.valorCotizacionWebOk(priceBCV, exchangeDolar, fechaBCV, date!!)
-                                        }
-                                        .addOnFailureListener {
-                                            Log.e("Error", "Error al obtener la cotización del Firestore")
-                                            obtenerCotizacionShared()
-                                        }
+                override fun onResponse(
+                    call: Call<DolarVzlaExchangeRateResponse>,
+                    response: Response<DolarVzlaExchangeRateResponse>
+                ) {
+                    Log.i("Rates", "DolarVzla code=${response.code()} ok=${response.isSuccessful}")
+
+                    if (!response.isSuccessful) {
+                        val err = try { response.errorBody()?.string() } catch (e: Exception) { "errorBody-exception=$e" }
+                        Log.e("Rates", "DolarVzla errorBody=$err")
+                        fallbackAll()
+                        return
+                    }
+
+                    val body = response.body()
+                    Log.i("Rates", "DolarVzla body=$body")
+
+                    if (body == null) {
+                        Log.e("Rates", "DolarVzla body == null (posible parse/converter)")
+                        fallbackAll()
+                        return
+                    }
+
+                    val bcvCurrent = body.current.usd.toFloat()
+                    val bcvPrev = body.previous.usd.toFloat()
+                    val eurCurrent = body.current.eur.toFloat()
+                    val eurPrev = body.previous.eur.toFloat()
+                    val dateBcv = body.current.date
+
+                    // Guardar Euro actual YA (y opcionalmente BCV aquí si quieres)
+                    SharedPreferencesBD.saveCotizacionEuro(context, eurCurrent)
+
+                    // 2) Paralelo (ve.dolarapi)
+                    val paraleloOld = SharedPreferencesBD.getCotizacionParalelo(context)
+
+                    RetrofitClientDolarApiVe.service.getParalelo()
+                        .enqueue(object : Callback<DolarApiParaleloResponse> {
+
+                            override fun onResponse(
+                                call: Call<DolarApiParaleloResponse>,
+                                response: Response<DolarApiParaleloResponse>
+                            ) {
+                                val pBody = response.body()
+                                Log.i("Rates", "Paralelo code=${response.code()} ok=${response.isSuccessful}")
+                                Log.i("Rates", "Paralelo body=$pBody")
+
+                                // --- Caso 1: Paralelo OK ---
+                                if (response.isSuccessful && pBody != null) {
+                                    val paraleloCurrent = pBody.promedio.toFloat()
+                                    val dateParalelo = pBody.fechaActualizacion
+
+                                    homePresenter.valorCotizacionWebOk(
+                                        bcvCurrent, bcvPrev,
+                                        paraleloCurrent, paraleloOld,
+                                        eurCurrent, eurPrev,
+                                        dateBcv,
+                                        dateParalelo
+                                    )
+
+                                    // Guardar SIEMPRE nuevos (BCV + Paralelo + Euro)
+                                    homePresenter.guardarCotizacionShared(bcvCurrent, paraleloCurrent, eurCurrent)
+                                    return
                                 }
-                            } else {
-                                obtenerCotizacionShared()
+
+                                // --- Caso 2: Paralelo falla => parcial con paralelo guardado ---
+                                val err = try { response.errorBody()?.string() } catch (e: Exception) { "errorBody-exception=$e" }
+                                Log.e("Rates", "Paralelo errorBody=$err")
+
+                                val paraleloSaved = paraleloOld
+
+                                homePresenter.valorCotizacionWebOk(
+                                    bcvCurrent, bcvPrev,
+                                    paraleloSaved, paraleloOld, // delta 0
+                                    eurCurrent, eurPrev,
+                                    dateBcv,
+                                    "" // sin fecha del paralelo
+                                )
+
+                                // Guardar BCV + paralelo (guardado) + Euro (actual)
+                                homePresenter.guardarCotizacionShared(bcvCurrent, paraleloSaved, eurCurrent)
                             }
-                        }
 
-                        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                            Log.e("Error", t.toString())
-                            obtenerCotizacionShared()
-                        }
+                            override fun onFailure(call: Call<DolarApiParaleloResponse>, t: Throwable) {
+                                Log.e("Rates", "Paralelo onFailure", t)
 
-                    })
-            }
-        }
+                                // Parcial: BCV/EUR de red + Paralelo desde prefs
+                                val paraleloSaved = paraleloOld
 
+                                homePresenter.valorCotizacionWebOk(
+                                    bcvCurrent, bcvPrev,
+                                    paraleloSaved, paraleloOld,
+                                    eurCurrent, eurPrev,
+                                    dateBcv,
+                                    ""
+                                )
+
+                                homePresenter.guardarCotizacionShared(bcvCurrent, paraleloSaved, eurCurrent)
+                            }
+                        })
+                }
+
+                override fun onFailure(call: Call<DolarVzlaExchangeRateResponse>, t: Throwable) {
+                    Log.e("Rates", "DolarVzla onFailure", t)
+                    fallbackAll()
+                }
+            })
+    }
+    private fun fallbackAll() {
+        val bcv = SharedPreferencesBD.getCotizacion(context)
+        val paralelo = SharedPreferencesBD.getCotizacionParalelo(context)
+        val euro = SharedPreferencesBD.getCotizacionEuro(context)
+        homePresenter.valorCotizacionWebError(bcv, paralelo, euro)
     }
 
     private fun getStatusNotification() {
@@ -86,12 +160,8 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
         }
     }
 
-    private fun obtenerCotizacionShared() {
-        homePresenter.valorCotizacionWebError(SharedPreferencesBD.getCotizacion(context), SharedPreferencesBD.getCotizacionParalelo(context))
-    }
-
-    override fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float) {
-        SharedPreferencesBD.saveCotizacion(context, valorBCV, valorParalelo)
+    override fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float, valorEuro: Float) {
+        SharedPreferencesBD.saveCotizacion(context, valorBCV, valorParalelo, valorEuro)
     }
 
     override fun moveDataNextYear(year: Int) {

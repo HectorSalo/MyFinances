@@ -670,4 +670,18 @@
     <color name="md_secondary_text_icons">#8a000000</color>
     <color name="md_disabled_hint_text">#4c000000</color>
     <color name="md_divider">#1f000000</color>
+
+    <color name="home_stroke">#1F000000</color>
+    <color name="income_green">#2E7D32</color>
+    <color name="income_track">#1F2E7D32</color>
+    <color name="badge_positive">#2E7D32</color>
+    <color name="badge_negative">#C62828</color>
+
+    <color name="calc_input_hint">#007C91</color>        <!-- cian controlado (no neón) -->
+    <color name="calc_input_stroke">#007C91</color>      <!-- mismo acento para stroke -->
+
+    <color name="calc_button_tint">#B5436D</color>       <!-- vino oscuro, resalta -->
+
+    <color name="calc_card_bg">#DEDEDE</color>           <!-- sutil, limpio -->
+
 </resources>

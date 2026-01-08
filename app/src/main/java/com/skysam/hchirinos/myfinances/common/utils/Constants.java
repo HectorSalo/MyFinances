@@ -52,6 +52,7 @@ public class Constants {
 
     public static final String VALOR_COTIZACION = "valor_cotizacion";
     public static final String VALOR_COTIZACION_PARALELO = "valor_cotizacion_paralelo";
+    public static final String VALOR_COTIZACION_EURO = "valor_cotizacion_euro";
     public static final String USER = "user";
 
     public static final int RP_STORAGE = 23;

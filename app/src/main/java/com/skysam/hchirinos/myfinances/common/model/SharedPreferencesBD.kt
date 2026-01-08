@@ -20,11 +20,20 @@ object SharedPreferencesBD {
         return bloqueo!!
     }
 
-    fun saveCotizacion(context: Context, valorBCV: Float, valorParalelo: Float) {
+    fun saveCotizacion(context: Context, valorBCV: Float, valorParalelo: Float, euro: Float) {
         val editor = getInstance(context).edit()
         editor.putFloat(Constants.VALOR_COTIZACION, valorBCV)
         editor.putFloat(Constants.VALOR_COTIZACION_PARALELO, valorParalelo)
+        editor.putFloat(Constants.VALOR_COTIZACION_EURO, euro)
         editor.apply()
+    }
+
+    fun saveCotizacionEuro(context: Context, euro: Float) {
+        getInstance(context).edit().putFloat(Constants.VALOR_COTIZACION_EURO, euro).apply()
+    }
+
+    fun getCotizacionEuro(context: Context): Float {
+        return getInstance(context).getFloat(Constants.VALOR_COTIZACION_EURO, 0f)
     }
 
     fun getCotizacion(context: Context): Float {

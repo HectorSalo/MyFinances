@@ -1,56 +1,63 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui;
 
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.skysam.hchirinos.myfinances.R;
-import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass;
 import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 
 public class HomeFragment extends Fragment implements HomeView {
 
     private HomePresenter homePresenter;
-    private PieChart pieBalance;
     private MainViewModel viewModel;
     private float montoIngresos, montoGastos;
-    private TextView tvCotizacionDolar, tvSuperDeficit, tvMontoTotal, tvSuma, tvDeudas, tvAhorros,
-            tvPrestamos, tvGastosVarios, tvCotizacionDolarBCV, tvCotizacionDolarParalelo, tvCotizacionDolarPromedio;
-    private MaterialCardView linearLayout;
+    private TextView tvMontoTotal;
+    private View tileBcv, tileParalelo, tilePromedio, tileEuro;
+    private TextView tvRatesUpdated;
+    private TextView tvBadge;
+
+
+    private TextView tvIngresosValue, tvGastosValue, tvRatioLabel;
+    private LinearProgressIndicator progressRatio;
+
+    private View rowAhorros, rowPrestamos, rowDeudas, rowGastosVarios;
+
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
     private MoveToNextYearDialog moveToNextYearDialog;
+    private final Object summaryLock = new Object();
+
+    private String summaryGastosVarios = "--";
+    private String summaryDeudas = "--";
+    private String summaryAhorros = "--";
+    private String summaryPrestamos = "--";
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,20 +91,26 @@ public class HomeFragment extends Fragment implements HomeView {
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
-        pieBalance = view.findViewById(R.id.pie_balance);
-        tvCotizacionDolar = view.findViewById(R.id.textView_cotizacion_dolar);
-        tvCotizacionDolarBCV = view.findViewById(R.id.textView_cotizacion_dolar_bcv);
-        tvCotizacionDolarParalelo = view.findViewById(R.id.textView_cotizacion_dolar_paralelo);
-        tvCotizacionDolarPromedio = view.findViewById(R.id.textView_cotizacion_dolar_promedio);
-        linearLayout = view.findViewById(R.id.linearLayout_resultado_balance);
-        tvSuma = view.findViewById(R.id.textView_suma);
-        tvSuperDeficit = view.findViewById(R.id.textView_deficit_superhabil);
         tvMontoTotal = view.findViewById(R.id.textView_monto_total);
-        tvDeudas = view.findViewById(R.id.tv_total_deudas);
-        tvAhorros = view.findViewById(R.id.tv_total_ahorros);
-        tvPrestamos = view.findViewById(R.id.tv_total_prestamos);
-        tvGastosVarios = view.findViewById(R.id.tv_total_gastos_varios);
         ImageButton ibTransfer = view.findViewById(R.id.ib_transfer);
+
+        tvIngresosValue = view.findViewById(R.id.tv_ingresos_value);
+        tvGastosValue = view.findViewById(R.id.tv_gastos_value);
+        progressRatio = view.findViewById(R.id.progress_ratio);
+
+        tvRatesUpdated = view.findViewById(R.id.tv_rates_updated);
+        tvRatioLabel = view.findViewById(R.id.tv_ratio_label);
+
+        tileBcv = view.findViewById(R.id.tile_bcv);
+        tileParalelo = view.findViewById(R.id.tile_paralelo);
+        tilePromedio = view.findViewById(R.id.tile_promedio);
+        tileEuro = view.findViewById(R.id.tile_euro);
+
+        rowAhorros = view.findViewById(R.id.row_ahorros);
+        rowPrestamos = view.findViewById(R.id.row_prestamos);
+        rowDeudas = view.findViewById(R.id.row_deudas);
+        rowGastosVarios = view.findViewById(R.id.row_gastos_varios);
+        tvBadge = view.findViewById(R.id.tv_balance_badge);
 
         Calendar calendar = Calendar.getInstance();
         int currentYear = calendar.get(Calendar.YEAR);
@@ -117,130 +130,300 @@ public class HomeFragment extends Fragment implements HomeView {
         montoIngresos = 0;
         montoGastos = 0;
 
+        tvRatesUpdated.setText(getString(R.string.home_rates_loading));
+
         loadViewModels();
 
         return view;
     }
 
     private void loadViewModels() {
-        viewModel.getAmountIngresos().observe(getViewLifecycleOwner(), ingresos-> {
+        viewModel.getAmountIngresos().observe(getViewLifecycleOwner(), ingresos -> {
             montoIngresos = Float.parseFloat(ingresos.toString());
             cargarFolios();
         });
-        viewModel.getAmountGastos().observe(getViewLifecycleOwner(), gastos-> {
+
+        viewModel.getAmountGastos().observe(getViewLifecycleOwner(), gastos -> {
             montoGastos = Float.parseFloat(gastos.toString());
             cargarFolios();
         });
-        viewModel.getAmountAhorros().observe(getViewLifecycleOwner(), ahorros->
-                tvAhorros.setText("Ahorros hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(ahorros)));
-        viewModel.getAmountPrestamos().observe(getViewLifecycleOwner(), prestamos->
-                tvPrestamos.setText("Préstamos hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(prestamos)));
-        viewModel.getAmountDeudas().observe(getViewLifecycleOwner(), deudas->
-                tvDeudas.setText("Deudas hasta la fecha: $" + ClassesCommon.INSTANCE.convertDoubleToString(deudas)));
-        viewModel.getAmountGastosNoFijos().observe(getViewLifecycleOwner(), gastos->
-                tvGastosVarios.setText("Gastos varios: $" + ClassesCommon.INSTANCE.convertDoubleToString(gastos)));
+
+        // Render inicial con placeholders (opcional pero recomendado)
+        renderSummaryOrdered();
+
+        viewModel.getAmountGastosNoFijos().observe(getViewLifecycleOwner(), gastos -> {
+            String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(gastos);
+            synchronized (summaryLock) {
+                summaryGastosVarios = value;
+            }
+            renderSummaryOrdered();
+        });
+
+        viewModel.getAmountDeudas().observe(getViewLifecycleOwner(), deudas -> {
+            String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(deudas);
+            synchronized (summaryLock) {
+                summaryDeudas = value;
+            }
+            renderSummaryOrdered();
+        });
+
+        viewModel.getAmountAhorros().observe(getViewLifecycleOwner(), ahorros -> {
+            String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(ahorros);
+            synchronized (summaryLock) {
+                summaryAhorros = value;
+            }
+            renderSummaryOrdered();
+        });
+
+        viewModel.getAmountPrestamos().observe(getViewLifecycleOwner(), prestamos -> {
+            String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(prestamos);
+            synchronized (summaryLock) {
+                summaryPrestamos = value;
+            }
+            renderSummaryOrdered();
+        });
+    }
+
+    private void setRateTile(
+            View tile,
+            String label,
+            String value,
+            @Nullable Float currentValue,
+            @Nullable Float previousValue,
+            @Nullable String updatedDate
+    ) {
+        setRateTile(tile, label, value, currentValue, previousValue, updatedDate, false, null);
+    }
+
+
+    private void setRateTile(
+            View tile,
+            String label,
+            String value,
+            @Nullable Float currentValue,
+            @Nullable Float previousValue,
+            @Nullable String updatedDate,
+            boolean includeDirectionWord,
+            @Nullable String deltaUnit // ej "pp"
+    ) {
+        TextView tvLabel = tile.findViewById(R.id.tv_rate_label);
+        TextView tvValue = tile.findViewById(R.id.tv_rate_value);
+        TextView tvUpdated = tile.findViewById(R.id.tv_rate_updated);
+        TextView tvChange = tile.findViewById(R.id.tv_rate_change);
+
+        tvLabel.setText(label);
+        tvValue.setText(value);
+
+        // Fecha de actualización (debajo del título)
+        if (tvUpdated != null) {
+            if (updatedDate == null || updatedDate.trim().isEmpty()) {
+                tvUpdated.setVisibility(View.GONE);
+            } else {
+                tvUpdated.setVisibility(View.VISIBLE);
+                tvUpdated.setText("Actualización: " + updatedDate);
+            }
+        }
+
+        if (tvChange == null) return;
+
+        if (currentValue == null || previousValue == null || previousValue == 0f) {
+            tvChange.setVisibility(View.GONE);
+            return;
+        }
+
+        float delta = currentValue - previousValue;
+        float percent = (delta / previousValue) * 100f;
+
+        // Texto de dirección (solo si lo pides)
+        String directionWord = "";
+        if (includeDirectionWord) {
+            if (delta > 0f) directionWord = "Subió ";
+            else if (delta < 0f) directionWord = "Bajó ";
+            else directionWord = "Sin cambio ";
+        }
+
+        // Formato de delta / percent
+        String deltaAbsStr = ClassesCommon.INSTANCE.convertFloatToString(Math.abs(delta));
+        String percentAbsStr = ClassesCommon.INSTANCE.convertFloatToString(Math.abs(percent));
+
+        final boolean isUp = delta > 0f;
+
+        String deltaStr = (isUp ? "+" : "-") + deltaAbsStr;
+        String percentStr = "(" + (isUp ? "+" : "-") + percentAbsStr + "%)";
+
+        // Sufijo para delta (pp)
+        String unit = "";
+        if (deltaUnit != null) {
+            String u = deltaUnit.trim();
+            if (!u.isEmpty()) {
+                // Si es "%", se pega sin espacio: "+1,20%"
+                unit = "%".equals(u) ? "%" : " " + u;
+            }
+        }
+
+        tvChange.setText(directionWord + deltaStr + unit + " " + percentStr);
+        tvChange.setVisibility(View.VISIBLE);
+
+        // Color + icono según dirección (tu regla actual)
+        final int color = ContextCompat.getColor(
+                requireContext(),
+                isUp ? R.color.badge_negative : R.color.badge_positive
+        );
+        tvChange.setTextColor(color);
+        TextViewCompat.setCompoundDrawableTintList(tvChange, ColorStateList.valueOf(color));
+
+        int iconRes = isUp ? R.drawable.arrow_circle_up_24px : R.drawable.ic_arrow_circle_down_24;
+
+        // Tamaño del icono igual al texto
+        int iconSizePx = Math.round(tvChange.getTextSize());
+
+        try {
+            Drawable start = AppCompatResources.getDrawable(requireContext(), iconRes);
+            if (start != null) {
+                start = start.mutate();
+                start.setBounds(0, 0, iconSizePx, iconSizePx);
+
+                TextViewCompat.setCompoundDrawablesRelative(tvChange, start, null, null, null);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void setSummaryRow(View row, String label, String value) {
+        TextView tvLabel = row.findViewById(R.id.tv_summary_label);
+        TextView tvValue = row.findViewById(R.id.tv_summary_value);
+        tvLabel.setText(label);
+        tvValue.setText(value);
+    }
+
+    private void renderSummaryOrdered() {
+        if (getContext() == null) return;
+
+        // Orden fijo: Gastos varios, Deudas, Ahorros, Préstamos
+        setSummaryRow(rowGastosVarios, getString(R.string.summary_gastos_varios), summaryGastosVarios);
+        setSummaryRow(rowDeudas, getString(R.string.menu_deudas), summaryDeudas);
+        setSummaryRow(rowAhorros, getString(R.string.menu_ahorros), summaryAhorros);
+        setSummaryRow(rowPrestamos, getString(R.string.menu_prestamos), summaryPrestamos);
     }
 
 
     private void cargarFolios() {
+        if (getContext() == null) return;
 
-        if (getContext() != null) {
-            pieBalance.setDescription(null);
-            pieBalance.setCenterText("Balance Mensual\n($)");
-            pieBalance.setCenterTextSize(24);
-            pieBalance.setDrawEntryLabels(false);
-            pieBalance.setRotationEnabled(false);
+        float montoTotal = montoIngresos - montoGastos;
 
-            ArrayList<PieEntry> pieEntries = new ArrayList<>();
-            pieEntries.add(new PieEntry(montoIngresos, requireContext().getString(R.string.pie_ingresos)));
-            pieEntries.add(new PieEntry(montoGastos, getContext().getString(R.string.pie_egresos)));
+        // Monto total con color según superávit/déficit
+        tvMontoTotal.setText("$" + ClassesCommon.INSTANCE.convertFloatToString(montoTotal));
 
-
-            PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
-            pieDataSet.setValueTextSize(18);
-            pieDataSet.setColors(ContextCompat.getColor(requireContext(), R.color.md_green_300),
-                    ContextCompat.getColor(getContext(), R.color.md_red_900));
-            pieDataSet.setFormSize(16);
-            PieData pieData = new PieData(pieDataSet);
-
-            pieBalance.setData(pieData);
-            pieBalance.getLegend().setTextColor(ContextCompat.getColor(requireContext(), R.color.md_teal_700));
-            pieBalance.invalidate();
-
-            float montoTotal = montoIngresos - montoGastos;
-            if (montoTotal > 0) {
-                tvSuperDeficit.setText("Tiene un superávit de:");
-                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
-            } else if (montoTotal < 0) {
-                tvSuperDeficit.setText("Tiene un déficit de:");
-                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_red_900));
-            } else if (montoTotal == 0) {
-                tvSuperDeficit.setText("Balance en cero");
-                linearLayout.setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
-            }
-            tvSuma.setText(getString(R.string.text_total_balance_mensual,
-                    ClassesCommon.INSTANCE.convertFloatToString(montoIngresos),
-                    ClassesCommon.INSTANCE.convertFloatToString(montoGastos)));
-            tvMontoTotal.setText("$" + ClassesCommon.INSTANCE.convertFloatToString(montoTotal));
+        if (montoTotal > 0) {
+            tvBadge.setText("Superávit");
+            tvBadge.setBackgroundResource(R.drawable.bg_badge_positive);
+            tvMontoTotal.setTextColor(ContextCompat.getColor(requireContext(), R.color.badge_positive));
+        } else if (montoTotal < 0) {
+            tvBadge.setText("Déficit");
+            tvBadge.setBackgroundResource(R.drawable.bg_badge_negative);
+            tvMontoTotal.setTextColor(ContextCompat.getColor(requireContext(), R.color.badge_negative));
+        } else {
+            tvBadge.setText("En cero");
+            tvBadge.setBackgroundResource(R.drawable.bg_badge_neutral);
+            tvMontoTotal.setTextColor(
+                    MaterialColors.getColor(tvMontoTotal, com.google.android.material.R.attr.colorOnSurface)
+            );
         }
-    }
 
+        // Ingresos/Gastos
+        tvIngresosValue.setText("$" + ClassesCommon.INSTANCE.convertFloatToString(montoIngresos));
+        tvGastosValue.setText("$" + ClassesCommon.INSTANCE.convertFloatToString(montoGastos));
+
+        // Disponible (0..100): 100% si no hay gastos, baja a medida que gastas
+        float ingresos = Math.max(montoIngresos, 1f);           // evita división por 0
+        float disponible = montoIngresos - montoGastos;         // puede ser negativo
+        float disponibleClamped = Math.max(0f, Math.min(disponible, montoIngresos));
+        int progress = Math.round((disponibleClamped / ingresos) * 100f);
+        progressRatio.setProgress(progress);
+        tvRatioLabel.setText("Disponible: " + progress + "%");
+
+    }
 
     private void actualizarCotizacion() {
         homePresenter.obtenerCotizacionWeb();
     }
 
     @Override
-    public void valorCotizacionWebOk(float valorBCV, float valorParalelo, String fechaBCV, String fechaParalelo) {
-        if (tvCotizacionDolar != null) {
-            Drawable arrowDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.arrow_circle_up_24px);
-            arrowDrawable.setBounds(0, 0, 40, 40);
-            tvCotizacionDolar.setText("Últ. actualización\n" + "BCV: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaBCV)
-                    + "\nParalelo: " + ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaParalelo));
-            if (valorBCV > SharedPreferencesBD.INSTANCE.getCotizacion(requireContext())) {
-                SpannableStringBuilder spannable = new SpannableStringBuilder();
-                spannable.append("BCV\n");
-                spannable.append(ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
-                spannable.append("  "); // Espacio antes del ícono
-                ImageSpan imageSpan = new ImageSpan(arrowDrawable, ImageSpan.ALIGN_BASELINE);
-                spannable.setSpan(imageSpan, spannable.length() - 1, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    public void valorCotizacionWebOk(
+            float valorBCV,
+            float valorBCVPrev,
+            float valorParalelo,
+            float valorParaleloPrev,
+            float valorEuro,
+            float valorEuroPrev,
+            String fechaBCV,
+            String fechaParalelo
+    ) {
+        if (getContext() == null) return;
 
-                tvCotizacionDolarBCV.setText(spannable);
-            } else {
-                tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
-            }
-            if (valorParalelo > SharedPreferencesBD.INSTANCE.getCotizacionParalelo(requireContext())) {
-                SpannableStringBuilder spannable = new SpannableStringBuilder();
-                spannable.append("Paralelo\n");
-                spannable.append(ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
-                spannable.append("  "); // Espacio antes del ícono
-                ImageSpan imageSpan = new ImageSpan(arrowDrawable, ImageSpan.ALIGN_BASELINE);
-                spannable.setSpan(imageSpan, spannable.length() - 1, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvRatesUpdated.setText("");
+        tvRatesUpdated.setVisibility(View.GONE);
 
-                tvCotizacionDolarParalelo.setText(spannable);
-            } else {
-                tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
-            }
-            float promedio = (valorBCV + valorParalelo) / 2;
-            tvCotizacionDolarPromedio.setText("Promedio\n" + ClassesCommon.INSTANCE.convertFloatToString(promedio));
-            tvCotizacionDolarBCV.setVisibility(View.VISIBLE);
-            tvCotizacionDolarParalelo.setVisibility(View.VISIBLE);
-            tvCotizacionDolarPromedio.setVisibility(View.VISIBLE);
-            homePresenter.guardarCotizacionShared(valorBCV, valorParalelo);
-        }
+        String bcvStr = ClassesCommon.INSTANCE.convertFloatToString(valorBCV);
+        String parStr = ClassesCommon.INSTANCE.convertFloatToString(valorParalelo);
+        String eurStr = ClassesCommon.INSTANCE.convertFloatToString(valorEuro);
+
+        String dateBcv = ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaBCV);
+        String datePar = (fechaParalelo == null || fechaParalelo.trim().isEmpty())
+                ? ""
+                : ClassesCommon.INSTANCE.convertDateToCotizaciones(fechaParalelo);
+
+        Float diffPct = (valorBCV != 0f)
+                ? ((valorParalelo - valorBCV) / valorBCV) * 100f
+                : null;
+
+        Float diffPctPrev = (valorBCVPrev != 0f)
+                ? ((valorParaleloPrev - valorBCVPrev) / valorBCVPrev) * 100f
+                : null;
+
+        String diffStr = (diffPct == null)
+                ? "--"
+                : ClassesCommon.INSTANCE.convertFloatToString(diffPct) + "%";
+
+        // Nota: ya NO pasas showUp; pasas current/previous
+        setRateTile(tileBcv, getString(R.string.rate_bcv), bcvStr, valorBCV, valorBCVPrev, dateBcv);
+        setRateTile(tileParalelo, getString(R.string.rate_paralelo), parStr, valorParalelo, valorParaleloPrev, datePar);
+        setRateTile(tileEuro, getString(R.string.rate_euro), eurStr, valorEuro, valorEuroPrev, dateBcv);
+        setRateTile(tilePromedio,"Diferencial BCV vs. Paralelo", diffStr, diffPct, diffPctPrev, "", true, "%");
     }
 
     @Override
-    public void valorCotizacionWebError(float valorBCV, float valorParalelo) {
-        if (tvCotizacionDolar != null) {
-            tvCotizacionDolar.setText("Error al obtener la cotización.\nSe muestran los últimos valores guardados");
-            tvCotizacionDolarBCV.setText("BCV\n" + ClassesCommon.INSTANCE.convertFloatToString(valorBCV));
-            tvCotizacionDolarParalelo.setText("Paralelo\n" + ClassesCommon.INSTANCE.convertFloatToString(valorParalelo));
-            tvCotizacionDolarPromedio.setText("Promedio\n" + ClassesCommon.INSTANCE.convertFloatToString((valorBCV + valorParalelo) / 2));
-            tvCotizacionDolarBCV.setVisibility(View.VISIBLE);
-            tvCotizacionDolarParalelo.setVisibility(View.VISIBLE);
-            tvCotizacionDolarPromedio.setVisibility(View.VISIBLE);
-        }
+    public void valorCotizacionWebError(float valorBCV, float valorParalelo, float valorEuro) {
+        if (getContext() == null) return;
+
+        tvRatesUpdated.setText("Error al obtener cotización. Mostrando últimos valores guardados");
+        tvRatesUpdated.setVisibility(View.VISIBLE);
+
+        String bcvStr = ClassesCommon.INSTANCE.convertFloatToString(valorBCV);
+        String parStr = ClassesCommon.INSTANCE.convertFloatToString(valorParalelo);
+        String eurStr = ClassesCommon.INSTANCE.convertFloatToString(valorEuro);
+
+        Float diffPct = (valorBCV != 0f)
+                ? ((valorParalelo - valorBCV) / valorBCV) * 100f
+                : null;
+
+        String diffStr = (diffPct == null)
+                ? "--"
+                : ClassesCommon.INSTANCE.convertFloatToString(diffPct) + "%";
+
+        setRateTile(tileBcv, getString(R.string.rate_bcv), bcvStr, null, null, null);
+        setRateTile(tileParalelo, getString(R.string.rate_paralelo), parStr, null, null, null);
+        setRateTile(tileEuro, getString(R.string.rate_euro), eurStr, null, null, null);
+        setRateTile(
+                tilePromedio,
+                "Diferencial BCV vs. Paralelo",
+                diffStr,
+                null,  // sin current/previous => oculta el change
+                null,
+                null,
+                false,
+                "%"
+        );
     }
 
 

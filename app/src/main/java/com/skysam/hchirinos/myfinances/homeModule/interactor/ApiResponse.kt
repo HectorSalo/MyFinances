@@ -1,35 +1,32 @@
 package com.skysam.hchirinos.myfinances.homeModule.interactor
 
 /**
- * Created by Hector Chirinos on 19/11/2024.
+ * Created by Hector Chirinos in the home office on 7 ene. 2026
  */
-
-data class ApiResponse(
-    val fuente: String,
-    val nombre: String,
-    val promedio: Float,
-    val fechaActualizacion: String
+// api.dolarvzla.com/public/exchange-rate
+data class DolarVzlaExchangeRateResponse(
+    val current: DolarVzlaSnapshot,
+    val previous: DolarVzlaSnapshot,
+    val changePercentage: DolarVzlaChangePercentage? = null
 )
 
-data class DateTime(
-    val date: String,
-    val time: String
+data class DolarVzlaSnapshot(
+    val usd: Double,
+    val eur: Double,
+    val date: String // "2026-01-07"
 )
 
-data class Monitors(
-    val bcv: MonitorData,
-    val enparalelovzla: MonitorData
+data class DolarVzlaChangePercentage(
+    val usd: Double,
+    val eur: Double
 )
 
-data class MonitorData(
-    val change: Float,
-    val color: String,
-    val image: String,
-    val last_update: String,
-    val percent: Float,
-    val price: Float,
-    val price_old: Float,
-    val symbol: String,
-    val title: String
+// ve.dolarapi.com/v1/dolares/paralelo
+data class DolarApiParaleloResponse(
+    val fuente: String? = null,
+    val nombre: String? = null,
+    val compra: Double? = null,
+    val venta: Double? = null,
+    val promedio: Double,
+    val fechaActualizacion: String // ISO
 )
-

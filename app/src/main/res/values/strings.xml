@@ -183,4 +183,22 @@
     <string name="notification_gastos_body">Pagar %1$s</string>
     <string name="notification_ingresos_body">Cobrar %1$s</string>
 
+
+
+    <string name="home_balance_title">Balance del mes</string>
+    <string name="home_badge_loading">Calculando…</string>
+
+    <string name="home_rates_title">Tasas de cambio (Bs.)</string>
+    <string name="home_rates_loading">Cargando cotización…</string>
+
+    <string name="home_summary_title">Resumen</string>
+
+    <string name="rate_bcv">BCV</string>
+    <string name="rate_paralelo">Paralelo</string>
+    <string name="rate_promedio">Promedio</string>
+    <string name="rate_euro">Euro</string>
+    <string name="summary_gastos_varios">Gastos varios</string>
+    <string name="calculadora_cambiar">Cambiar</string>
+
+
 </resources>

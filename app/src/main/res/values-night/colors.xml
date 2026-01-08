@@ -6,4 +6,12 @@
 
     <color name="color_background_tutorial">#F2515659</color>
     <color name="color_message_tutorial">#00E5FF</color>
+
+    <!-- Calculadora / Convertidor -->
+    <color name="calc_input_hint">#2FB7C8</color>        <!-- cian más visible en dark -->
+    <color name="calc_input_stroke">#2FB7C8</color>
+
+    <color name="calc_button_tint">#4F001C</color>       <!-- primario elevado para dark -->
+
+    <color name="calc_card_bg">#212121</color>           <!-- sutil pero separable del fondo -->
 </resources>
