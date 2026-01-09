@@ -206,7 +206,6 @@ public class HomeFragment extends Fragment implements HomeView {
             String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(ahorros);
             synchronized (summaryLock) {
                 summaryAhorros = value;
-                summaryCapital = value;
             }
             renderSummaryOrdered();
         });
