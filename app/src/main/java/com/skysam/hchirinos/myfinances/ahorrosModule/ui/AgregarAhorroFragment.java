@@ -1,11 +1,14 @@
 package com.skysam.hchirinos.myfinances.ahorrosModule.ui;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -36,6 +39,9 @@ public class AgregarAhorroFragment extends Fragment {
     private RadioButton rbDolar;
     private ProgressBar progressBar;
     private Button btnGuardar;
+    private TextWatcher montoWatcher;
+    private CheckBox cbCapital;
+    private boolean isFormattingMonto = false;
 
     public AgregarAhorroFragment(){}
 
@@ -58,14 +64,61 @@ public class AgregarAhorroFragment extends Fragment {
         etOrigenLayout = view.findViewById(R.id.outlined_origen);
         etMontoLayout = view.findViewById(R.id.outlined_monto);
         rbDolar = view.findViewById(R.id.radioButton_dolares);
+        cbCapital = view.findViewById(R.id.cb_capital);
 
         progressBar = view.findViewById(R.id.progressBar_agregar_ahorro);
 
         rbDolar.setChecked(true);
 
+        montoWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isFormattingMonto) return;
+                formatAmountInput(s.toString(), etMonto, this);
+            }
+        };
+        etMonto.addTextChangedListener(montoWatcher);
+
         btnGuardar = view.findViewById(R.id.button_guardar);
         btnGuardar.setOnClickListener(view1 -> validarDatos());
     }
+
+    private void formatAmountInput(String raw, TextInputEditText editText, TextWatcher watcher) {
+        if (raw == null) raw = "";
+
+        // Permitir vacío
+        String cleaned = raw.replace(",", "").replace(".", "").replace(" ", "");
+        if (cleaned.isEmpty()) {
+            isFormattingMonto = true;
+            editText.removeTextChangedListener(watcher);
+            editText.setText("");
+            editText.addTextChangedListener(watcher);
+            isFormattingMonto = false;
+            return;
+        }
+
+        double cantidad;
+        try {
+            // "Traslado a la izquierda": 1234 -> 12.34
+            cantidad = Double.parseDouble(cleaned) / 100d;
+        } catch (Exception e) {
+            return;
+        }
+
+        // Formato con separadores + 2 decimales
+        String formatted = String.format(java.util.Locale.GERMANY, "%,.2f", cantidad);
+
+        isFormattingMonto = true;
+        editText.removeTextChangedListener(watcher);
+        editText.setText(formatted);
+        editText.setSelection(formatted.length()); // cursor al final
+        editText.addTextChangedListener(watcher);
+        isFormattingMonto = false;
+    }
+
 
     private void validarDatos() {
         etConceptoLayout.setError(null);
@@ -82,9 +135,11 @@ public class AgregarAhorroFragment extends Fragment {
             etConceptoLayout.setError("Campo obligatorio");
         }
         if (!montoS.isEmpty()) {
-            monto = Double.parseDouble(montoS);
+            String normalized = montoS.replace(".", "").replace(",", ".");
+            monto = Double.parseDouble(normalized);
+
             if (monto > 0) {
-                    montovalido = true;
+                montovalido = true;
             } else {
                 montovalido = false;
                 etMontoLayout.setError("El monto debe ser mayor a cero");
@@ -110,11 +165,8 @@ public class AgregarAhorroFragment extends Fragment {
         int mes = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
         Date fechaIngreso = calendar.getTime();
-        boolean dolar = false;
-
-        if (rbDolar.isChecked()) {
-            dolar = true;
-        }
+        boolean dolar = rbDolar.isChecked();
+        boolean capital = cbCapital != null && cbCapital.isChecked();
 
         if(origen.isEmpty()) {
             origen = null;
@@ -126,6 +178,7 @@ public class AgregarAhorroFragment extends Fragment {
         docData.put(Constants.BD_FECHA_INGRESO, fechaIngreso);
         docData.put(Constants.BD_DOLAR, dolar);
         docData.put(Constants.BD_ORIGEN, origen);
+        docData.put(Constants.BD_CAPITAL, capital);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

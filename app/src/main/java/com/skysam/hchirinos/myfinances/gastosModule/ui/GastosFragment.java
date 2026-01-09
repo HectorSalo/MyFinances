@@ -47,8 +47,12 @@ import com.skysam.hchirinos.myfinances.ui.activityGeneral.EditarActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -263,7 +267,7 @@ public class GastosFragment extends Fragment {
     private void cargarGastos() {
         progressBar.setVisibility(View.VISIBLE);
         listaGastos = new ArrayList<>();
-        gastosAdapter = new GastosAdapter(listaGastos, getContext(), requireActivity());
+        gastosAdapter = new GastosAdapter(listaGastos, getContext(), requireActivity(), yearSelected, mesSelected);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(gastosAdapter);
@@ -275,74 +279,58 @@ public class GastosFragment extends Fragment {
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 listaGastos.clear();
+                Map<String, Date> dueDateById = new HashMap<>();
                 for (QueryDocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                    boolean perteneceMes = true;
-                    Calendar calendarPago = Calendar.getInstance();
+                    String idDoc = doc.getId();
+
                     IngresosGastosConstructor gasto = new IngresosGastosConstructor();
-                    gasto.setIdGasto(doc.getId());
+                    gasto.setIdGasto(idDoc);
                     gasto.setConcepto(doc.getString(Constants.BD_CONCEPTO));
-                    gasto.setMonto(doc.getDouble(Constants.BD_MONTO));
-                    gasto.setDolar(doc.getBoolean(Constants.BD_DOLAR));
-                    gasto.setFechaIncial(doc.getDate(Constants.BD_FECHA_INCIAL));
-                    calendarPago.setTime(doc.getDate(Constants.BD_FECHA_INCIAL));
-                    String tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA);
+                    Double monto = doc.getDouble(Constants.BD_MONTO);
+                    gasto.setMonto(monto != null ? monto : 0.0);
+                    Boolean dolar = doc.getBoolean(Constants.BD_DOLAR);
+                    gasto.setDolar(dolar != null && dolar);
 
-                    Boolean activo = doc.getBoolean(Constants.BD_MES_ACTIVO);
-                    if (activo == null) {
-                        gasto.setMesActivo(true);
-                    } else {
-                        gasto.setMesActivo(activo);
-                    }
-
-                    Boolean pagado = doc.getBoolean(Constants.BD_PAGADO);
-                    gasto.setPagado(pagado != null && pagado);
-
-                    if (tipoFrecuencia != null) {
-                        double duracionFrecuencia = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
-                        int duracionFrecuenciaInt = (int) duracionFrecuencia;
-                        gasto.setDuracionFrecuencia(duracionFrecuenciaInt);
-
-                        gasto.setTipoFrecuencia(doc.getString(Constants.BD_TIPO_FRECUENCIA));
-
-                        int mesPago = calendarPago.get(Calendar.MONTH);
-                        int yearPago = calendarPago.get(Calendar.YEAR);
-
-                        while (mesPago <= mesSelected && yearPago == yearSelected) {
-                            perteneceMes = mesPago == mesSelected;
-
-                            switch (tipoFrecuencia) {
-                                case "Dias":
-                                    calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt);
-                                    break;
-                                case "Semanas":
-                                    calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt * 7);
-                                    break;
-                                case "Meses":
-                                    calendarPago.add(Calendar.MONTH, duracionFrecuenciaInt);
-                                    break;
-                            }
-
-                            if (perteneceMes) {
-                                mesPago += 12;
-                            } else {
-                                mesPago = calendarPago.get(Calendar.MONTH);
-                                yearPago = calendarPago.get(Calendar.YEAR);
-                            }
-                        }
-
-
-                    } else {
-                        gasto.setTipoFrecuencia(null);
-                    }
+                    Date fechaInicial = doc.getDate(Constants.BD_FECHA_INCIAL);
+                    gasto.setFechaIncial(fechaInicial);
 
                     Date fechaFinal = doc.getDate(Constants.BD_FECHA_FINAL);
                     gasto.setFechaFinal(fechaFinal);
 
+                    String tipoFrecuencia = doc.getString(Constants.BD_TIPO_FRECUENCIA);
+                    gasto.setTipoFrecuencia(tipoFrecuencia);
+
+                    Boolean activo = doc.getBoolean(Constants.BD_MES_ACTIVO);
+                    gasto.setMesActivo(activo == null || activo);
+
+                    Boolean pagado = doc.getBoolean(Constants.BD_PAGADO);
+                    gasto.setPagado(pagado != null && pagado);
+
+// Duración: en Firestore a veces viene Double
+                    Double durD = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
+                    int duracionFrecuencia = (durD != null) ? durD.intValue() : 0;
+                    gasto.setDuracionFrecuencia(duracionFrecuencia);
+
+                    boolean perteneceMes;
+                    Date dueDate;
+                    if (tipoFrecuencia == null) {
+                        // Único: pertenece al mes porque está guardado dentro de la colección de ese mes
+                        perteneceMes = true;
+                        dueDate = fechaInicial; // sirve para ordenar dentro de su grupo
+                    } else {
+                        // Periódico: calcular si cae en este mes (aunque exista el doc)
+                        dueDate = computeDueDateInSelectedMonth(fechaInicial, fechaFinal, tipoFrecuencia, duracionFrecuencia, yearSelected, mesSelected);
+                        perteneceMes = (dueDate != null);
+                    }
+
                     if (perteneceMes) {
                         listaGastos.add(gasto);
+                        // cache para orden
+                        dueDateById.put(idDoc, dueDate);
                     }
 
                 }
+                sortGastosForDisplay(listaGastos, dueDateById);
                 gastosAdapter.updateList(listaGastos);
                 if (listaGastos.isEmpty()) {
                     tvSinLista.setVisibility(View.VISIBLE);
@@ -358,6 +346,109 @@ public class GastosFragment extends Fragment {
         });
     }
 
+    private void sortGastosForDisplay(ArrayList<IngresosGastosConstructor> list, Map<String, Date> dueDateById) {
+        list.sort((a, b) -> {
+            int ga = groupOf(a);
+            int gb = groupOf(b);
+            if (ga != gb) return Integer.compare(ga, gb);
+
+            Date da = dueDateById.get(a.getIdGasto());
+            Date db = dueDateById.get(b.getIdGasto());
+
+            long ta = (da != null) ? da.getTime() : Long.MAX_VALUE;
+            long tb = (db != null) ? db.getTime() : Long.MAX_VALUE;
+
+            int c = Long.compare(ta, tb);
+            if (c != 0) return c;
+
+            // desempate estable
+            String ca = (a.getConcepto() == null) ? "" : a.getConcepto().toLowerCase(Locale.getDefault());
+            String cb = (b.getConcepto() == null) ? "" : b.getConcepto().toLowerCase(Locale.getDefault());
+            return ca.compareTo(cb);
+        });
+    }
+
+    /**
+     * Grupos según tu regla:
+     * 0: Periódicos NO pagados
+     * 1: Únicos
+     * 2: Periódicos pagados
+     */
+    private int groupOf(IngresosGastosConstructor g) {
+        boolean esPeriodico = g.getTipoFrecuencia() != null;
+
+        if (esPeriodico && !g.isPagado()) return 0;
+        if (!esPeriodico) return 1;
+        return 2;
+    }
+
+    /**
+     * Calcula la fecha del "pago" que cae dentro del mes seleccionado.
+     * Si en ese mes no cae ningún pago (por periodicidad), retorna null.
+     *
+     * - start: fecha inicial del gasto
+     * - end: fecha final (puede ser null)
+     * - tipo: Dias/Semanas/Meses
+     * - dur: duración (>=1)
+     */
+    private Date computeDueDateInSelectedMonth(
+            Date start,
+            Date end,
+            String tipo,
+            int dur,
+            int year,
+            int month
+    ) {
+        if (start == null || tipo == null || dur <= 0) return null;
+
+        Calendar monthStart = Calendar.getInstance();
+        monthStart.clear();
+        monthStart.set(year, month, 1, 0, 0, 0);
+
+        Calendar monthEnd = (Calendar) monthStart.clone();
+        monthEnd.add(Calendar.MONTH, 1);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(start);
+
+        // Si el gasto inicia después de que termina el mes seleccionado, no pertenece
+        if (!cal.before(monthEnd)) return null;
+
+        // Avanzar desde start hasta entrar en el rango del mes seleccionado
+        int guard = 0;
+        while (cal.before(monthStart) && guard < 5000) {
+            addByFrequency(cal, tipo, dur);
+            guard++;
+        }
+
+        // Validar que cae dentro del mes
+        if (cal.before(monthStart) || !cal.before(monthEnd)) return null;
+
+        Date candidate = cal.getTime();
+
+        // Si hay fecha final y el candidate se pasa, no pertenece
+        if (end != null && candidate.after(end)) return null;
+
+        return candidate;
+    }
+
+    private void addByFrequency(Calendar cal, String tipo, int dur) {
+        switch (tipo) {
+            case "Dias":
+                cal.add(Calendar.DAY_OF_YEAR, dur);
+                break;
+            case "Semanas":
+                cal.add(Calendar.DAY_OF_YEAR, dur * 7);
+                break;
+            case "Meses":
+                cal.add(Calendar.MONTH, dur);
+                break;
+            default:
+                // fallback seguro
+                cal.add(Calendar.MONTH, 1);
+                break;
+        }
+    }
 
     private void crearDialog(final int position) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());

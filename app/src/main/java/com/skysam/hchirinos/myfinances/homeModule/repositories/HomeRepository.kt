@@ -169,6 +169,37 @@ object HomeRepository {
         return callbackFlow {
             val request = getInstance()
                 .collection(Constants.BD_AHORROS).document(Auth.uidCurrentUser()).collection("$year-$month")
+                .whereEqualTo(Constants.BD_CAPITAL, false)
+                .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
+                    if (error != null) {
+                        Log.w(ContentValues.TAG, "Listen failed.", error)
+                        return@addSnapshotListener
+                    }
+
+                    var montototal = 0.0
+                    for (document in value!!) {
+                        val date = document.getDate(Constants.BD_FECHA_INGRESO)
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date!!
+                        val montoDetal = document.getDouble(Constants.BD_MONTO)!!
+                        val dolar = document.getBoolean(Constants.BD_DOLAR)!!
+                        montototal += if (dolar) {
+                            montoDetal
+                        } else {
+                            montoDetal / valorCotizacion
+                        }
+                    }
+                    trySend(montototal)
+                }
+            awaitClose { request.remove() }
+        }
+    }
+
+    fun getCapital(): Flow<Double> {
+        return callbackFlow {
+            val request = getInstance()
+                .collection(Constants.BD_AHORROS).document(Auth.uidCurrentUser()).collection("$year-$month")
+                .whereEqualTo(Constants.BD_CAPITAL, true)
                 .addSnapshotListener(MetadataChanges.INCLUDE) { value, error ->
                     if (error != null) {
                         Log.w(ContentValues.TAG, "Listen failed.", error)

@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/fondo_toolbar"
+        android:fitsSystemWindows="true"
         android:theme="@style/Theme.MyFinances.AppBarOverlay"
         app:elevation="0dp">
 

@@ -3,6 +3,7 @@ package com.skysam.hchirinos.myfinances.homeModule.presenter
 import android.content.Context
 import com.skysam.hchirinos.myfinances.homeModule.interactor.HomeInteractor
 import com.skysam.hchirinos.myfinances.homeModule.interactor.HomeInteractorClass
+import com.skysam.hchirinos.myfinances.homeModule.interactor.RatesHistoryResult
 import com.skysam.hchirinos.myfinances.homeModule.ui.HomeView
 
 class HomePresenterClass(private val homeView: HomeView, context: Context): HomePresenter {
@@ -44,5 +45,11 @@ class HomePresenterClass(private val homeView: HomeView, context: Context): Home
 
     override fun statusMoveNextYear(statusOk: Boolean, message: String) {
         homeView.statusMoveNextYear(statusOk, message)
+    }
+    override fun obtenerHistorialTasas(from: String, to: String) {
+        homeInteractor.obtenerHistorialTasas(from, to)
+    }
+    override fun historialTasasResult(result: RatesHistoryResult) {
+        homeView.historialTasasResult(result)
     }
 }

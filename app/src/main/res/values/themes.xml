@@ -37,33 +37,41 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="android:dialogCornerRadius">16dp</item>
     </style>
 
     <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:dialogCornerRadius">16dp</item>
     </style>
 
-    <style name="Theme.MyFinances.NoActionBar">
+    <style name="Theme.MyFinances.NoActionBar" parent="Theme.MyFinances">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:dialogCornerRadius">16dp</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
+
+    <style name="Theme.MyFinances.NoActionBar.Home" parent="Theme.MyFinances">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:dialogCornerRadius">16dp</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="Theme.MyFinances.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MyFinances.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-   <!-- <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        // Set the splash screen background, animated icon, and animation duration.
-        <item name="windowSplashScreenBackground">?attr/colorOnPrimary</item>
+    <!-- res/values/styles.xml -->
+    <style name="ThemeOverlay.MyApp.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MyApp.BottomSheet</item>
+    </style>
 
-        // Use windowSplashScreenAnimatedIcon to add either a drawable or an
-        // animated drawable. One of these is required.
-        <item name="windowSplashScreenAnimatedIcon">@drawable/background_splash</item>
-        <item name="windowSplashScreenAnimationDuration">200</item>  # Required for
-        # animated icons
+    <style name="Widget.MyApp.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.MyApp.BottomSheet</item>
+    </style>
 
-        // Set the theme of the Activity that directly follows your splash screen.
-        <item name="postSplashScreenTheme">@style/Theme.MyFinances</item>
-    </style>-->
 </resources>

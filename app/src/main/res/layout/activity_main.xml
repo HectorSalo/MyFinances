@@ -13,6 +13,7 @@
         android:background="@drawable/fondo_toolbar"
         android:theme="@style/Theme.MyFinances.AppBarOverlay"
         app:elevation="0dp"
+        android:fitsSystemWindows="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -44,7 +45,8 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomAppBar"
@@ -56,6 +58,7 @@
             app:fabCradleMargin="5dp"
             app:fabCradleRoundedCornerRadius="16dp"
             app:hideOnScroll="true"
+            android:fitsSystemWindows="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

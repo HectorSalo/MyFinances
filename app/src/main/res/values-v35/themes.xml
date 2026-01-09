@@ -1,16 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.MyFinances" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Mantiene comportamiento clásico (no edge-to-edge forzado por el sistema) -->
         <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
-        <item name="android:fitsSystemWindows">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
-
-        <item name="android:windowSharedElementEnterTransition">@transition/share_elements</item>
-        <item name="android:windowSharedElementExitTransition">@transition/share_elements</item>
     </style>
 
+    <style name="Theme.MyFinances.NoActionBar" parent="Theme.MyFinances">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:dialogCornerRadius">16dp</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
+
+    <style name="Theme.MyFinances.NoActionBar.Home" parent="Theme.MyFinances">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:dialogCornerRadius">16dp</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
 </resources>

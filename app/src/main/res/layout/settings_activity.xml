@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:elevation="0dp"
+        android:fitsSystemWindows="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
+import com.skysam.hchirinos.myfinances.common.model.constructores.ExchangeRateListResponse
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon
@@ -252,6 +253,54 @@ class HomeInteractorClass(private val homePresenter: HomePresenter, val context:
                         homePresenter.statusMoveNextYear(false, "Error al copiar los Ingresos. Intente más tarde")
                     }
                 }
+    }
+
+    override fun obtenerHistorialTasas(from: String, to: String) {
+        RetrofitClientDolarVzla.service.getExchangeRateHistory(from, to)
+            .enqueue(object : Callback<ExchangeRateListResponse> {
+
+                override fun onResponse(
+                    call: Call<ExchangeRateListResponse>,
+                    response: Response<ExchangeRateListResponse>
+                ) {
+                    Log.i("RatesHistory", "code=${response.code()} ok=${response.isSuccessful}")
+
+                    if (!response.isSuccessful) {
+                        val err = try { response.errorBody()?.string() }
+                        catch (e: Exception) { "errorBody-exception=$e" }
+
+                        Log.e("RatesHistory", "errorBody=$err")
+                        homePresenter.historialTasasResult(
+                            RatesHistoryResult.Error("HTTP ${response.code()}", response.code())
+                        )
+                        return
+                    }
+
+                    val body = response.body()
+                    if (body == null) {
+                        Log.e("RatesHistory", "body == null (posible parse/converter)")
+                        homePresenter.historialTasasResult(RatesHistoryResult.Error("Respuesta vacía"))
+                        return
+                    }
+
+                    val items = body.rates
+                        .filter { it.date.isNotBlank() }
+                        .sortedByDescending { it.date } // ISO "YYYY-MM-DD" ordena bien
+
+                    if (items.isEmpty()) {
+                        homePresenter.historialTasasResult(RatesHistoryResult.Empty)
+                    } else {
+                        homePresenter.historialTasasResult(RatesHistoryResult.Success(items))
+                    }
+                }
+
+                override fun onFailure(call: Call<ExchangeRateListResponse>, t: Throwable) {
+                    Log.e("RatesHistory", "onFailure", t)
+                    homePresenter.historialTasasResult(
+                        RatesHistoryResult.Error(t.message ?: "Error de conexión")
+                    )
+                }
+            })
     }
 
     private fun moveAhorros(user: String, year: Int) {

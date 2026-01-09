@@ -245,6 +245,10 @@
                     android:id="@+id/row_prestamos"
                     layout="@layout/item_summary_row" />
 
+                <include
+                    android:id="@+id/row_capital"
+                    layout="@layout/item_summary_row" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

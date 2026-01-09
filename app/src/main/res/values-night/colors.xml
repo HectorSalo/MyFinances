@@ -14,4 +14,9 @@
     <color name="calc_button_tint">#4F001C</color>       <!-- primario elevado para dark -->
 
     <color name="calc_card_bg">#212121</color>           <!-- sutil pero separable del fondo -->
+
+    <color name="gastos_surface">#424245</color>
+    <color name="gastos_surface_alt">#25272D</color>
+    <color name="gastos_stroke">#8C8989</color>
+
 </resources>

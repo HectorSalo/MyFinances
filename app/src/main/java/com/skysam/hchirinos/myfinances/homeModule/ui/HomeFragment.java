@@ -22,7 +22,10 @@ import android.widget.Toast;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.common.model.constructores.ExchangeRateDto;
+import com.skysam.hchirinos.myfinances.common.model.constructores.RateHistoryUi;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
+import com.skysam.hchirinos.myfinances.homeModule.interactor.RatesHistoryResult;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenter;
 import com.skysam.hchirinos.myfinances.homeModule.presenter.HomePresenterClass;
 import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
@@ -30,7 +33,9 @@ import com.skysam.hchirinos.myfinances.homeModule.viewmodel.MainViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class HomeFragment extends Fragment implements HomeView {
@@ -42,22 +47,23 @@ public class HomeFragment extends Fragment implements HomeView {
     private View tileBcv, tileParalelo, tilePromedio, tileEuro;
     private TextView tvRatesUpdated;
     private TextView tvBadge;
-
-
     private TextView tvIngresosValue, tvGastosValue, tvRatioLabel;
     private LinearProgressIndicator progressRatio;
-
-    private View rowAhorros, rowPrestamos, rowDeudas, rowGastosVarios;
-
+    private View rowAhorros, rowPrestamos, rowDeudas, rowGastosVarios, rowCapital;
     private static final int INTERVALO = 2500;
     private long tiempoPrimerClick;
     private MoveToNextYearDialog moveToNextYearDialog;
     private final Object summaryLock = new Object();
-
     private String summaryGastosVarios = "--";
     private String summaryDeudas = "--";
     private String summaryAhorros = "--";
     private String summaryPrestamos = "--";
+    private String summaryCapital = "--";
+    private String lastDateBcv = "";
+    private String lastBcvStr = "--";
+    private String lastEurStr = "--";
+    private float lastBcvPrev = 0f;
+    private float lastEurPrev = 0f;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -100,16 +106,19 @@ public class HomeFragment extends Fragment implements HomeView {
 
         tvRatesUpdated = view.findViewById(R.id.tv_rates_updated);
         tvRatioLabel = view.findViewById(R.id.tv_ratio_label);
+        ImageButton ibRatesHistory = view.findViewById(R.id.ib_rates_history);
 
         tileBcv = view.findViewById(R.id.tile_bcv);
         tileParalelo = view.findViewById(R.id.tile_paralelo);
         tilePromedio = view.findViewById(R.id.tile_promedio);
         tileEuro = view.findViewById(R.id.tile_euro);
+        tvRatesUpdated = view.findViewById(R.id.tv_rates_updated);
 
         rowAhorros = view.findViewById(R.id.row_ahorros);
         rowPrestamos = view.findViewById(R.id.row_prestamos);
         rowDeudas = view.findViewById(R.id.row_deudas);
         rowGastosVarios = view.findViewById(R.id.row_gastos_varios);
+        rowCapital = view.findViewById(R.id.row_capital);
         tvBadge = view.findViewById(R.id.tv_balance_badge);
 
         Calendar calendar = Calendar.getInstance();
@@ -125,6 +134,32 @@ public class HomeFragment extends Fragment implements HomeView {
             moveToNextYearDialog = new MoveToNextYearDialog(currentYear, homePresenter);
             moveToNextYearDialog.show(requireActivity().getSupportFragmentManager(), getTag());
             moveToNextYearDialog.setCancelable(false);
+        });
+        ibRatesHistory.setOnClickListener(v -> {
+            ArrayList<RateHistoryUi> cache = new ArrayList<>();
+
+            // Cache (2 días): hoy + anterior
+            if (!lastDateBcv.isEmpty() && !lastBcvStr.equals("--")) {
+                cache.add(new RateHistoryUi(
+                        lastDateBcv,
+                        "USD " + lastBcvStr,
+                        "EUR " + lastEurStr
+                ));
+
+                if (lastBcvPrev != 0f) {
+                    cache.add(new RateHistoryUi(
+                            "Día anterior",
+                            "USD " + ClassesCommon.INSTANCE.convertFloatToString(lastBcvPrev),
+                            lastEurPrev == 0f ? null : "EUR " + ClassesCommon.INSTANCE.convertFloatToString(lastEurPrev)
+                    ));
+                }
+            }
+
+            RatesHistoryBottomSheet sheet = RatesHistoryBottomSheet.Companion.newInstance(cache);
+
+            sheet.setListener((from, to) -> homePresenter.obtenerHistorialTasas(from, to));
+
+            sheet.show(requireActivity().getSupportFragmentManager(), "rates_history_sheet");
         });
 
         montoIngresos = 0;
@@ -171,6 +206,15 @@ public class HomeFragment extends Fragment implements HomeView {
             String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(ahorros);
             synchronized (summaryLock) {
                 summaryAhorros = value;
+                summaryCapital = value;
+            }
+            renderSummaryOrdered();
+        });
+
+        viewModel.getAmountCapital().observe(getViewLifecycleOwner(), capital -> {
+            String value = "$" + ClassesCommon.INSTANCE.convertDoubleToString(capital);
+            synchronized (summaryLock) {
+                summaryCapital = value;
             }
             renderSummaryOrdered();
         });
@@ -303,6 +347,7 @@ public class HomeFragment extends Fragment implements HomeView {
         setSummaryRow(rowDeudas, getString(R.string.menu_deudas), summaryDeudas);
         setSummaryRow(rowAhorros, getString(R.string.menu_ahorros), summaryAhorros);
         setSummaryRow(rowPrestamos, getString(R.string.menu_prestamos), summaryPrestamos);
+        setSummaryRow(rowCapital, getString(R.string.summary_capital), summaryCapital);
     }
 
 
@@ -390,6 +435,12 @@ public class HomeFragment extends Fragment implements HomeView {
         setRateTile(tileParalelo, getString(R.string.rate_paralelo), parStr, valorParalelo, valorParaleloPrev, datePar);
         setRateTile(tileEuro, getString(R.string.rate_euro), eurStr, valorEuro, valorEuroPrev, dateBcv);
         setRateTile(tilePromedio,"Diferencial BCV vs. Paralelo", diffStr, diffPct, diffPctPrev, "", true, "%");
+
+        lastDateBcv = dateBcv;
+        lastBcvStr = bcvStr;
+        lastEurStr = eurStr;
+        lastBcvPrev = valorBCVPrev;
+        lastEurPrev = valorEuroPrev;
     }
 
     @Override
@@ -426,6 +477,28 @@ public class HomeFragment extends Fragment implements HomeView {
         );
     }
 
+    @Override
+    public void historialTasasResult(@NotNull RatesHistoryResult result) {
+        Fragment f = requireActivity().getSupportFragmentManager()
+                .findFragmentByTag("rates_history_sheet");
+
+        if (!(f instanceof RatesHistoryBottomSheet)) return;
+        RatesHistoryBottomSheet sheet = (RatesHistoryBottomSheet) f;
+
+        if (result instanceof RatesHistoryResult.Success) {
+            RatesHistoryResult.Success success = (RatesHistoryResult.Success) result;
+            List<RateHistoryUi> uiList = mapResultToUi(success.getItems());
+            sheet.renderHistory(uiList);
+
+        } else if (result instanceof RatesHistoryResult.Empty) {
+            sheet.renderHistory(java.util.Collections.emptyList());
+
+        } else if (result instanceof RatesHistoryResult.Error) {
+            RatesHistoryResult.Error err = (RatesHistoryResult.Error) result;
+            sheet.renderError(err.getMessage());
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -437,5 +510,28 @@ public class HomeFragment extends Fragment implements HomeView {
     public void statusMoveNextYear(boolean statusOk, @NotNull String message) {
         moveToNextYearDialog.dismiss();
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private List<RateHistoryUi> mapResultToUi(List<ExchangeRateDto> items) {
+        ArrayList<RateHistoryUi> out = new ArrayList<>();
+
+        for (ExchangeRateDto it : items) {
+
+            // Ajusta nombres según tu DTO real
+            String date = it.getDate(); // ejemplo
+            String dateLabel = ClassesCommon.INSTANCE.convertDateToCotizaciones(date);
+
+            String usd = "USD " + ClassesCommon.INSTANCE.convertDoubleToString(it.getUsd()); // ejemplo
+            String eur = null;
+
+            // si tu DTO trae eur
+            if (it.getEur() != 0.0) {
+                eur = "EUR " + ClassesCommon.INSTANCE.convertDoubleToString(it.getEur());
+            }
+
+            out.add(new RateHistoryUi(dateLabel, usd, eur));
+        }
+
+        return out;
     }
 }

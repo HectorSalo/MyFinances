@@ -43,12 +43,13 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
     @NonNull
     @Override
     public IngresosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_ingresos, null, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_ingresos, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final IngresosAdapter.ViewHolder holder, int position) {
+        holder.tvProximoCobro.setVisibility(View.VISIBLE);
         holder.tvConcepto.setText(listIngresos.get(position).getConcepto());
 
         if (listIngresos.get(position).isDolar()) {
@@ -67,6 +68,12 @@ public class IngresosAdapter extends RecyclerView.Adapter<IngresosAdapter.ViewHo
                 String tipoFrecuencia = listIngresos.get(position).getTipoFrecuencia();
                 Calendar calendarInicial = Calendar.getInstance();
                 calendarInicial.setTime(dateInicial);
+
+                if (dateInicial == null || duracionFrecuencia <= 0 || tipoFrecuencia == null) {
+                    holder.tvProximoCobro.setVisibility(View.GONE);
+                    holder.tvFrecuencia.setText("Frecuencia inválida");
+                    return;
+                }
 
                 switch (tipoFrecuencia) {
                     case "Dias":

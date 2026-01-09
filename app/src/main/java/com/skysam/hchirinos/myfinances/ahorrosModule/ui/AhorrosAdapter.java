@@ -46,11 +46,7 @@ public class AhorrosAdapter extends RecyclerView.Adapter<AhorrosAdapter.ViewHold
 
         holder.concepto.setText(listaAhorros.get(i).getConcepto());
 
-        if (listaAhorros.get(i).getOrigen() != null) {
-            holder.origen.setText(listaAhorros.get(i).getOrigen());
-        } else {
-            holder.origen.setVisibility(View.GONE);
-        }
+        holder.origen.setVisibility(View.GONE);
 
         holder.fechaIngreso.setText("Agregado el: " + new SimpleDateFormat("EEE d MMM yyyy").format(listaAhorros.get(i).getFechaIngreso()));
 

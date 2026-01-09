@@ -13,6 +13,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="ToolBarAppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -35,17 +36,26 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:backgroundTint">@color/color_message_tutorial</item>
+        <item name="android:colorBackground">@color/color_background_tutorial</item>
+        <item name="android:dialogCornerRadius">16dp</item>
     </style>
 
     <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:dialogCornerRadius">16dp</item>
     </style>
 
-    <style name="Theme.MyFinances.NoActionBar">
+    <style name="Theme.MyFinances.NoActionBar" parent="Theme.MyFinances">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
+
+    <style name="Theme.MyFinances.NoActionBar.Home" parent="Theme.MyFinances">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="Theme.MyFinances.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

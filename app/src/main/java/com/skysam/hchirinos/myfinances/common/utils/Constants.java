@@ -60,4 +60,5 @@ public class Constants {
 
 
     public static final String BD_EXCHANGE = "exchange";
+    public static final String BD_CAPITAL = "capital";
 }

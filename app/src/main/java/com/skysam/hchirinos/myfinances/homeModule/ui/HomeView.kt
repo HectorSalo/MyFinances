@@ -1,5 +1,7 @@
 package com.skysam.hchirinos.myfinances.homeModule.ui
 
+import com.skysam.hchirinos.myfinances.homeModule.interactor.RatesHistoryResult
+
 interface HomeView {
     fun valorCotizacionWebOk(
         valorBCV: Float,
@@ -15,4 +17,5 @@ interface HomeView {
     fun valorCotizacionWebError(valorBCV: Float, valorParalelo: Float, valorEuro: Float)
 
     fun statusMoveNextYear(statusOk: Boolean, message: String)
+    fun historialTasasResult(result: RatesHistoryResult)
 }

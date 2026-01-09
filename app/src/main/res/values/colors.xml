@@ -684,4 +684,8 @@
 
     <color name="calc_card_bg">#DEDEDE</color>           <!-- sutil, limpio -->
 
+    <color name="gastos_surface">#FFFFFF</color>
+    <color name="gastos_surface_alt">#F5F6FA</color>
+    <color name="gastos_stroke">#E2E4EA</color>
+
 </resources>

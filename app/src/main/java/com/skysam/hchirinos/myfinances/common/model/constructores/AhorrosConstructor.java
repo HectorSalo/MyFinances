@@ -5,7 +5,7 @@ import java.util.Date;
 public class AhorrosConstructor {
     private String concepto, origen, idAhorro, idDeuda, prestamista;
     private double monto;
-    private boolean dolar;
+    private boolean dolar, capital;
     private Date fechaIngreso;
 
     public AhorrosConstructor(String idAhorro, String concepto, String origen, double monto, boolean dolar, Date fechaIngreso) {
@@ -59,6 +59,12 @@ public class AhorrosConstructor {
 
     public void setDolar(boolean dolar) {
         this.dolar = dolar;
+    }
+    public boolean isCapital() {
+        return capital;
+    }
+    public void setCapital(boolean capital) {
+        this.capital = capital;
     }
 
     public Date getFechaIngreso() {

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,6 +49,8 @@ import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,6 +69,7 @@ public class AhorrosFragment extends Fragment {
     private LottieAnimationView lottieAnimationView;
     private boolean fragmentCreado;
     private boolean fromSearch = false;
+    private boolean isFormattingEditMonto = false;
     private CoordinatorLayout coordinatorLayout;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private int mesSelected, yearSelected;
@@ -238,23 +243,28 @@ public class AhorrosFragment extends Fragment {
                 case ItemTouchHelper.LEFT:
                     if (newList != null) {
                         String monto;
-                        final String idDoc;
-                        final boolean dolar;
+                        String idDoc;
+                        boolean dolar;
+                        boolean capital;
+
                         if (newList.isEmpty()) {
                             monto = String.valueOf(listaAhorros.get(position).getMonto());
                             idDoc = listaAhorros.get(position).getIdAhorro();
                             dolar = listaAhorros.get(position).isDolar();
+                            capital = listaAhorros.get(position).isCapital(); // NUEVO
                         } else {
                             monto = String.valueOf(newList.get(position).getMonto());
                             idDoc = newList.get(position).getIdAhorro();
                             dolar = newList.get(position).isDolar();
+                            capital = newList.get(position).isCapital(); // NUEVO
                         }
-                        editarItem(monto, idDoc, dolar);
+                        editarItem(monto, idDoc, dolar, capital);
                     } else {
                         String monto = String.valueOf(listaAhorros.get(position).getMonto());
-                        final String idDoc = listaAhorros.get(position).getIdAhorro();
-                        final boolean dolar = listaAhorros.get(position).isDolar();
-                        editarItem(monto, idDoc, dolar);
+                        String idDoc = listaAhorros.get(position).getIdAhorro();
+                        boolean dolar = listaAhorros.get(position).isDolar();
+                        boolean capital = listaAhorros.get(position).isCapital();
+                        editarItem(monto, idDoc, dolar, capital);
                     }
                     break;
             }
@@ -326,9 +336,37 @@ public class AhorrosFragment extends Fragment {
                     ahorro.setMonto(doc.getDouble(Constants.BD_MONTO));
                     ahorro.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
+                    Boolean cap = doc.getBoolean(Constants.BD_CAPITAL);
+                    ahorro.setCapital(cap != null && cap);
+
                     listaAhorros.add(ahorro);
 
                 }
+                // Orden: No capital primero, luego capital; y dentro de cada grupo, más reciente primero
+                listaAhorros.sort((a1, a2) -> {
+                    // 1) capital: false primero
+                    boolean c1 = a1.isCapital();
+                    boolean c2 = a2.isCapital();
+                    if (c1 != c2) {
+                        return c1 ? 1 : -1; // true (capital) va después
+                    }
+
+                    // 2) fecha: más reciente primero (desc)
+                    Date f1 = a1.getFechaIngreso();
+                    Date f2 = a2.getFechaIngreso();
+                    long t1 = (f1 != null) ? f1.getTime() : 0L;
+                    long t2 = (f2 != null) ? f2.getTime() : 0L;
+
+                    int cmpFecha = Long.compare(t2, t1); // descendente
+                    if (cmpFecha != 0) return cmpFecha;
+
+                    // 3) desempate estable (opcional)
+                    String id1 = a1.getIdAhorro() != null ? a1.getIdAhorro() : "";
+                    String id2 = a2.getIdAhorro() != null ? a2.getIdAhorro() : "";
+                    return id2.compareTo(id1); // descendente
+                });
+
+
                 ahorrosAdapter.updateList(listaAhorros);
                 if (listaAhorros.isEmpty()) {
                     tvSinLista.setVisibility(View.VISIBLE);
@@ -344,54 +382,131 @@ public class AhorrosFragment extends Fragment {
         });
     }
 
-    private void editarItem(String monto, final String idDoc, boolean dolar) {
+    private void editarItem(String monto, final String idDoc, boolean dolar, boolean capital) {
         LayoutInflater inflater = LayoutInflater.from(coordinatorLayout.getContext());
         View v = inflater.inflate(R.layout.layout_editar_ahorro, null);
-        final TextInputEditText textInputEditText = v.findViewById(R.id.et_monto);
-        final RadioButton radioButtonDolar = v.findViewById(R.id.radioButton_dolares);
-        RadioButton radioButtonBolivares = v.findViewById(R.id.radioButton_bolivares);
-        textInputEditText.setText(monto);
-        if (dolar) {
-            radioButtonDolar.setChecked(true);
-        } else {
-            radioButtonBolivares.setChecked(true);
-        }
 
+        final TextInputEditText etMontoDialog = v.findViewById(R.id.et_monto);
+        final RadioButton rbDolarDialog = v.findViewById(R.id.radioButton_dolares);
+        final RadioButton rbBolivaresDialog = v.findViewById(R.id.radioButton_bolivares);
+        final com.google.android.material.checkbox.MaterialCheckBox cbCapital = v.findViewById(R.id.cb_capital);
+
+        // Estado inicial
+        cbCapital.setChecked(capital);
+
+        if (dolar) rbDolarDialog.setChecked(true);
+        else rbBolivaresDialog.setChecked(true);
+
+        // Monto inicial: formatear al abrir (opcional, pero recomendado)
+        // Si tu "monto" viene como "1234.5", lo convertimos a "1.234,50" con el mismo patrón.
+        setMontoFormateadoInicial(etMontoDialog, monto);
+
+        // Watcher: ingreso controlado, 2 decimales, miles, cursor al final
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                if (isFormattingEditMonto) return;
+                formatAmountInputDialog(s.toString(), etMontoDialog, this);
+            }
+        };
+        etMontoDialog.addTextChangedListener(watcher);
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(coordinatorLayout.getContext());
-        dialog.setTitle("Ingrese el nuevo monto")
+        dialog.setTitle("Editar ahorro")
                 .setView(v)
                 .setCancelable(false)
                 .setPositiveButton("Actualizar", (dialog1, which) -> {
-                    if (!textInputEditText.getText().toString().isEmpty()) {
-                        double valor = Double.parseDouble(textInputEditText.getText().toString());
-                        if (valor > 0) {
-                            boolean dolarEnviar;
-                            dolarEnviar = radioButtonDolar.isChecked();
-                            guardarItem(dolarEnviar, valor, idDoc);
-                            Toast.makeText(getContext(), "Actualizando...", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getContext(), "El valor ingresado no puede ser cero", Toast.LENGTH_SHORT).show();
-                            cargarAhorros();
-                        }
-                    } else {
+                    String raw = etMontoDialog.getText() != null ? etMontoDialog.getText().toString().trim() : "";
+
+                    if (raw.isEmpty()) {
                         Toast.makeText(getContext(), "El campo no puede estar vacío", Toast.LENGTH_SHORT).show();
                         cargarAhorros();
+                        return;
                     }
+
+                    // "1.234,56" -> "1234.56"
+                    String normalized = raw.replace(".", "").replace(",", ".");
+                    double valor;
+
+                    try {
+                        valor = Double.parseDouble(normalized);
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Monto inválido", Toast.LENGTH_SHORT).show();
+                        cargarAhorros();
+                        return;
+                    }
+
+                    boolean dolarEnviar = rbDolarDialog.isChecked();
+                    boolean capitalEnviar = cbCapital.isChecked();
+
+                    guardarItem(dolarEnviar, valor, idDoc, capitalEnviar); // NUEVO
+                    Toast.makeText(getContext(), "Actualizando...", Toast.LENGTH_LONG).show();
                 })
-                .setNegativeButton(getString(R.string.btn_cancelar), (dialog12, which) -> cargarAhorros()).show();
+                .setNegativeButton(getString(R.string.btn_cancelar), (dialog12, which) -> cargarAhorros())
+                .show();
+    }
+
+    private void formatAmountInputDialog(String raw, TextInputEditText editText, TextWatcher watcher) {
+        if (raw == null) raw = "";
+
+        String cleaned = raw.replace(",", "").replace(".", "").replace(" ", "");
+        if (cleaned.isEmpty()) {
+            isFormattingEditMonto = true;
+            editText.removeTextChangedListener(watcher);
+            editText.setText("");
+            editText.addTextChangedListener(watcher);
+            isFormattingEditMonto = false;
+            return;
+        }
+
+        double cantidad;
+        try {
+            cantidad = Double.parseDouble(cleaned) / 100d;
+        } catch (Exception e) {
+            return;
+        }
+
+        String formatted = String.format(java.util.Locale.GERMANY, "%,.2f", cantidad);
+
+        isFormattingEditMonto = true;
+        editText.removeTextChangedListener(watcher);
+        editText.setText(formatted);
+        editText.setSelection(formatted.length());
+        editText.addTextChangedListener(watcher);
+        isFormattingEditMonto = false;
+    }
+
+    private void setMontoFormateadoInicial(TextInputEditText editText, String monto) {
+        // monto viene como "1234.56" o "1234" normalmente
+        // Lo mostramos como "1.234,56" usando Locale.GERMANY
+        try {
+            double value = Double.parseDouble(monto);
+            String formatted = String.format(java.util.Locale.GERMANY, "%,.2f", value);
+            editText.setText(formatted);
+            editText.setSelection(formatted.length());
+        } catch (Exception e) {
+            editText.setText(monto);
+            if (editText.getText() != null) editText.setSelection(editText.getText().length());
+        }
     }
 
 
-    private void guardarItem(boolean dolar, double monto, String idDoc) {
+
+    private void guardarItem(boolean dolar, double monto, String idDoc, boolean capital) {
         progressBar.setVisibility(View.VISIBLE);
+
         for (int i = mesSelected; i < 12; i++) {
             final int finalI = i;
+
             db.collection(Constants.BD_AHORROS).document(Auth.INSTANCE.uidCurrentUser())
                     .collection(yearSelected + "-" + i).document(idDoc)
-                    .update(Constants.BD_DOLAR, dolar, Constants.BD_MONTO, monto)
+                    .update(
+                            Constants.BD_DOLAR, dolar,
+                            Constants.BD_MONTO, monto,
+                            Constants.BD_CAPITAL, capital // NUEVO
+                    )
                     .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
                         if (finalI == 11) {
                             cargarAhorros();
                             Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
@@ -399,7 +514,6 @@ public class AhorrosFragment extends Fragment {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.w(TAG, "Error updating document", e);
                         if (finalI > mesSelected) {
                             Toast.makeText(getContext(), getString(R.string.process_succes), Toast.LENGTH_SHORT).show();
                         } else {

@@ -4,124 +4,137 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
     tools:context=".ahorrosModule.ui.AgregarAhorroFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_concepto"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         android:hint="@string/concepto"
         app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_concepto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_origen"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="12dp"
         android:hint="@string/origen"
+        android:visibility="gone"
         app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outlined_concepto"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/outlined_concepto">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_origen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlined_monto"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="12dp"
         android:hint="@string/monto"
         app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outlined_origen"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outlined_origen">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_monto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
-
+            android:inputType="number"
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cb_capital"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/summary_capital"
+        app:layout_constraintTop_toBottomOf="@id/outlined_monto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_capital_helper"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Separa el ahorro base del ahorro para metas o deseos."
+        android:textSize="12sp"
+        android:alpha="0.75"
+        app:layout_constraintTop_toBottomOf="@id/cb_capital"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_capital_helper"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outlined_monto">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <RadioButton
             android:id="@+id/radioButton_bolivares"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/moneda_bolivar" />
 
         <RadioButton
             android:id="@+id/radioButton_dolares"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_marginStart="12dp"
             android:text="@string/moneda_dolar" />
     </RadioGroup>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_guardar"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="20dp"
         android:text="@string/btn_guardar"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:cornerRadius="14dp"
+        app:layout_constraintTop_toBottomOf="@id/radioGroup"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/md_text_white"/>
 
     <ProgressBar
         android:id="@+id/progressBar_agregar_ahorro"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/button_guardar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_guardar" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,6 +18,12 @@ import com.skysam.hchirinos.myfinances.common.NotificationReceiverFCM
 import java.io.FileNotFoundException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -92,35 +98,25 @@ object ClassesCommon {
     fun convertDateToCotizaciones(dateString: String): String {
         if (dateString.isBlank()) return ""
 
-        // Formato de salida uniforme (ajústalo a tu preferencia)
-        // Ej: "25/12/2025 11:14 PM" (respeta 12/24h según Locale si quieres)
-        val output = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        output.timeZone = TimeZone.getDefault()
+        // Presentación según Locale del dispositivo
+        val outFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
 
-        // Lista de formatos aceptados (backend puede variar)
-        val patterns = listOf(
-            "yyyy-MM-dd'T'HH:mm:ss.SSSX", // 2026-01-05T17:02:43.751Z
-            "yyyy-MM-dd'T'HH:mm:ssX",     // 2026-01-05T17:02:43Z
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", // algunos backends mandan Z literal
-            "yyyy-MM-dd'T'HH:mm:ss'Z'",
-            "yyyy-MM-dd"                  // 2026-01-07
-        )
+        return try {
+            // Caso 1: Solo fecha -> es un LocalDate del backend (no hay zona que aplicar)
+            if (Regex("""\d{4}-\d{2}-\d{2}""").matches(dateString)) {
+                LocalDate.parse(dateString).format(outFmt)
+            } else {
+                // Caso 2: Fecha-hora con Z u offset -> tomar el día en UTC (backend)
+                // - Si viene con 'Z', UTC es correcto.
+                // - Si viene con offset, lo normal en APIs es normalizar a UTC.
+                val instant = runCatching { Instant.parse(dateString) }
+                    .getOrElse { OffsetDateTime.parse(dateString).toInstant() }
 
-        for (p in patterns) {
-            try {
-                val input = SimpleDateFormat(p, Locale.US).apply {
-                    // Si viene con Z / offset, el parser lo gestiona; para yyyy-MM-dd tomamos UTC para consistencia
-                    timeZone = TimeZone.getTimeZone("UTC")
-                    isLenient = false
-                }
-                val date = input.parse(dateString) ?: continue
-                return output.format(date)
-            } catch (_: Exception) {
-                // Ignorar y probar el siguiente patrón
+                instant.atZone(ZoneOffset.UTC).toLocalDate().format(outFmt)
             }
+        } catch (_: Exception) {
+            "Invalid date"
         }
-
-        return "Invalid date"
     }
 
 

@@ -4,4 +4,5 @@ interface HomeInteractor {
     fun obtenerCotizacionWeb()
     fun guardarCotizacionShared(valorBCV: Float, valorParalelo: Float, valorEuro: Float)
     fun moveDataNextYear(year: Int)
+    fun obtenerHistorialTasas(from: String, to: String)
 }
