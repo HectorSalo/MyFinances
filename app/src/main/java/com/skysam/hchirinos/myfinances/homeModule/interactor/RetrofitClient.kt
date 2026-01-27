@@ -1,5 +1,6 @@
 package com.skysam.hchirinos.myfinances.homeModule.interactor
 
+import com.skysam.hchirinos.myfinances.BuildConfig
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -8,8 +9,25 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 
 object RetrofitClientDolarVzla {
+    private const val BASE_URL = "https://api.dolarvzla.com/"
+    private const val HEADER_KEY = "x-dolarvzla-key"
+    private const val API_KEY = BuildConfig.DOLARVZLA_API_KEY
+
+    private val okHttpClient = okhttp3.OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val original = chain.request()
+            val builder = original.newBuilder()
+
+            if (API_KEY.isNotBlank()) {
+                builder.addHeader(HEADER_KEY, API_KEY)
+            }
+
+            chain.proceed(builder.build())
+        }
+        .build()
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.dolarvzla.com/")
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

@@ -3,6 +3,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-kapt'
 
+def props = new Properties()
+props.load(rootProject.file("local.properties").newDataInputStream())
+
 android {
     compileSdkVersion 36
 
@@ -10,8 +13,10 @@ android {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 29
         targetSdkVersion 36
-        versionCode 32
-        versionName "14.1"
+        versionCode 33
+        versionName "14.2"
+
+        buildConfigField "String", "DOLARVZLA_API_KEY", "\"${props.getProperty("DOLARVZLA_API_KEY", "")}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,12 +73,12 @@ dependencies {
     }
 
     //librerias Firebase
-    implementation platform('com.google.firebase:firebase-bom:34.7.0')
+    implementation platform('com.google.firebase:firebase-bom:34.8.0')
     implementation 'com.google.firebase:firebase-analytics:23.0.0'
     implementation 'com.google.firebase:firebase-auth:24.0.1'
-    implementation 'com.google.firebase:firebase-firestore:26.0.2'
+    implementation 'com.google.firebase:firebase-firestore:26.1.0'
     implementation 'com.google.firebase:firebase-storage:22.0.1'
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    implementation 'com.google.android.gms:play-services-auth:21.5.0'
     implementation 'com.google.firebase:firebase-messaging'
 
     //librerias externas
