@@ -21,4 +21,8 @@
         android:title="@string/menu_ajustes"
         android:icon="@drawable/ic_settings_24"
         />
+    <item
+        android:id="@+id/menu_bolsa_de_caracas"
+        android:title="@string/bolsa_de_caracas_title"
+        android:icon="@drawable/ic_trending_up_24" />
 </menu>

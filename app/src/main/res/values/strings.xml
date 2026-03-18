@@ -1,4 +1,9 @@
 <resources>
+            <!-- Bolsa de Caracas (nuevo módulo) -->
+            <string name="bolsa_de_caracas_title">Bolsa de Caracas</string>
+            <string name="bolsa_de_caracas_tab_portafolio">Portafolio</string>
+            <string name="bolsa_de_caracas_tab_mercado">Mercado</string>
+            <string name="bolsa_de_caracas_tab_configurar_portafolio">Configurar portafolio</string>
     <string name="app_name">Mis Finanzas</string>
     <string name="texto_vacio"> </string>
     <string name="title_activity_agregar">Agregar</string>
@@ -200,6 +205,10 @@
     <string name="summary_gastos_varios">Gastos varios</string>
     <string name="summary_capital">Ahorros de capital</string>
     <string name="calculadora_cambiar">Cambiar</string>
+    <string name="loading">Cargando</string>
+    <string name="market_empty">No hay acciones disponibles.</string>
+    <string name="portfolio_empty_message">No hay posiciones en el portafolio.</string>
+    <string name="portfolio_not_created">Aún no has creado tu portafolio. Ve a la pestaña "Configurar portafolio" para comenzar.</string>
 
 
 </resources>

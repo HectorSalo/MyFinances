@@ -62,6 +62,10 @@
             android:name=".ui.activityGeneral.AgregarActivity"
             android:label="@string/title_activity_agregar"
             android:theme="@style/Theme.MyFinances.NoActionBar"/>
+        <activity
+            android:name=".bolsadecaracas.presentation.activity.BolsaDeCaracasActivity"
+            android:label="@string/bolsa_de_caracas_title"
+            android:theme="@style/Theme.MyFinances.NoActionBar" />
         <activity android:name=".homeModule.ui.HomeActivity"
             android:theme="@style/Theme.MyFinances.NoActionBar.Home"/>
         <service android:name=".common.NotificationReceiverFCM"

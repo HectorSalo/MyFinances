@@ -28,6 +28,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.skysam.hchirinos.myfinances.R;
+import com.skysam.hchirinos.myfinances.bolsadecaracas.presentation.activity.BolsaDeCaracasActivity;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.graficosModule.ui.GraphicsActivity;
 import com.skysam.hchirinos.myfinances.ui.activityGeneral.CalculadoraActivity;
@@ -128,6 +129,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_graphs:
                 startActivity(new Intent(this, GraphicsActivity.class));
+                break;
+            case R.id.menu_bolsa_de_caracas:
+                startActivity(new Intent(this, BolsaDeCaracasActivity.class));
                 break;
             default:
                 break;

@@ -9,6 +9,7 @@ public class Constants {
     public static final String BD_GASTOS = "gastos";
     public static final String BD_DEUDAS = "deudas";
     public static final String BD_IMAGENES_LISTAS = "imagenesListas";
+    public static final String BD_BVC_PORTFOLIO = "bvc_portfolio";
 
     public static final String BD_CONCEPTO= "concepto";
     public static final String BD_MONTO = "monto";

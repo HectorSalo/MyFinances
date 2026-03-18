@@ -5,7 +5,9 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth
 import com.skysam.hchirinos.myfinances.common.utils.Constants
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class MyFinancesApp: Application() {
     companion object {
         lateinit var appContext: Context
