@@ -41,5 +41,10 @@
         android:label="@string/menu_deudas"
         tools:layout="@layout/fragment_deudas_graph" />
 
+    <fragment
+        android:id="@+id/nav_resumen_consolidado"
+        android:name="com.skysam.hchirinos.myfinances.graficosModule.ui.ResumenConsolidadoFragment"
+        android:label="@string/label_nav_resumen_consolidado"
+        tools:layout="@layout/fragment_resumen_consolidado" />
 
 </navigation>

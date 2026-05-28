@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_resumen_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/resumen_anual_titulo"
+            android:textStyle="bold"
+            style="@style/TextAppearance.AppCompat.Title" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:alpha="0.2"
+            android:background="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_acumulado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:textStyle="bold"
+            style="@style/TextAppearance.AppCompat.Body1"
+            tools:text="Acumulado: $ 1.234,56" />
+
+        <TextView
+            android:id="@+id/tv_promedio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            style="@style/TextAppearance.AppCompat.Body1"
+            tools:text="Promedio mensual: $ 154,32" />
+
+        <TextView
+            android:id="@+id/tv_proyeccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textStyle="bold"
+            style="@style/TextAppearance.AppCompat.Body1"
+            tools:text="Proyección al cierre: $ 1.851,84" />
+
+        <TextView
+            android:id="@+id/tv_mes_alto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            style="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Mes más alto: Marzo ($ 300,00)" />
+
+        <TextView
+            android:id="@+id/tv_meses_registro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            style="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Meses con registro: 5 de 8" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:alpha="0.2"
+            android:background="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_insight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            style="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Tus ingresos proyectados para el cierre del año son de $ 1.851,84." />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

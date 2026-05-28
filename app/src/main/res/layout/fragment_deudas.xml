@@ -37,6 +37,54 @@
         app:layout_constraintStart_toStartOf="@id/guide_line"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleGroup_filtro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinner_mes">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_filtro_pendientes"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="@string/deudas_filtro_pendientes"
+            android:textSize="12sp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_filtro_pagadas"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="@string/deudas_filtro_pagadas"
+            android:textSize="12sp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_filtro_todas"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="@string/deudas_filtro_todas"
+            android:textSize="12sp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieAnimationView"
         android:layout_width="0dp"
@@ -47,7 +95,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner_mes"
+        app:layout_constraintTop_toBottomOf="@id/toggleGroup_filtro"
         app:lottie_fileName="not_found.json"
         app:lottie_loop="false" />
 
@@ -60,7 +108,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_mes"
+        app:layout_constraintTop_toBottomOf="@id/toggleGroup_filtro"
         tools:listitem="@layout/cardview_prestamos"/>
 
     <ProgressBar

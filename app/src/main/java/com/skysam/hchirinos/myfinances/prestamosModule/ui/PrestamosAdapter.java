@@ -54,7 +54,7 @@ public class PrestamosAdapter extends RecyclerView.Adapter<PrestamosAdapter.View
     @NonNull
     @Override
     public PrestamosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, null, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, parent, false);
         return new ViewHolder(view);
     }
 

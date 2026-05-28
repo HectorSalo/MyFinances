@@ -684,6 +684,11 @@
 
     <color name="calc_card_bg">#DEDEDE</color>           <!-- sutil, limpio -->
 
+    <!-- Toggle calculadora -->
+    <color name="calc_toggle_text_unchecked">#333333</color>
+    <color name="calc_toggle_bg_unchecked">@android:color/transparent</color>
+    <color name="calc_toggle_stroke_unchecked">#BDBDBD</color>
+
     <color name="gastos_surface">#FFFFFF</color>
     <color name="gastos_surface_alt">#F5F6FA</color>
     <color name="gastos_stroke">#E2E4EA</color>

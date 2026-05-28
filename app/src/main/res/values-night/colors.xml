@@ -15,6 +15,11 @@
 
     <color name="calc_card_bg">#212121</color>           <!-- sutil pero separable del fondo -->
 
+    <!-- Toggle calculadora -->
+    <color name="calc_toggle_text_unchecked">#E0E0E0</color>
+    <color name="calc_toggle_bg_unchecked">@android:color/transparent</color>
+    <color name="calc_toggle_stroke_unchecked">#757575</color>
+
     <color name="gastos_surface">#424245</color>
     <color name="gastos_surface_alt">#25272D</color>
     <color name="gastos_stroke">#8C8989</color>

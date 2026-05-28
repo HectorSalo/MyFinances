@@ -152,6 +152,70 @@ class IngresosGraphFragment : Fragment(), IngresosGraphView {
         val prom = amountTotal / (monthCurrent + 1)
         binding.tvProm.text = getString(R.string.text_prom_graphs,
                 ClassesCommon.convertDoubleToString(prom))
+
+        actualizarResumenAnual(barEntries)
+    }
+
+    private fun actualizarResumenAnual(barEntries: ArrayList<BarEntry>) {
+        val meses = resources.getStringArray(R.array.meses)
+        val mesesConsiderados = monthCurrent + 1
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val isCurrentYear = yearSelected == currentYear
+
+        var acumulado = 0.0
+        var maxMonto = 0f
+        var maxMesIdx = -1
+        var mesesConRegistro = 0
+
+        for (i in 0 until mesesConsiderados) {
+            val v = barEntries[i].y
+            acumulado += v
+            if (v > 0f) mesesConRegistro++
+            if (v > maxMonto) { maxMonto = v; maxMesIdx = i }
+        }
+
+        val promedio = if (mesesConsiderados > 0) acumulado / mesesConsiderados else 0.0
+        val proyeccion = promedio * 12
+        val r = binding.resumenAnual
+
+        r.tvResumenTitulo.text = getString(
+            if (isCurrentYear) R.string.resumen_anual_titulo_actual
+            else R.string.resumen_anual_titulo_historico
+        )
+
+        r.tvAcumulado.text = if (isCurrentYear) {
+            getString(R.string.resumen_anual_acumulado, ClassesCommon.convertDoubleToString(acumulado))
+        } else {
+            getString(R.string.resumen_anual_total_anio, ClassesCommon.convertDoubleToString(acumulado))
+        }
+
+        r.tvPromedio.text = getString(R.string.resumen_anual_promedio,
+            ClassesCommon.convertDoubleToString(promedio))
+
+        if (isCurrentYear) {
+            r.tvProyeccion.visibility = View.VISIBLE
+            r.tvProyeccion.text = getString(R.string.resumen_anual_proyeccion,
+                ClassesCommon.convertDoubleToString(proyeccion))
+        } else {
+            r.tvProyeccion.visibility = View.GONE
+        }
+
+        if (maxMesIdx >= 0 && maxMonto > 0f) {
+            r.tvMesAlto.text = getString(R.string.resumen_anual_mes_alto,
+                meses[maxMesIdx], ClassesCommon.convertDoubleToString(maxMonto.toDouble()))
+        } else {
+            r.tvMesAlto.text = getString(R.string.resumen_anual_mes_alto, "—", "0,00")
+        }
+
+        r.tvMesesRegistro.text = getString(R.string.resumen_anual_meses_registro,
+            mesesConRegistro, mesesConsiderados)
+
+        r.tvInsight.text = when {
+            !isCurrentYear -> getString(R.string.resumen_anual_insight_historico)
+            acumulado > 0.0 -> getString(R.string.resumen_anual_insight_ingresos,
+                ClassesCommon.convertDoubleToString(proyeccion))
+            else -> getString(R.string.resumen_anual_insight_ingresos_vacio)
+        }
     }
 
     override fun onDestroyView() {

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".graficosModule.ui.ResumenConsolidadoFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <Spinner
+            android:id="@+id/sp_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp" />
+
+        <!-- Card 1: Totales acumulados -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tv_titulo_consolidado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    tools:text="Resumen hasta ahora" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_total_ingresos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ingresos: $ 1.000,00" />
+
+                <TextView
+                    android:id="@+id/tv_total_gastos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Gastos: $ 800,00" />
+
+                <TextView
+                    android:id="@+id/tv_total_ahorros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ahorros: $ 50,00" />
+
+                <TextView
+                    android:id="@+id/tv_total_deudas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Deudas: $ 100,00" />
+
+                <TextView
+                    android:id="@+id/tv_total_prestamos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Préstamos: $ 200,00" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_margen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Margen después de gastos y deudas: $ 100,00" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card 2: Indicadores porcentuales -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/consolidado_titulo_indicadores"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Subhead" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_porc_gastos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Has usado el 80% de tus ingresos en gastos." />
+
+                <TextView
+                    android:id="@+id/tv_porc_ahorros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Has ahorrado el 5% de tus ingresos." />
+
+                <TextView
+                    android:id="@+id/tv_porc_deudas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Tus deudas representan el 10% de tus ingresos acumulados." />
+
+                <TextView
+                    android:id="@+id/tv_porc_prestamos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Tus préstamos representan el 20% de tus ingresos acumulados." />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card 3: Promedios mensuales -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/consolidado_titulo_promedios"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Subhead" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_prom_ingresos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Promedio ingresos: $ 200,00/mes" />
+
+                <TextView
+                    android:id="@+id/tv_prom_gastos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Promedio gastos: $ 160,00/mes" />
+
+                <TextView
+                    android:id="@+id/tv_prom_ahorros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Promedio ahorros: $ 10,00/mes" />
+
+                <TextView
+                    android:id="@+id/tv_prom_deudas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Promedio deudas: $ 20,00/mes" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card 4: Proyección al cierre (solo año actual) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_proyeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/consolidado_titulo_proyeccion"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Subhead" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_proy_ingresos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ingresos proyectados: $ 2.400,00" />
+
+                <TextView
+                    android:id="@+id/tv_proy_gastos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Gastos proyectados: $ 1.920,00" />
+
+                <TextView
+                    android:id="@+id/tv_proy_ahorros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ahorros proyectados: $ 120,00" />
+
+                <TextView
+                    android:id="@+id/tv_proy_deudas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Deudas proyectadas: $ 240,00" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card 5: Insight -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tv_insight_consolidado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    tools:text="Estos indicadores resumen tu comportamiento financiero en lo que va del año." />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

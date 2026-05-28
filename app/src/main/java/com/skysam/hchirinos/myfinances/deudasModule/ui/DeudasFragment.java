@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,11 +38,14 @@ import com.skysam.hchirinos.myfinances.homeModule.ui.HomeActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 
 public class DeudasFragment extends Fragment {
+
+    private enum DebtFilter { PENDING, PAID, ALL }
 
     public DeudasFragment() {
         // Required empty public constructor
@@ -58,6 +62,8 @@ public class DeudasFragment extends Fragment {
     private int mesSelected, yearSelected;
     private Toolbar toolbar;
     private MenuItem itemBuscar;
+    private DebtFilter currentFilter = DebtFilter.PENDING;
+    private MaterialButtonToggleGroup toggleGroupFiltro;
 
 
     @Override
@@ -141,6 +147,20 @@ public class DeudasFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_deudas);
 
+        toggleGroupFiltro = view.findViewById(R.id.toggleGroup_filtro);
+        toggleGroupFiltro.check(R.id.btn_filtro_pendientes);
+        toggleGroupFiltro.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            if (checkedId == R.id.btn_filtro_pendientes) {
+                currentFilter = DebtFilter.PENDING;
+            } else if (checkedId == R.id.btn_filtro_pagadas) {
+                currentFilter = DebtFilter.PAID;
+            } else {
+                currentFilter = DebtFilter.ALL;
+            }
+            applyDebtFilter();
+        });
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -185,6 +205,7 @@ public class DeudasFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         listaDeudas = new ArrayList<>();
         deudasAdapter = new DeudasAdapter(listaDeudas, getContext(), yearSelected, mesSelected);
+        deudasAdapter.setOnDebtUpdatedListener(() -> applyDebtFilter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(deudasAdapter);
@@ -206,14 +227,8 @@ public class DeudasFragment extends Fragment {
                     deuda.setFechaIngreso(doc.getDate(Constants.BD_FECHA_INGRESO));
 
                     listaDeudas.add(deuda);
-
                 }
-                deudasAdapter.updateList(listaDeudas);
-                if (listaDeudas.isEmpty()) {
-                    tvSinLista.setVisibility(View.VISIBLE);
-                } else {
-                    tvSinLista.setVisibility(View.GONE);
-                }
+                applyDebtFilter();
                 progressBar.setVisibility(View.GONE);
             } else {
                 progressBar.setVisibility(View.GONE);
@@ -221,6 +236,44 @@ public class DeudasFragment extends Fragment {
             }
             fragmentCreado = false;
         });
+    }
+
+    private void applyDebtFilter() {
+        if (listaDeudas == null) return;
+        ArrayList<AhorrosConstructor> filtered = new ArrayList<>();
+        for (AhorrosConstructor debt : listaDeudas) {
+            boolean isPaid = debt.getMonto() == 0;
+            if (currentFilter == DebtFilter.PENDING && !isPaid) {
+                filtered.add(debt);
+            } else if (currentFilter == DebtFilter.PAID && isPaid) {
+                filtered.add(debt);
+            } else if (currentFilter == DebtFilter.ALL) {
+                filtered.add(debt);
+            }
+        }
+        if (currentFilter == DebtFilter.ALL) {
+            Collections.sort(filtered, (d1, d2) -> {
+                boolean d1Paid = d1.getMonto() == 0;
+                boolean d2Paid = d2.getMonto() == 0;
+                if (d1Paid == d2Paid) return 0;
+                return d1Paid ? 1 : -1;
+            });
+        }
+        deudasAdapter.updateList(filtered);
+        if (filtered.isEmpty()) {
+            String emptyText;
+            if (currentFilter == DebtFilter.PENDING) {
+                emptyText = getString(R.string.deudas_sin_pendientes);
+            } else if (currentFilter == DebtFilter.PAID) {
+                emptyText = getString(R.string.deudas_sin_pagadas);
+            } else {
+                emptyText = getString(R.string.deudas_sin_registradas);
+            }
+            tvSinLista.setText(emptyText);
+            tvSinLista.setVisibility(View.VISIBLE);
+        } else {
+            tvSinLista.setVisibility(View.GONE);
+        }
     }
 
     public void buscarItem(String text) {
@@ -232,16 +285,19 @@ public class DeudasFragment extends Fragment {
                 final ArrayList<AhorrosConstructor> newList = new ArrayList<>();
 
                 for (AhorrosConstructor name : listaDeudas) {
-                    if (name.getConcepto().toLowerCase().contains(userInput) || name.getPrestamista().toLowerCase().contains(userInput)) {
-                        newList.add(name);
-                    }
+                    boolean matchesSearch = name.getConcepto().toLowerCase().contains(userInput)
+                            || name.getPrestamista().toLowerCase().contains(userInput);
+                    if (!matchesSearch) continue;
+                    boolean isPaid = name.getMonto() == 0;
+                    if (currentFilter == DebtFilter.PENDING && isPaid) continue;
+                    if (currentFilter == DebtFilter.PAID && !isPaid) continue;
+                    newList.add(name);
                 }
                 if (newList.isEmpty()) {
                     lottieAnimationView.setVisibility(View.VISIBLE);
                     lottieAnimationView.playAnimation();
                 }
                 deudasAdapter.updateList(newList);
-
             }
         }
     }

@@ -1,161 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:fillViewport="true"
     tools:context=".ui.activityGeneral.CalculadoraActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/outlined_ingreso"
-        android:layout_width="0dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="@string/calculadora_bolivares"
-        app:boxCornerRadiusBottomEnd="16dp"
-        app:boxCornerRadiusBottomStart="16dp"
-        app:boxCornerRadiusTopEnd="16dp"
-        app:boxCornerRadiusTopStart="16dp"
-        app:boxStrokeColor="@color/calc_input_stroke"
-        app:hintTextColor="@color/calc_input_hint"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_ingreso"
+        <!-- ===== SELECTOR DE MODO ===== -->
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_modo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:text="@string/text_calculadora_cero" />
+            android:layout_marginTop="8dp"
+            app:singleSelection="true"
+            app:selectionRequired="true">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_modo_conversion"
+                style="@style/Widget.MyFinances.Calculator.ToggleButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/calculadora_modo_conversion"
+                app:cornerRadius="10dp"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_convertir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/calculadora_cambiar"
-        android:layout_marginTop="12dp"
-        app:icon="@drawable/ic_convertir_24"
-        app:iconGravity="textStart"
-        app:iconPadding="8dp"
-        app:cornerRadius="10dp"
-        android:backgroundTint="@color/calc_button_tint"
-        app:layout_constraintTop_toBottomOf="@id/outlined_ingreso"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/md_text_white"
-        android:drawableTint="@color/md_text_white"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_modo_venta"
+                style="@style/Widget.MyFinances.Calculator.ToggleButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/calculadora_modo_venta"
+                app:cornerRadius="10dp"/>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_results"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="2dp"
-        app:cardCornerRadius="16dp"
-        android:backgroundTint="@color/calc_card_bg"
-        app:layout_constraintTop_toBottomOf="@id/btn_convertir"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
+        <!-- ===== SECCIÓN CONVERSIÓN ===== -->
         <LinearLayout
+            android:id="@+id/section_conversion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginTop="16dp">
 
-            <!-- BCV -->
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlined_ingreso"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:hint="@string/calculadora_bolivares"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxStrokeColor="@color/calc_input_stroke"
+                app:hintTextColor="@color/calc_input_hint">
 
-                <TextView
-                    android:id="@+id/tv_label_bcv"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_ingreso"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/calculadora_dolares_bcv"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="?android:attr/textColorPrimary"/>
+                    android:inputType="numberDecimal"
+                    android:text="@string/text_calculadora_cero"/>
 
-                <TextView
-                    android:id="@+id/tv_value_bcv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_calculadora_cero"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textColor="?android:attr/textColorPrimary"/>
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.divider.MaterialDivider
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_convertir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/calc_button_tint"
+                android:drawableTint="@color/md_text_white"
+                android:text="@string/calculadora_cambiar"
+                android:textColor="@color/md_text_white"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/ic_convertir_24"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="12dp"/>
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/calc_card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true">
 
-            <!-- Paralelo -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tv_label_paralelo"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/calculadora_dolares_paralelo"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/tv_value_paralelo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_calculadora_cero"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="12dp"/>
+                        <TextView
+                            android:id="@+id/tv_label_bcv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_dolares_bcv"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
 
-            <!-- Euro -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                        <TextView
+                            android:id="@+id/tv_value_bcv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_label_euro"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/rate_euro"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="12dp"/>
 
-                <TextView
-                    android:id="@+id/tv_value_euro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_calculadora_cero"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_label_paralelo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_dolares_paralelo"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_value_paralelo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_label_euro"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/rate_euro"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_value_euro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- ===== SECCIÓN VENTA ===== -->
+        <LinearLayout
+            android:id="@+id/section_venta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlined_dolares"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/calculadora_monto_dolares"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxStrokeColor="@color/calc_input_stroke"
+                app:hintTextColor="@color/calc_input_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_dolares"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlined_tasa"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/calculadora_tasa_venta"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxStrokeColor="@color/calc_input_stroke"
+                app:hintTextColor="@color/calc_input_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_tasa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_venta_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/calc_card_bg"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Recibes por la venta -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_recibes_venta"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_venta_recibes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="12dp"/>
+
+                    <!-- Equivalente a BCV -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_equivalente_bcv"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_venta_equivalente"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="12dp"/>
+
+                    <!-- Diferencia vs BCV -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/calculadora_diferencia_bcv"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?android:attr/textColorSecondary"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_bs_label"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_venta_dif_bs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/calculadora_usd_label"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+
+                        <TextView
+                            android:id="@+id/tv_venta_dif_usd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_calculadora_cero"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?android:attr/textColorPrimary"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

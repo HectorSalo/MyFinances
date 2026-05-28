@@ -174,6 +174,58 @@
     <string name="label_nav_totales">Totales</string>
     <string name="text_prom_graphs">Promedio ($) %1$s</string>
 
+    <!-- Resumen anual gráficos -->
+    <string name="resumen_anual_titulo">Resumen del año</string>
+    <string name="resumen_anual_titulo_actual">Resumen hasta ahora</string>
+    <string name="resumen_anual_titulo_historico">Resumen del año</string>
+    <string name="resumen_anual_total_anio">Total del año: $ %1$s</string>
+    <string name="resumen_anual_insight_historico">Este fue el total registrado para este año.</string>
+    <string name="resumen_anual_acumulado">Acumulado: $ %1$s</string>
+    <string name="resumen_anual_promedio">Promedio mensual: $ %1$s</string>
+    <string name="resumen_anual_proyeccion">Proyección al cierre: $ %1$s</string>
+    <string name="resumen_anual_mes_alto">Mes más alto: %1$s ($ %2$s)</string>
+    <string name="resumen_anual_meses_registro">Meses con registro: %1$d de %2$d</string>
+    <string name="resumen_anual_insight_ingresos">Tus ingresos proyectados para el cierre del año son de $ %1$s.</string>
+    <string name="resumen_anual_insight_ingresos_vacio">No hay ingresos registrados para este año.</string>
+    <string name="resumen_anual_insight_gastos">Si mantienes este ritmo, tus gastos cerrarían cerca de $ %1$s.</string>
+    <string name="resumen_anual_insight_gastos_vacio">No hay gastos registrados para este año.</string>
+    <string name="resumen_anual_insight_ahorros">A este ritmo, podrías cerrar el año con $ %1$s en ahorros registrados.</string>
+    <string name="resumen_anual_insight_ahorros_vacio">No hay ahorros registrados para este año.</string>
+    <string name="resumen_anual_insight_deudas">Si mantienes este ritmo, tus deudas acumuladas podrían cerrar cerca de $ %1$s.</string>
+    <string name="resumen_anual_insight_deudas_vacio">No hay deudas registradas para este año.</string>
+    <string name="resumen_anual_insight_prestamos">Tus préstamos proyectados para el cierre del año serían de $ %1$s.</string>
+    <string name="resumen_anual_insight_prestamos_vacio">No hay préstamos registrados para este año.</string>
+
+
+    <!-- Resumen consolidado anual -->
+    <string name="label_nav_resumen_consolidado">Resumen anual</string>
+    <string name="consolidado_titulo_indicadores">Indicadores del año</string>
+    <string name="consolidado_titulo_promedios">Promedios mensuales</string>
+    <string name="consolidado_titulo_proyeccion">Proyección al cierre del año</string>
+    <string name="consolidado_total_ingresos">Ingresos: $ %1$s</string>
+    <string name="consolidado_total_gastos">Gastos: $ %1$s</string>
+    <string name="consolidado_total_ahorros">Ahorros: $ %1$s</string>
+    <string name="consolidado_total_deudas">Deudas: $ %1$s</string>
+    <string name="consolidado_total_prestamos">Préstamos: $ %1$s</string>
+    <string name="consolidado_margen">Margen después de gastos y deudas: $ %1$s</string>
+    <string name="consolidado_porc_gastos">Has usado el %1$s%% de tus ingresos en gastos.</string>
+    <string name="consolidado_porc_ahorros">Has ahorrado el %1$s%% de tus ingresos.</string>
+    <string name="consolidado_porc_deudas">Tus deudas representan el %1$s%% de tus ingresos acumulados.</string>
+    <string name="consolidado_porc_prestamos">Tus préstamos representan el %1$s%% de tus ingresos acumulados.</string>
+    <string name="consolidado_prom_ingresos">Promedio ingresos: $ %1$s/mes</string>
+    <string name="consolidado_prom_gastos">Promedio gastos: $ %1$s/mes</string>
+    <string name="consolidado_prom_ahorros">Promedio ahorros: $ %1$s/mes</string>
+    <string name="consolidado_prom_deudas">Promedio deudas: $ %1$s/mes</string>
+    <string name="consolidado_proy_ingresos">Ingresos proyectados: $ %1$s</string>
+    <string name="consolidado_proy_gastos">Gastos proyectados: $ %1$s</string>
+    <string name="consolidado_proy_ahorros">Ahorros proyectados: $ %1$s</string>
+    <string name="consolidado_proy_deudas">Deudas proyectadas: $ %1$s</string>
+    <string name="consolidado_sin_ingresos">No hay ingresos registrados para calcular indicadores anuales.</string>
+    <string name="consolidado_insight_gastos_altos">Tus gastos están consumiendo gran parte de tus ingresos acumulados.</string>
+    <string name="consolidado_insight_ahorro_saludable">Tu ritmo de ahorro anual luce saludable hasta ahora.</string>
+    <string name="consolidado_insight_deudas_altas">Tus deudas tienen un peso importante sobre tus ingresos acumulados.</string>
+    <string name="consolidado_insight_neutro">Estos indicadores resumen tu comportamiento financiero en lo que va del año.</string>
+    <string name="consolidado_insight_historico_neutro">Estos indicadores resumen tu comportamiento financiero durante este año.</string>
 
     <!-- Tutorial -->
     <string name="btn_tuto_ok">Entendido</string>
@@ -210,5 +262,23 @@
     <string name="portfolio_empty_message">No hay posiciones en el portafolio.</string>
     <string name="portfolio_not_created">Aún no has creado tu portafolio. Ve a la pestaña "Configurar portafolio" para comenzar.</string>
 
+    <!-- Calculadora modos -->
+    <string name="calculadora_modo_conversion">Conversión</string>
+    <string name="calculadora_modo_venta">Venta</string>
+    <string name="calculadora_monto_dolares">Monto en dólares:</string>
+    <string name="calculadora_tasa_venta">Tasa de venta:</string>
+    <string name="calculadora_recibes_venta">Recibes por la venta</string>
+    <string name="calculadora_equivalente_bcv">Equivalente a BCV</string>
+    <string name="calculadora_diferencia_bcv">Diferencia vs BCV</string>
+    <string name="calculadora_bs_label">Bolívares</string>
+    <string name="calculadora_usd_label">Dólares</string>
+
+    <!-- Deudas filter -->
+    <string name="deudas_filtro_pendientes">Pendientes</string>
+    <string name="deudas_filtro_pagadas">Pagadas</string>
+    <string name="deudas_filtro_todas">Todas</string>
+    <string name="deudas_sin_pendientes">No tienes deudas pendientes</string>
+    <string name="deudas_sin_pagadas">No tienes deudas pagadas este mes</string>
+    <string name="deudas_sin_registradas">No tienes deudas registradas este mes</string>
 
 </resources>

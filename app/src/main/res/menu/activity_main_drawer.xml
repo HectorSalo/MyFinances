@@ -29,5 +29,9 @@
             android:id="@+id/nav_deudas"
             android:icon="@drawable/ic_deudas_24dp"
             android:title="@string/menu_deudas" />
+        <item
+            android:id="@+id/nav_resumen_consolidado"
+            android:icon="@drawable/ic_history_24"
+            android:title="@string/label_nav_resumen_consolidado" />
     </group>
 </menu>

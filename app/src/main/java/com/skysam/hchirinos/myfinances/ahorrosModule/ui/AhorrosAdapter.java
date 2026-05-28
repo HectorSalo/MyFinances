@@ -36,7 +36,7 @@ public class AhorrosAdapter extends RecyclerView.Adapter<AhorrosAdapter.ViewHold
     @NonNull
     @Override
     public AhorrosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_ahorros, null, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_ahorros, parent, false);
         return new ViewHolder(view);
     }
 

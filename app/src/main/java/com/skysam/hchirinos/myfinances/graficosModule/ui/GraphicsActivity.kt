@@ -35,7 +35,8 @@ class GraphicsActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.nav_totales, R.id.nav_ingresos, R.id.nav_ahorros,
-                R.id.nav_prestamos, R.id.nav_gastos, R.id.nav_deudas), drawerLayout)
+                R.id.nav_prestamos, R.id.nav_gastos, R.id.nav_deudas,
+                R.id.nav_resumen_consolidado), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }

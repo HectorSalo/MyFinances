@@ -24,5 +24,6 @@
     <item
         android:id="@+id/menu_bolsa_de_caracas"
         android:title="@string/bolsa_de_caracas_title"
-        android:icon="@drawable/ic_trending_up_24" />
+        android:icon="@drawable/ic_trending_up_24"
+        android:visible="false"/>
 </menu>

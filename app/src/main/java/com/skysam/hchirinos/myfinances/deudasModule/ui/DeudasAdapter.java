@@ -38,10 +38,15 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder> {
 
+    public interface OnDebtUpdatedListener {
+        void onDebtUpdated();
+    }
+
     private ArrayList<AhorrosConstructor> listaDeudas;
     private final Context context;
     private final int year;
     private final int mes;
+    private OnDebtUpdatedListener onDebtUpdatedListener;
 
     public DeudasAdapter(ArrayList<AhorrosConstructor> listaDeudas, Context context, int year, int mes) {
         this.listaDeudas = listaDeudas;
@@ -50,10 +55,20 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
         this.year = year;
     }
 
+    public void setOnDebtUpdatedListener(OnDebtUpdatedListener listener) {
+        this.onDebtUpdatedListener = listener;
+    }
+
+    private void notifyDebtUpdated() {
+        if (onDebtUpdatedListener != null) {
+            onDebtUpdatedListener.onDebtUpdated();
+        }
+    }
+
     @NonNull
     @Override
     public DeudasAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, null, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_prestamos, parent, false);
         return new ViewHolder(view);
     }
 
@@ -185,6 +200,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
                             listaDeudas.get(position).setMonto(montoNuevo);
                             updateList(listaDeudas);
+                            notifyDebtUpdated();
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -193,6 +209,7 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                             Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
                             listaDeudas.get(position).setMonto(montoNuevo);
                             updateList(listaDeudas);
+                            notifyDebtUpdated();
                         } else {
                             Toast.makeText(context, context.getString(R.string.error_guardar_data), Toast.LENGTH_SHORT).show();
                         }
@@ -251,12 +268,14 @@ public class DeudasAdapter extends RecyclerView.Adapter<DeudasAdapter.ViewHolder
                     Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
                     listaDeudas.get(position).setMonto(0);
                     updateList(listaDeudas);
+                    notifyDebtUpdated();
                 })
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Error updating document", e);
                     Toast.makeText(context, "Monto actualizado", Toast.LENGTH_SHORT).show();
                     listaDeudas.get(position).setMonto(0);
                     updateList(listaDeudas);
+                    notifyDebtUpdated();
                 });
     }
 
