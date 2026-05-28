@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Constraints;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.chip.ChipGroup;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.ClassesCommon;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
 import com.skysam.hchirinos.myfinances.common.utils.OnClickDatePicker;
+import com.skysam.hchirinos.myfinances.common.utils.TipoPresupuesto;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,6 +70,7 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
     private String idLista, idItem;
     private boolean itemListGastos;
     private boolean fechaIncial;
+    private ChipGroup chipGroupTipoPresupuesto;
 
     public AgregarGastoFragment() {
         // Required empty public constructor
@@ -163,6 +167,8 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
 
         ibFechaFinal = view.findViewById(R.id.imageButton_final);
         ibFechaFinal.setOnClickListener(view12 -> crearDialogFechaFinal());
+
+        chipGroupTipoPresupuesto = view.findViewById(R.id.chipGroup_tipo_presupuesto);
 
         if (getArguments() != null) {
             String concepto = getArguments().getString(Constants.BD_CONCEPTO);
@@ -269,6 +275,7 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         docData.put(Constants.BD_TIPO_FRECUENCIA, tipoFrecuencia);
         docData.put(Constants.BD_MES_ACTIVO, true);
         docData.put(Constants.BD_PAGADO, false);
+        docData.put(Constants.BD_TIPO_PRESUPUESTO, getTipoPresupuestoSeleccionado());
 
         for (int j = mesSelecInicial; j < (mesSelecFinal+1); j++) {
             final int finalJ = j;
@@ -317,6 +324,7 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
         docData.put(Constants.BD_DURACION_FRECUENCIA, null);
         docData.put(Constants.BD_TIPO_FRECUENCIA, null);
         docData.put(Constants.BD_MES_ACTIVO, true);
+        docData.put(Constants.BD_TIPO_PRESUPUESTO, getTipoPresupuestoSeleccionado());
 
 
             db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
@@ -342,6 +350,16 @@ public class AgregarGastoFragment extends Fragment implements OnClickDatePicker 
                         ibFechaFinal.setEnabled(true);
                     });
 
+    }
+
+    private String getTipoPresupuestoSeleccionado() {
+        int checkedId = chipGroupTipoPresupuesto.getCheckedChipId();
+        if (checkedId == R.id.chip_ahorro_capitalizable) {
+            return TipoPresupuesto.AHORRO_CAPITALIZABLE;
+        } else if (checkedId == R.id.chip_pago_deuda) {
+            return TipoPresupuesto.PAGO_DEUDA;
+        }
+        return TipoPresupuesto.GASTO_NORMAL;
     }
 
     private void crearDialogFechaFinal() {

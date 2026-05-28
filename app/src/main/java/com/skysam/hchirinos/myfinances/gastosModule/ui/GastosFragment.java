@@ -306,6 +306,9 @@ public class GastosFragment extends Fragment {
                     Boolean pagado = doc.getBoolean(Constants.BD_PAGADO);
                     gasto.setPagado(pagado != null && pagado);
 
+                    String tipoPresupuesto = doc.getString(Constants.BD_TIPO_PRESUPUESTO);
+                    gasto.setTipoPresupuesto(tipoPresupuesto != null ? tipoPresupuesto : com.skysam.hchirinos.myfinances.common.utils.TipoPresupuesto.GASTO_NORMAL);
+
 // Duración: en Firestore a veces viene Double
                     Double durD = doc.getDouble(Constants.BD_DURACION_FRECUENCIA);
                     int duracionFrecuencia = (durD != null) ? durD.intValue() : 0;

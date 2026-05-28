@@ -18,6 +18,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.skysam.hchirinos.myfinances.R;
 import com.skysam.hchirinos.myfinances.common.model.firebase.Auth;
 import com.skysam.hchirinos.myfinances.common.utils.Constants;
+import com.skysam.hchirinos.myfinances.common.utils.TipoPresupuesto;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -58,6 +61,7 @@ public class EditarGastoFragment extends Fragment {
     private TextView tvFechaInicial, tvFechaFinal;
     private ProgressBar progressBar;
     private Button btnEditar;
+    private ChipGroup chipGroupTipoPresupuesto;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
@@ -110,6 +114,8 @@ public class EditarGastoFragment extends Fragment {
 
         btnEditar = view.findViewById(R.id.button_editar);
         btnEditar.setOnClickListener(v -> validarDatos());
+
+        chipGroupTipoPresupuesto = view.findViewById(R.id.chipGroup_tipo_presupuesto);
 
         if (mesUnico) {
             linearLayoutFecha.setVisibility(View.GONE);
@@ -194,6 +200,9 @@ public class EditarGastoFragment extends Fragment {
                         mesFinal = 11;
                     }
 
+                    String tipoPresupuesto = document.getString(Constants.BD_TIPO_PRESUPUESTO);
+                    setChipTipoPresupuesto(tipoPresupuesto);
+
                 } else {
                     Log.d(TAG, "No such document");
                     Toast.makeText(getContext(), "Error al cargar. Intente nuevamente", Toast.LENGTH_SHORT).show();
@@ -237,6 +246,9 @@ public class EditarGastoFragment extends Fragment {
                     } else {
                         rbBs.setChecked(true);
                     }
+
+                    String tipoPresupuesto = document.getString(Constants.BD_TIPO_PRESUPUESTO);
+                    setChipTipoPresupuesto(tipoPresupuesto);
 
                 } else {
                     Log.d(TAG, "No such document");
@@ -323,6 +335,7 @@ public class EditarGastoFragment extends Fragment {
         if (rbMeses.isChecked()) {
             item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
         }
+        item.put(Constants.BD_TIPO_PRESUPUESTO, getTipoPresupuestoSeleccionado());
 
         db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
                 .collection(yearSelected + "-" + mesSelected).document(idDoc)
@@ -376,6 +389,7 @@ public class EditarGastoFragment extends Fragment {
         if (rbMeses.isChecked()) {
             item.put(Constants.BD_TIPO_FRECUENCIA, "Meses");
         }
+        item.put(Constants.BD_TIPO_PRESUPUESTO, getTipoPresupuestoSeleccionado());
 
         for (int i = mesSelected; i < (mesFinal+1); i++) {
             final int finalI = i;
@@ -427,6 +441,7 @@ public class EditarGastoFragment extends Fragment {
         if (rbDolar.isChecked()) {
             item.put(Constants.BD_DOLAR, true);
         }
+        item.put(Constants.BD_TIPO_PRESUPUESTO, getTipoPresupuestoSeleccionado());
 
             db.collection(Constants.BD_GASTOS).document(Auth.INSTANCE.uidCurrentUser())
                     .collection(yearSelected + "-" + mesSelected).document(idDoc)
@@ -446,5 +461,28 @@ public class EditarGastoFragment extends Fragment {
                         btnEditar.setEnabled(true);
                     });
 
+    }
+
+    private String getTipoPresupuestoSeleccionado() {
+        int checkedId = chipGroupTipoPresupuesto.getCheckedChipId();
+        if (checkedId == R.id.chip_ahorro_capitalizable) {
+            return TipoPresupuesto.AHORRO_CAPITALIZABLE;
+        } else if (checkedId == R.id.chip_pago_deuda) {
+            return TipoPresupuesto.PAGO_DEUDA;
+        }
+        return TipoPresupuesto.GASTO_NORMAL;
+    }
+
+    private void setChipTipoPresupuesto(String tipoPresupuesto) {
+        if (TipoPresupuesto.AHORRO_CAPITALIZABLE.equals(tipoPresupuesto)) {
+            Chip chip = chipGroupTipoPresupuesto.findViewById(R.id.chip_ahorro_capitalizable);
+            if (chip != null) chip.setChecked(true);
+        } else if (TipoPresupuesto.PAGO_DEUDA.equals(tipoPresupuesto)) {
+            Chip chip = chipGroupTipoPresupuesto.findViewById(R.id.chip_pago_deuda);
+            if (chip != null) chip.setChecked(true);
+        } else {
+            Chip chip = chipGroupTipoPresupuesto.findViewById(R.id.chip_gasto_normal);
+            if (chip != null) chip.setChecked(true);
+        }
     }
 }

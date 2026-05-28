@@ -3,7 +3,7 @@ package com.skysam.hchirinos.myfinances.common.model.constructores;
 import java.util.Date;
 
 public class IngresosGastosConstructor {
-    private String concepto, tipoFrecuencia, idIngreso, idGasto;
+    private String concepto, tipoFrecuencia, idIngreso, idGasto, tipoPresupuesto;
     private double monto;
     private boolean dolar, mesActivo, pagado;
     private int duracionFrecuencia;
@@ -98,5 +98,13 @@ public class IngresosGastosConstructor {
 
     public void setFechaFinal(Date fechaFinal) {
         this.fechaFinal = fechaFinal;
+    }
+
+    public String getTipoPresupuesto() {
+        return tipoPresupuesto;
+    }
+
+    public void setTipoPresupuesto(String tipoPresupuesto) {
+        this.tipoPresupuesto = tipoPresupuesto;
     }
 }

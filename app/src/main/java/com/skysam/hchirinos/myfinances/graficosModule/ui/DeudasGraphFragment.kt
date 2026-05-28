@@ -154,25 +154,28 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
     }
 
     private fun actualizarResumenAnual(barEntries: ArrayList<BarEntry>) {
-        val meses = resources.getStringArray(R.array.meses)
         val mesesConsiderados = monthCurrent + 1
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val isCurrentYear = yearSelected == currentYear
 
-        var acumulado = 0.0
-        var maxMonto = 0f
-        var maxMesIdx = -1
-        var mesesConRegistro = 0
+        // Saldo: el último mes considerado es el saldo actual
+        val saldoActual = barEntries[mesesConsiderados - 1].y.toDouble()
+        val saldoInicial = barEntries[0].y.toDouble()
+        val variacion = saldoActual - saldoInicial
 
+        var mayorSaldo = 0.0
+        var sumaSaldos = 0.0
         for (i in 0 until mesesConsiderados) {
-            val v = barEntries[i].y
-            acumulado += v
-            if (v > 0f) mesesConRegistro++
-            if (v > maxMonto) { maxMonto = v; maxMesIdx = i }
+            val v = barEntries[i].y.toDouble()
+            sumaSaldos += v
+            if (v > mayorSaldo) mayorSaldo = v
         }
+        val promedio = sumaSaldos / mesesConsiderados
 
-        val promedio = if (mesesConsiderados > 0) acumulado / mesesConsiderados else 0.0
-        val proyeccion = promedio * 12
+        val mesesRestantes = 12 - mesesConsiderados
+        val tendenciaPromedio = (saldoActual - saldoInicial) / maxOf(1, mesesConsiderados - 1).toDouble()
+        val tendenciaCierre = saldoActual + (tendenciaPromedio * mesesRestantes)
+
         val r = binding.resumenAnual
 
         r.tvResumenTitulo.text = getString(
@@ -180,37 +183,43 @@ class DeudasGraphFragment : Fragment(), DeudasGraphView {
             else R.string.resumen_anual_titulo_historico
         )
 
+        // Saldo actual / al cierre del año
         r.tvAcumulado.text = if (isCurrentYear) {
-            getString(R.string.resumen_anual_acumulado, ClassesCommon.convertDoubleToString(acumulado))
+            getString(R.string.resumen_anual_deuda_actual, ClassesCommon.convertDoubleToString(saldoActual))
         } else {
-            getString(R.string.resumen_anual_total_anio, ClassesCommon.convertDoubleToString(acumulado))
+            getString(R.string.resumen_anual_deuda_cierre, ClassesCommon.convertDoubleToString(saldoActual))
         }
 
-        r.tvPromedio.text = getString(R.string.resumen_anual_promedio,
+        // Promedio de saldo mensual
+        r.tvPromedio.text = getString(R.string.resumen_anual_promedio_saldo,
             ClassesCommon.convertDoubleToString(promedio))
 
+        // Tendencia al cierre (solo año actual)
         if (isCurrentYear) {
             r.tvProyeccion.visibility = View.VISIBLE
-            r.tvProyeccion.text = getString(R.string.resumen_anual_proyeccion,
-                ClassesCommon.convertDoubleToString(proyeccion))
+            r.tvProyeccion.text = getString(R.string.resumen_anual_tendencia_cierre,
+                ClassesCommon.convertDoubleToString(tendenciaCierre))
         } else {
             r.tvProyeccion.visibility = View.GONE
         }
 
-        if (maxMesIdx >= 0 && maxMonto > 0f) {
-            r.tvMesAlto.text = getString(R.string.resumen_anual_mes_alto,
-                meses[maxMesIdx], ClassesCommon.convertDoubleToString(maxMonto.toDouble()))
-        } else {
-            r.tvMesAlto.text = getString(R.string.resumen_anual_mes_alto, "—", "0,00")
+        // Variación del año
+        r.tvMesAlto.text = when {
+            variacion > 0.0 -> getString(R.string.resumen_anual_variacion_positiva,
+                ClassesCommon.convertDoubleToString(variacion))
+            variacion < 0.0 -> getString(R.string.resumen_anual_variacion_negativa,
+                ClassesCommon.convertDoubleToString(-variacion))
+            else -> getString(R.string.resumen_anual_sin_variacion)
         }
 
-        r.tvMesesRegistro.text = getString(R.string.resumen_anual_meses_registro,
-            mesesConRegistro, mesesConsiderados)
+        // Mayor saldo registrado
+        r.tvMesesRegistro.text = getString(R.string.resumen_anual_mayor_saldo,
+            ClassesCommon.convertDoubleToString(mayorSaldo))
 
         r.tvInsight.text = when {
             !isCurrentYear -> getString(R.string.resumen_anual_insight_historico)
-            acumulado > 0.0 -> getString(R.string.resumen_anual_insight_deudas,
-                ClassesCommon.convertDoubleToString(proyeccion))
+            saldoActual > 0.0 -> getString(R.string.resumen_anual_insight_deudas_tendencia,
+                ClassesCommon.convertDoubleToString(tendenciaCierre))
             else -> getString(R.string.resumen_anual_insight_deudas_vacio)
         }
     }

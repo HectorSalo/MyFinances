@@ -72,9 +72,36 @@
                     android:id="@+id/tv_total_gastos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
+                    android:layout_marginBottom="2dp"
                     style="@style/TextAppearance.AppCompat.Body1"
                     tools:text="Gastos: $ 800,00" />
+
+                <TextView
+                    android:id="@+id/tv_gastos_normales"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="2dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="· Gastos normales: $ 600,00" />
+
+                <TextView
+                    android:id="@+id/tv_ahorro_capitalizable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="2dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="· Ahorro capitalizable: $ 100,00" />
+
+                <TextView
+                    android:id="@+id/tv_pago_deuda"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="· Pago de deuda: $ 100,00" />
 
                 <TextView
                     android:id="@+id/tv_total_ahorros"
@@ -299,6 +326,22 @@
                     tools:text="Gastos proyectados: $ 1.920,00" />
 
                 <TextView
+                    android:id="@+id/tv_proy_ahorro_capitalizable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ahorro capitalizable proyectado: $ 600,00" />
+
+                <TextView
+                    android:id="@+id/tv_proy_pago_deuda"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Pago de deuda proyectado: $ 960,00" />
+
+                <TextView
                     android:id="@+id/tv_proy_ahorros"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -316,7 +359,76 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Card 5: Insight -->
+        <!-- Card 5: Cobertura proyectada de deuda (solo año actual) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_cobertura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/consolidado_titulo_cobertura_deuda"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Subhead" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:alpha="0.2"
+                    android:background="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/tv_cobertura_deuda_proyectada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Deuda proyectada al cierre: $ 1.800,00" />
+
+                <TextView
+                    android:id="@+id/tv_cobertura_pago_proyectado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Pago de deuda proyectado: $ 960,00" />
+
+                <TextView
+                    android:id="@+id/tv_cobertura_porcentaje"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Cobertura proyectada: 53%" />
+
+                <TextView
+                    android:id="@+id/tv_cobertura_faltante"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    tools:text="Al ritmo actual, te faltarían $ 840,00 para cubrir tu deuda proyectada." />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card 6: Insight -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

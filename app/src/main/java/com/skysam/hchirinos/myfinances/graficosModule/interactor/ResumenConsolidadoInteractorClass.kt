@@ -6,6 +6,7 @@ import com.skysam.hchirinos.myfinances.common.MyFinancesApp
 import com.skysam.hchirinos.myfinances.common.model.SharedPreferencesBD
 import com.skysam.hchirinos.myfinances.common.model.firebase.FirebaseFirestore
 import com.skysam.hchirinos.myfinances.common.utils.Constants
+import com.skysam.hchirinos.myfinances.common.utils.TipoPresupuesto
 import com.skysam.hchirinos.myfinances.graficosModule.presenter.ResumenConsolidadoPresenter
 import java.util.*
 
@@ -80,6 +81,9 @@ class ResumenConsolidadoInteractorClass(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     var montototal = 0.0
+                    var gastoNormal = 0.0
+                    var ahorroCapitalizable = 0.0
+                    var pagoDeuda = 0.0
                     var mesPago: Int
                     var yearPago: Int
                     for (document in task.result!!) {
@@ -88,6 +92,15 @@ class ResumenConsolidadoInteractorClass(
                             val montoDetal = document.getDouble(Constants.BD_MONTO)!!
                             val dolar = document.getBoolean(Constants.BD_DOLAR)!!
                             val tipoFrecuencia = document.getString(Constants.BD_TIPO_FRECUENCIA)
+                            // Leer tipo de presupuesto con fallback a GASTO_NORMAL para documentos legacy
+                            val tipoPresupuesto = document.getString(Constants.BD_TIPO_PRESUPUESTO)
+                                ?: TipoPresupuesto.GASTO_NORMAL
+
+                            // Función local para convertir a USD
+                            fun toUsd(monto: Double): Double =
+                                if (dolar) monto else monto / valorCotizacion
+
+                            var montoUsdDoc = 0.0
                             if (tipoFrecuencia != null) {
                                 val calendarPago = Calendar.getInstance()
                                 calendarPago.time = document.getDate(Constants.BD_FECHA_INCIAL)!!
@@ -97,8 +110,7 @@ class ResumenConsolidadoInteractorClass(
                                 yearPago = calendarPago[Calendar.YEAR]
                                 while (mesPago <= month && yearPago == year) {
                                     if (mesPago == month) {
-                                        montototal = if (dolar) montototal + montoDetal
-                                        else montototal + montoDetal / valorCotizacion
+                                        montoUsdDoc += toUsd(montoDetal)
                                     }
                                     when (tipoFrecuencia) {
                                         "Dias" -> calendarPago.add(Calendar.DAY_OF_YEAR, duracionFrecuenciaInt)
@@ -109,18 +121,28 @@ class ResumenConsolidadoInteractorClass(
                                     yearPago = calendarPago[Calendar.YEAR]
                                 }
                             } else {
-                                montototal = if (dolar) montototal + montoDetal
-                                else montototal + montoDetal / valorCotizacion
+                                montoUsdDoc = toUsd(montoDetal)
+                            }
+
+                            montototal += montoUsdDoc
+                            when (tipoPresupuesto) {
+                                TipoPresupuesto.AHORRO_CAPITALIZABLE -> ahorroCapitalizable += montoUsdDoc
+                                TipoPresupuesto.PAGO_DEUDA -> pagoDeuda += montoUsdDoc
+                                else -> gastoNormal += montoUsdDoc
                             }
                         }
                     }
-                    presenter.statusGastosAnual(month, true, montototal.toFloat(), "")
+                    presenter.statusGastosAnual(
+                        month, true,
+                        montototal.toFloat(), gastoNormal.toFloat(),
+                        ahorroCapitalizable.toFloat(), pagoDeuda.toFloat(), ""
+                    )
                 } else {
-                    presenter.statusGastosAnual(month, true, 0f, "")
+                    presenter.statusGastosAnual(month, true, 0f, 0f, 0f, 0f, "")
                 }
             }
             .addOnFailureListener {
-                presenter.statusGastosAnual(month, false, 0f, "Error al obtener gastos")
+                presenter.statusGastosAnual(month, false, 0f, 0f, 0f, 0f, "Error al obtener gastos")
             }
     }
 

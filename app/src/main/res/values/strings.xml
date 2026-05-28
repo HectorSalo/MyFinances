@@ -189,12 +189,25 @@
     <string name="resumen_anual_insight_ingresos_vacio">No hay ingresos registrados para este año.</string>
     <string name="resumen_anual_insight_gastos">Si mantienes este ritmo, tus gastos cerrarían cerca de $ %1$s.</string>
     <string name="resumen_anual_insight_gastos_vacio">No hay gastos registrados para este año.</string>
-    <string name="resumen_anual_insight_ahorros">A este ritmo, podrías cerrar el año con $ %1$s en ahorros registrados.</string>
+    <string name="resumen_anual_insight_ahorros_tendencia">Si mantienes esta tendencia, tu ahorro podría cerrar en $ %1$s.</string>
     <string name="resumen_anual_insight_ahorros_vacio">No hay ahorros registrados para este año.</string>
-    <string name="resumen_anual_insight_deudas">Si mantienes este ritmo, tus deudas acumuladas podrían cerrar cerca de $ %1$s.</string>
+    <string name="resumen_anual_insight_deudas_tendencia">Si esta tendencia continúa, tu deuda podría cerrar en $ %1$s.</string>
     <string name="resumen_anual_insight_deudas_vacio">No hay deudas registradas para este año.</string>
-    <string name="resumen_anual_insight_prestamos">Tus préstamos proyectados para el cierre del año serían de $ %1$s.</string>
+    <string name="resumen_anual_insight_prestamos_tendencia">Si esta tendencia continúa, tus préstamos podrían cerrar en $ %1$s.</string>
     <string name="resumen_anual_insight_prestamos_vacio">No hay préstamos registrados para este año.</string>
+    <!-- Saldo labels (Ahorros / Deudas / Préstamos son saldos, no flujos) -->
+    <string name="resumen_anual_ahorro_actual">Ahorro actual: $ %1$s</string>
+    <string name="resumen_anual_ahorro_cierre">Ahorro al cierre del año: $ %1$s</string>
+    <string name="resumen_anual_deuda_actual">Deuda actual: $ %1$s</string>
+    <string name="resumen_anual_deuda_cierre">Deuda al cierre del año: $ %1$s</string>
+    <string name="resumen_anual_prestamo_actual">Préstamos actuales: $ %1$s</string>
+    <string name="resumen_anual_prestamo_cierre">Préstamos al cierre del año: $ %1$s</string>
+    <string name="resumen_anual_variacion_positiva">Variación del año: +$ %1$s</string>
+    <string name="resumen_anual_variacion_negativa">Variación del año: -$ %1$s</string>
+    <string name="resumen_anual_sin_variacion">Sin variación en el año</string>
+    <string name="resumen_anual_mayor_saldo">Mayor saldo registrado: $ %1$s</string>
+    <string name="resumen_anual_tendencia_cierre">Tendencia al cierre: $ %1$s</string>
+    <string name="resumen_anual_promedio_saldo">Promedio de saldo mensual: $ %1$s</string>
 
 
     <!-- Resumen consolidado anual -->
@@ -209,23 +222,54 @@
     <string name="consolidado_total_prestamos">Préstamos: $ %1$s</string>
     <string name="consolidado_margen">Margen después de gastos y deudas: $ %1$s</string>
     <string name="consolidado_porc_gastos">Has usado el %1$s%% de tus ingresos en gastos.</string>
-    <string name="consolidado_porc_ahorros">Has ahorrado el %1$s%% de tus ingresos.</string>
-    <string name="consolidado_porc_deudas">Tus deudas representan el %1$s%% de tus ingresos acumulados.</string>
-    <string name="consolidado_porc_prestamos">Tus préstamos representan el %1$s%% de tus ingresos acumulados.</string>
+    <string name="consolidado_porc_ahorro_actual">Tu ahorro actual equivale al %1$s%% de tus ingresos acumulados.</string>
+    <string name="consolidado_porc_deuda_actual">Tu deuda actual equivale al %1$s%% de tus ingresos acumulados.</string>
+    <string name="consolidado_porc_prestamo_actual">Tus préstamos actuales equivalen al %1$s%% de tus ingresos acumulados.</string>
     <string name="consolidado_prom_ingresos">Promedio ingresos: $ %1$s/mes</string>
     <string name="consolidado_prom_gastos">Promedio gastos: $ %1$s/mes</string>
-    <string name="consolidado_prom_ahorros">Promedio ahorros: $ %1$s/mes</string>
-    <string name="consolidado_prom_deudas">Promedio deudas: $ %1$s/mes</string>
+    <string name="consolidado_prom_saldo_ahorros">Promedio saldo ahorros: $ %1$s/mes</string>
+    <string name="consolidado_prom_saldo_deudas">Promedio saldo deudas: $ %1$s/mes</string>
     <string name="consolidado_proy_ingresos">Ingresos proyectados: $ %1$s</string>
     <string name="consolidado_proy_gastos">Gastos proyectados: $ %1$s</string>
-    <string name="consolidado_proy_ahorros">Ahorros proyectados: $ %1$s</string>
-    <string name="consolidado_proy_deudas">Deudas proyectadas: $ %1$s</string>
+    <string name="consolidado_tendencia_ahorros">Tendencia ahorro al cierre: $ %1$s</string>
+    <string name="consolidado_tendencia_deudas">Tendencia deuda al cierre: $ %1$s</string>
+    <string name="consolidado_ahorro_actual">Ahorro actual: $ %1$s</string>
+    <string name="consolidado_ahorro_cierre">Ahorro al cierre del año: $ %1$s</string>
+    <string name="consolidado_deuda_actual">Deuda actual: $ %1$s</string>
+    <string name="consolidado_deuda_cierre">Deuda al cierre del año: $ %1$s</string>
+    <string name="consolidado_prestamo_actual">Préstamos actuales: $ %1$s</string>
+    <string name="consolidado_prestamo_cierre">Préstamos al cierre del año: $ %1$s</string>
+    <string name="consolidado_margen_operativo">Diferencia ingresos-gastos: $ %1$s</string>
     <string name="consolidado_sin_ingresos">No hay ingresos registrados para calcular indicadores anuales.</string>
     <string name="consolidado_insight_gastos_altos">Tus gastos están consumiendo gran parte de tus ingresos acumulados.</string>
-    <string name="consolidado_insight_ahorro_saludable">Tu ritmo de ahorro anual luce saludable hasta ahora.</string>
-    <string name="consolidado_insight_deudas_altas">Tus deudas tienen un peso importante sobre tus ingresos acumulados.</string>
+    <string name="consolidado_insight_ahorro_saludable">Tu ahorro actual luce saludable frente a tus ingresos acumulados.</string>
+    <string name="consolidado_insight_deudas_altas">Tu deuda actual tiene un peso importante frente a tus ingresos acumulados.</string>
+    <string name="consolidado_insight_margen_positivo">Hasta ahora tus ingresos superan tus gastos acumulados.</string>
     <string name="consolidado_insight_neutro">Estos indicadores resumen tu comportamiento financiero en lo que va del año.</string>
-    <string name="consolidado_insight_historico_neutro">Estos indicadores resumen tu comportamiento financiero durante este año.</string>
+    <string name="consolidado_insight_historico_neutro">Estos indicadores resumen el comportamiento registrado para este año.</string>
+
+    <!-- Fase 4: desglose de gastos por tipo en Card 1 -->
+    <string name="consolidado_gastos_normales">· Gastos normales: $ %1$s</string>
+    <string name="consolidado_ahorro_capitalizable">· Ahorro capitalizable: $ %1$s</string>
+    <string name="consolidado_pago_deuda">· Pago de deuda: $ %1$s</string>
+
+    <!-- Fase 4: proyecciones por tipo en Card 4 -->
+    <string name="consolidado_ahorro_capitalizable_proyectado">Ahorro capitalizable proyectado: $ %1$s</string>
+    <string name="consolidado_pago_deuda_proyectado">Pago de deuda proyectado: $ %1$s</string>
+
+    <!-- Fase 4: Card cobertura de deuda -->
+    <string name="consolidado_titulo_cobertura_deuda">Cobertura proyectada de deuda</string>
+    <string name="consolidado_deuda_proyectada_cierre">Deuda proyectada al cierre: $ %1$s</string>
+    <string name="consolidado_pago_deuda_proyectado_cierre">Pago de deuda proyectado: $ %1$s</string>
+    <string name="consolidado_cobertura_deuda">Cobertura proyectada: %1$s%%</string>
+    <string name="consolidado_faltante_deuda">Al ritmo actual, te faltarían $ %1$s para cubrir tu deuda proyectada.</string>
+    <string name="consolidado_sobrante_deuda">Al ritmo actual, podrías cubrir tu deuda proyectada y quedar con $ %1$s de margen.</string>
+    <string name="consolidado_sin_deuda_proyectada">No tienes deuda proyectada al cierre del año.</string>
+
+    <!-- Fase 4: insights nuevos -->
+    <string name="consolidado_insight_deuda_sin_cubrir">Con tu ritmo actual de pagos, aún no cubrirías toda tu deuda proyectada al cierre del año.</string>
+    <string name="consolidado_insight_deuda_cubierta">Con tu ritmo actual de pagos, podrías cubrir tu deuda proyectada al cierre del año.</string>
+    <string name="consolidado_insight_ahorro_cap">Tu ahorro capitalizable proyectado muestra cuánto podrías formar como capital este año.</string>
 
     <!-- Tutorial -->
     <string name="btn_tuto_ok">Entendido</string>
@@ -280,5 +324,11 @@
     <string name="deudas_sin_pendientes">No tienes deudas pendientes</string>
     <string name="deudas_sin_pagadas">No tienes deudas pagadas este mes</string>
     <string name="deudas_sin_registradas">No tienes deudas registradas este mes</string>
+
+    <!-- Tipo de presupuesto (solo gastos) -->
+    <string name="tipo_presupuesto_label">Tipo de gasto</string>
+    <string name="tipo_presupuesto_gasto_normal">Gasto normal</string>
+    <string name="tipo_presupuesto_ahorro_capitalizable">Ahorro capitalizable</string>
+    <string name="tipo_presupuesto_pago_deuda">Pago de deuda</string>
 
 </resources>
