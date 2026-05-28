@@ -153,21 +153,22 @@ class ResumenConsolidadoInteractorClass(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     var montototal = 0.0
+                    var capital = 0.0
                     for (document in task.result!!) {
-                        val date = document.getDate(Constants.BD_FECHA_INGRESO)
-                        val calendar = Calendar.getInstance()
-                        calendar.time = date!!
                         val montoDetal = document.getDouble(Constants.BD_MONTO)!!
                         val dolar = document.getBoolean(Constants.BD_DOLAR)!!
-                        montototal += if (dolar) montoDetal else montoDetal / valorCotizacion
+                        val esCapital = document.getBoolean(Constants.BD_CAPITAL) ?: false
+                        val montoUsd = if (dolar) montoDetal else montoDetal / valorCotizacion
+                        montototal += montoUsd
+                        if (esCapital) capital += montoUsd
                     }
-                    presenter.statusAhorrosAnual(month, true, montototal.toFloat(), "")
+                    presenter.statusAhorrosAnual(month, true, montototal.toFloat(), capital.toFloat(), "")
                 } else {
-                    presenter.statusAhorrosAnual(month, true, 0f, "")
+                    presenter.statusAhorrosAnual(month, true, 0f, 0f, "")
                 }
             }
             .addOnFailureListener {
-                presenter.statusAhorrosAnual(month, false, 0f, "Error al obtener ahorros")
+                presenter.statusAhorrosAnual(month, false, 0f, 0f, "Error al obtener ahorros")
             }
     }
 

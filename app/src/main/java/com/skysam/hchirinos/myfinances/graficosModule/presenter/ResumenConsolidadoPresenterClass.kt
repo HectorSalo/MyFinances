@@ -22,8 +22,8 @@ class ResumenConsolidadoPresenterClass(
     override fun statusGastosAnual(month: Int, statusOk: Boolean, total: Float, normal: Float, ahorroCapitalizable: Float, pagoDeuda: Float, message: String) =
         view.statusGastosAnual(month, statusOk, total, normal, ahorroCapitalizable, pagoDeuda, message)
 
-    override fun statusAhorrosAnual(month: Int, statusOk: Boolean, monto: Float, message: String) =
-        view.statusAhorrosAnual(month, statusOk, monto, message)
+    override fun statusAhorrosAnual(month: Int, statusOk: Boolean, total: Float, capital: Float, message: String) =
+        view.statusAhorrosAnual(month, statusOk, total, capital, message)
 
     override fun statusDeudasAnual(month: Int, statusOk: Boolean, monto: Float, message: String) =
         view.statusDeudasAnual(month, statusOk, monto, message)

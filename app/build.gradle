@@ -15,8 +15,8 @@ android {
         applicationId "com.skysam.hchirinos.myfinances"
         minSdkVersion 29
         targetSdkVersion 36
-        versionCode 35
-        versionName "16.0"
+        versionCode 36
+        versionName "16.1"
 
         buildConfigField "String", "DOLARVZLA_API_KEY", "\"${props.getProperty("DOLARVZLA_API_KEY", "")}\""
 

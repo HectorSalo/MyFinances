@@ -20,13 +20,6 @@
             android:indeterminate="true"
             android:visibility="gone" />
 
-        <Spinner
-            android:id="@+id/sp_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp" />
-
         <!-- Card 1: Totales acumulados -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -104,12 +97,20 @@
                     tools:text="· Pago de deuda: $ 100,00" />
 
                 <TextView
-                    android:id="@+id/tv_total_ahorros"
+                    android:id="@+id/tv_ahorro_general"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Ahorro general: $ 30,00" />
+
+                <TextView
+                    android:id="@+id/tv_capital"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Ahorros: $ 50,00" />
+                    tools:text="Capital: $ 20,00" />
 
                 <TextView
                     android:id="@+id/tv_total_deudas"
