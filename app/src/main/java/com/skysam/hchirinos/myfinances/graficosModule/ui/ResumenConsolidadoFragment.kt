@@ -144,13 +144,11 @@ class ResumenConsolidadoFragment : Fragment(), ResumenConsolidadoView {
             binding.tvPorcAhorros.text   = getString(R.string.consolidado_porc_ahorro_actual,  pCapital.toString())
             binding.tvPorcDeudas.text    = getString(R.string.consolidado_porc_deuda_actual,   pDeudas.toString())
             binding.tvPorcPrestamos.text = getString(R.string.consolidado_porc_prestamo_actual, pPrestamos.toString())
-            mostrarInsight(pGastosCotidianos, deudaEstimadaCierre, coberturaDeuda, ahorroCapProyectado, margenCotidiano)
         } else {
             binding.tvPorcGastos.text    = getString(R.string.consolidado_sin_ingresos)
             binding.tvPorcAhorros.text   = ""
             binding.tvPorcDeudas.text    = ""
             binding.tvPorcPrestamos.text = ""
-            binding.tvInsightConsolidado.text = getString(R.string.consolidado_sin_ingresos)
         }
 
         // ── Card 3: Promedios y variaciones mensuales ───────────────────────
@@ -161,12 +159,11 @@ class ResumenConsolidadoFragment : Fragment(), ResumenConsolidadoView {
 
         // ── Card 4: Proyección al cierre del año ─────────────────────────────
         binding.cardProyeccion.visibility = View.VISIBLE
-        binding.tvProyIngresos.text            = getString(R.string.consolidado_proy_ingresos,                     fmt(ingresosProyectados))
-        binding.tvProyGastos.text              = getString(R.string.consolidado_proy_gastos,                       fmt(gastosCotidianosProyectados))
-        binding.tvProyAhorroCapitalizable.text = getString(R.string.consolidado_ahorro_capitalizable_proyectado,   fmt(ahorroCapProyectado))
-        binding.tvProyPagoDeuda.text           = getString(R.string.consolidado_pago_deuda_proyectado,             fmt(pagoDeudaProyectado))
-        binding.tvProyAhorros.text             = getString(R.string.consolidado_tendencia_ahorros,                 fmt(capitalEstimadoCierre))
-        binding.tvProyDeudas.text              = getString(R.string.consolidado_tendencia_deudas,                  fmt(deudaEstimadaCierre))
+        val diferenciaProyectada = ingresosProyectados - gastosCotidianosProyectados
+        binding.tvProyIngresos.text   = getString(R.string.consolidado_proy_ingresos,                     fmt(ingresosProyectados))
+        binding.tvProyGastos.text     = getString(R.string.consolidado_proy_gastos,                       fmt(gastosCotidianosProyectados))
+        binding.tvProyDiferencia.text = getString(R.string.consolidado_proy_diferencia_ingresos_gastos, fmt(diferenciaProyectada))
+        binding.tvProyAhorros.text    = getString(R.string.consolidado_tendencia_ahorros,                 fmt(capitalEstimadoCierre))
 
         // ── Card 5: Cobertura de deuda ────────────────────────────────────────
         binding.cardCobertura.visibility = View.VISIBLE
@@ -183,26 +180,6 @@ class ResumenConsolidadoFragment : Fragment(), ResumenConsolidadoView {
                 getString(R.string.consolidado_faltante_deuda,  fmt(-faltanteOSobrante))
             else
                 getString(R.string.consolidado_sobrante_deuda, fmt(faltanteOSobrante))
-        }
-    }
-
-    private fun mostrarInsight(
-        pGastosCotidianos: Int,
-        deudaEstimadaCierre: Double,
-        coberturaDeuda: Double,
-        ahorroCapProyectado: Double,
-        margenCotidiano: Double
-    ) {
-        binding.tvInsightConsolidado.text = when {
-            ingresosAcumulados <= 0         -> getString(R.string.consolidado_sin_ingresos)
-            deudaEstimadaCierre > 0 && coberturaDeuda < 100
-                                            -> getString(R.string.consolidado_insight_deuda_sin_cubrir)
-            deudaEstimadaCierre > 0 && coberturaDeuda >= 100
-                                            -> getString(R.string.consolidado_insight_deuda_cubierta)
-            ahorroCapProyectado > 0         -> getString(R.string.consolidado_insight_ahorro_cap)
-            pGastosCotidianos >= 80         -> getString(R.string.consolidado_insight_gastos_altos)
-            margenCotidiano > 0             -> getString(R.string.consolidado_insight_margen_positivo)
-            else                            -> getString(R.string.consolidado_insight_neutro)
         }
     }
 

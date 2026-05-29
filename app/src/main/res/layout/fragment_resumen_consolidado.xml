@@ -324,38 +324,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Gastos proyectados: $ 1.920,00" />
+                    tools:text="Gastos cotidianos proyectados: $ 1.920,00" />
 
                 <TextView
-                    android:id="@+id/tv_proy_ahorro_capitalizable"
+                    android:id="@+id/tv_proy_diferencia"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
+                    android:textStyle="bold"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Ahorro capitalizable proyectado: $ 600,00" />
-
-                <TextView
-                    android:id="@+id/tv_proy_pago_deuda"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Pago de deuda proyectado: $ 960,00" />
+                    tools:text="Diferencia proyectada ingresos-gastos cotidianos: $ 480,00" />
 
                 <TextView
                     android:id="@+id/tv_proy_ahorros"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
                     style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Ahorros proyectados: $ 120,00" />
-
-                <TextView
-                    android:id="@+id/tv_proy_deudas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Deudas proyectadas: $ 240,00" />
+                    tools:text="Capital al cierre según tendencia: $ 3.120,00" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -429,33 +414,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Card 6: Insight -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="3dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tv_insight_consolidado"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="italic"
-                    style="@style/TextAppearance.AppCompat.Body2"
-                    tools:text="Estos indicadores resumen tu comportamiento financiero en lo que va del año." />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        <!-- Insight card removido: mensajes redundantes ahora solo en Cobertura card -->
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -231,7 +231,7 @@
     <string name="consolidado_prom_saldo_deudas">Variación promedio de deuda: %1$s/mes</string>
     <string name="consolidado_proy_ingresos">Ingresos proyectados: $ %1$s</string>
     <string name="consolidado_proy_gastos">Gastos cotidianos proyectados: $ %1$s</string>
-    <string name="consolidado_tendencia_ahorros">Capital estimado al cierre: $ %1$s</string>
+    <string name="consolidado_tendencia_ahorros">Capital al cierre según tendencia: $ %1$s</string>
     <string name="consolidado_tendencia_deudas">Deuda estimada al cierre: $ %1$s</string>
     <string name="consolidado_ahorro_actual">Ahorro actual: $ %1$s</string>
     <string name="consolidado_ahorro_cierre">Ahorro al cierre del año: $ %1$s</string>
@@ -256,8 +256,7 @@
     <string name="consolidado_pago_deuda">· Pago de deuda: $ %1$s</string>
 
     <!-- Proyecciones por tipo en Card 4 -->
-    <string name="consolidado_ahorro_capitalizable_proyectado">Ahorro capitalizable proyectado: $ %1$s</string>
-    <string name="consolidado_pago_deuda_proyectado">Pago de deuda proyectado: $ %1$s</string>
+    <string name="consolidado_proy_diferencia_ingresos_gastos">Diferencia proyectada ingresos-gastos cotidianos: $ %1$s</string>
 
     <!-- Card cobertura de deuda -->
     <string name="consolidado_titulo_cobertura_deuda">Cobertura proyectada de deuda</string>
